@@ -5,6 +5,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../scale-visualizer/scale-visualizer.html">
 <link rel="import" href="../behaviors/math-and-physics.html">
+<link rel="import" href="../behaviors/planet-raw-data.html">
 
 <dom-module id="planet-info">
   <template>
@@ -46,7 +47,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </div>
       <div class="basic">
         <h3>Basic Info</h3>
-        <p>Spotted in {{pl_disc}} with {{pl_facility}}'s {{pl_telescope}} by using the <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets">{{discmethod}} method</a>.</p>
+        <p>Spotted in {{pl_disc}} with {{pl_facility}}'s {{pl_telescope}} by using the <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets">{{toLowercase(discmethod)}} method</a>.</p>
       </div>
       <div class="detailed">
         <h3>Detailed Info</h3>
@@ -65,87 +66,25 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-info',
-        behaviors: [MathAndPhysics],
+        behaviors: [MathAndPhysics, PlanetRawData],
         properties: {
-          pl_name: {
-            type: String,
-            notify: true
-          },
-          pl_rade: {
-            type: Number,
-            notify: true
-          },
-          pl_radj: {
-            type: Number,
-            notify: true
-          },
           earthRadii: {
             type: Number,
             notify: true,
             computed: 'getEarthRadii(pl_rade, pl_radj)'
-          },
-          st_dist: {
-            type: Number,
-            notify: true
           },
           distance: {
             type: String,
             notify: true,
             computed: 'pcToLy(st_dist)'
           },
-          pl_massj: {
-            type: Number,
-            notify: true
-          },
-          pl_masse: {
-            type: Number,
-            notify: true
-          },
-          pl_eqt: {
-            type: Number,
-            notify: true,
-            value: 0
-          },
           color: {
             type: String,
             notify: true,
             computed: 'tempToColor(pl_eqt)'
           },
-          pl_telescope: {
-            type: String,
-            notify: true,
-            value: 'unknown'
-          },
-          pl_facility: {
-            type: String,
-            notify: true,
-            value: 'unknown'
-          },
-          pl_disc: {
-            type: Number,
-            notify: true,
-            value: 'unknown'
-          },
-          pl_discmethod: {
-            type: String,
-            notify: true,
-            value: 'unknown',
-            observer: 'lowercaseMethod'
-          },
           discmethod: {
             type: String,
-            notify: true
-          },
-          pl_pnum: {
-            type: Number,
-            notify: true
-          },
-          ra: {
-            type: Number,
-            notify: true
-          },
-          dec: {
-            type: Number,
             notify: true
           }
         },
@@ -156,8 +95,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
             return false;
           }
         },
-        lowercaseMethod: function() {
-          this.discmethod = this.pl_discmethod.toLowerCase();
+        toLowercase: function(string) {
+          return string.toLowerCase();
         }
       });
     })();

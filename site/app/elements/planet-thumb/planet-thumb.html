@@ -5,6 +5,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../scale-visualizer/scale-visualizer.html">
 <link rel="import" href="../behaviors/math-and-physics.html">
+<link rel="import" href="../behaviors/planet-raw-data.html">
 
 <dom-module id="planet-thumb">
   <template>
@@ -79,73 +80,22 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-thumb',
-        behaviors: [MathAndPhysics],
+        behaviors: [MathAndPhysics, PlanetRawData],
         properties: {
-          pl_name: {
-            type: String,
-            notify: true
-          },
-          pl_rade: {
-            type: Number,
-            notify: true
-          },
-          pl_radj: {
-          	type: Number,
-          	notify: true
-          },
           earthRadii: {
             type: Number,
             notify: true,
             computed: 'getEarthRadii(pl_rade, pl_radj)'
           },
-          st_dist: {
-          	type: Number,
-          	notify: true
-          },
           distance: {
             type: Number,
             computed: 'pcToLy(st_dist)'
-          },
-          pl_massj: {
-            type: Number,
-            notify: true
-          },
-          pl_masse: {
-            type: Number,
-            notify: true
-          },
-          pl_eqt: {
-          	type: Number,
-          	notify: true,
-            value: 0
           },
           color: {
             type: String,
             notify: true,
             computed: 'tempToColor(pl_eqt)',
             value: 'brown'
-          },
-          pl_telescope: {
-            type: String,
-            notify: true,
-            value: 'unknown'
-          },
-          pl_disc: {
-            type: Number,
-            notify: true,
-            value: 'unknown'
-          }
-        },
-        changeSizes: function() {
-          let circle = this.querySelector('circle');
-          this.exoHalfWidth = 30 * this.radiusScale;
-
-          if (this.exoHalfWidth > 60) {
-            let diff = 30 - (this.exoHalfWidth - 60);
-            circle.style.transform = "translate(" + diff + "px, 50px)";
-            circle.style.webkitTransform = "translate(" + diff + "px, 50px)";
-          } else if (this.exoHalfWidth === 0) {
-            circle.style.display = "none";
           }
         }
       });

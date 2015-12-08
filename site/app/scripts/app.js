@@ -16,13 +16,10 @@
    */
   function createPlanetThumb(data) {
     planetInfos.push({name: data.pl_name, data: data});
-    // var pM = document.createElement('paper-material');
-    // pM.elevation = '1';
     var pT = document.createElement('planet-thumb');
     for (let d in data) {
       pT[d] = data[d];
     }
-    // pM.appendChild(pT);
     home.appendChild(pT);
   }
 

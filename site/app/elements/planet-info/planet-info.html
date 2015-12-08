@@ -4,6 +4,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../scale-visualizer/scale-visualizer.html">
+<link rel="import" href="../behaviors/math-and-physics.html">
 
 <dom-module id="planet-info">
   <template>
@@ -39,7 +40,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </div>
       <div class="vacation">
         <h3>Thinking about vacationing here?</h3>
-        <p hidden$="{{!doesntExist(distance)}}">At {{distance}} lightyears away, you'll need {{getTime(distance)}} years to reach {{pl_name}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
+        <p hidden$="{{!doesntExist(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{pl_name}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
         <p hidden$="{{!doesntExist(pl_pnum)}}">{{pl_name}} is just one of {{pl_pnum}} planets orbiting {{starName}}.</p>
         <p hidden$="{{!doesntExist(pl_pnum)}}">{{pl_name}} is the only planet orbiting {{starName}}.</p>
       </div>
@@ -64,6 +65,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-info',
+        behaviors: [MathAndPhysics],
         properties: {
           pl_name: {
             type: String,
@@ -80,7 +82,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthRadii: {
             type: Number,
             notify: true,
-            computed: 'getRadiusScale(pl_rade, pl_radj)'
+            computed: 'getEarthRadii(pl_rade, pl_radj)'
           },
           st_dist: {
             type: Number,
@@ -147,52 +149,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
             notify: true
           }
         },
-        getRadiusScale: function(earthRad, jupiterRad) {
-          if (!earthRad && !jupiterRad) {
-            return 0;
-          } else if (earthRad) {
-            return earthRad;
-          } else {
-            return jupiterRad * 11.2;
-          }
-        },
-        tempToColor: function(temp) {
-          // TODO: add more colors. needs super hot and super cold
-          var color = '#ccc';
-          if (temp < 273) {
-            color = '#99f';
-          } else if (temp > 313) {
-            color = '#f99';
-          }
-          return color;
-        },
-        pcToLy: function(dist) {
-          // gotta respect sigfigs
-          var digits = dist.toString().length;
-          if (!digits) {
-            return null;
-          }
-          var ly = (dist / 3.26).toString();
-          ly = ly.slice(0,digits);
-          return ly.toString();
-        },
         doesntExist: function(val) {
           if (val) {
             return true;
           } else {
             return false;
           }
-        },
-        getTime: function(ly) {
-          if (!ly) {
-            return null;
-          }
-          var digits = ly.toString().length;
-          // http://www.aerospaceweb.org/question/performance/q0023.shtml
-          var years = (ly / 0.000234).toString();
-          years = years.slice(0,digits);
-          // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-          return years.replace(/\B(?=(\d{3})+(?!\d))/g, ",");;
         },
         lowercaseMethod: function() {
           this.discmethod = this.pl_discmethod.toLowerCase();

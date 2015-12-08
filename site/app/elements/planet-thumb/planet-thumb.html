@@ -4,6 +4,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../scale-visualizer/scale-visualizer.html">
+<link rel="import" href="../behaviors/math-and-physics.html">
 
 <dom-module id="planet-thumb">
   <template>
@@ -78,6 +79,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-thumb',
+        behaviors: [MathAndPhysics],
         properties: {
           pl_name: {
             type: String,
@@ -94,7 +96,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthRadii: {
             type: Number,
             notify: true,
-            computed: 'getRadiusScale(pl_rade, pl_radj)'
+            computed: 'getEarthRadii(pl_rade, pl_radj)'
           },
           st_dist: {
           	type: Number,
@@ -133,35 +135,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
             notify: true,
             value: 'unknown'
           }
-        },
-        getRadiusScale: function(earthRad, jupiterRad) {
-          if (!earthRad && !jupiterRad) {
-            return 0;
-          } else if (earthRad) {
-            return earthRad;
-          } else {
-            return jupiterRad * 11.2;
-          }
-        },
-        pcToLy: function(dist) {
-          // gotta respect sigfigs
-          let digits = dist.toString().length;
-          if (!digits) {
-            return 'unknown';
-          }
-          var ly = (dist / 3.26).toString();
-          ly = ly.slice(0,digits);
-          return ly.toString();
-        },
-        tempToColor: function(temp) {
-          // TODO: add more colors. needs super hot and super cold
-          var color = '#ccc';
-          if (temp < 273) {
-            color = '#99f';
-          } else if (temp > 313) {
-            color = '#f99';
-          }
-          return color;
         },
         changeSizes: function() {
           let circle = this.querySelector('circle');

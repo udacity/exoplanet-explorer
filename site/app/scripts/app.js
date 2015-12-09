@@ -41,6 +41,7 @@ Instructions:
   };
 
   window.addEventListener('WebComponentsReady', function() {
+    home = document.querySelector('section[data-route="home"]');
     /*
     Uncomment the next line you're ready to start chaining and testing!
     You'll need to add a .then and a .catch.

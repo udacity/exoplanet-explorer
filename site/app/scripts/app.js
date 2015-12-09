@@ -14,8 +14,9 @@ Instructions:
   /*
   Helper function to show the search query.
    */
-  function addSearchHeader(string) {
-    home.innerHTML = '<h2 class="page-title">query: ' + string + '</h2>';
+  function addSearchHeader(response) {
+    response = JSON.parse(response);  // you'll be moving this line out of here in the next quiz!
+    home.innerHTML = '<h2 class="page-title">query: ' + response.query + '</h2>';
   };
 
   function get(url) {
@@ -44,8 +45,7 @@ Instructions:
      */
     get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
     .then(function(response) {
-      response = JSON.parse(response);
-      addSearchHeader(response.query);
+      addSearchHeader(response);
     })
     .catch(function(error) {
       console.log(error);

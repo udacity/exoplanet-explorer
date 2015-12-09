@@ -1,6 +1,6 @@
 /*
 Instructions:
-(1) Wrap an XHR in a Promise in the get() function below. See: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
+(1) Wrap an XHR in a Promise in the get() function below.
   (a) Resolve on load and reject on error.
 (2) If the XHR resolves, use addSearchHeader to add the search header to the page.
 (3) If the XHR fails, console.log the error.
@@ -18,10 +18,26 @@ Instructions:
     home.innerHTML = '<h2 class="page-title">query: ' + string + '</h2>';
   };
 
-  function get() {
+  function get(url) {
     /*
-    Your Promise goes here!
+    This code needs to get wrapped in a promise!
      */
+    var req = new XMLHttpRequest();
+    req.open('GET', url);
+    req.onload = function() {
+      if (req.status == 200) {
+        // It worked!
+        // You'll want to resolve with the data from req.response
+      } else {
+        // It failed :(
+        // Be nice and reject with req.statusText
+      };
+    };
+    req.onerror = function() {
+      // It failed :(
+      // Pass a Network Error to reject
+    };
+    req.send();
   };
 
   window.addEventListener('WebComponentsReady', function() {

@@ -44,6 +44,9 @@ Instructions:
     get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
     .then(function(response) {
       addSearchHeader(response.query);
+    })
+    .catch(function(error) {
+      console.log(error);
     });
   });
 })(document);

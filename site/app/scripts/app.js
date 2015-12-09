@@ -36,7 +36,7 @@ Instructions:
     };
     req.onerror = function() {
       // It failed :(
-      // Pass a Network Error to reject
+      // Pass a 'Network Error' to reject
     };
     req.send();
   };
@@ -44,7 +44,7 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Uncomment the next line you're ready to start chaining and testing!
+    Uncomment the next line when you're ready to start chaining and testing!
     You'll need to add a .then and a .catch.
      */
     // get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')

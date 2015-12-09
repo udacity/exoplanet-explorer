@@ -37,12 +37,14 @@ Instructions:
   };
 
   window.addEventListener('WebComponentsReady', function() {
+    home = document.querySelector('section[data-route="home"]');
     /*
     Uncomment the next line you're ready to start chaining and testing!
     You'll need to add a .then and a .catch.
      */
     get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
     .then(function(response) {
+      response = JSON.parse(response);
       addSearchHeader(response.query);
     })
     .catch(function(error) {

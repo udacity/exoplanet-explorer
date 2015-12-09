@@ -18,10 +18,22 @@ Instructions:
     home.innerHTML = '<h2 class="page-title">query: ' + string + '</h2>';
   };
 
-  function get() {
-    /*
-    Your Promise goes here!
-     */
+  function get(url) {
+    return new Promise(function(resolve){
+      var req = new XMLHttpRequest();
+      req.open('GET', url);
+      req.onload = function() {
+        if (req.status == 200) {
+          resolve(req.response);
+        } else {
+          reject(Error(req.statusText));
+        };
+      };
+      req.onerror = function() {
+        reject(Error('Network Error'));
+      };
+      req.send();
+    });
   };
 
   window.addEventListener('WebComponentsReady', function() {
@@ -29,6 +41,9 @@ Instructions:
     Uncomment the next line you're ready to start chaining and testing!
     You'll need to add a .then and a .catch.
      */
-    // get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    get('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    .then(function(response) {
+      addSearchHeader(response.query);
+    });
   });
 })(document);

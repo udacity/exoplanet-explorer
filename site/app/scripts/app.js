@@ -43,7 +43,9 @@ Instructions:
   };
 
   function getJSON(url) {
-    return get(url).then(JSON.parse);
+    return get(url).then(function(response) {
+      return JSON.parse(response);
+    });
   };
 
   window.addEventListener('WebComponentsReady', function() {

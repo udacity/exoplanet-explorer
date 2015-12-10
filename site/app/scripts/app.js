@@ -21,7 +21,7 @@ Instructions:
   };
 
   /**
-   * XHR Wrapped in a promise
+   * XHR wrapped in a Promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */

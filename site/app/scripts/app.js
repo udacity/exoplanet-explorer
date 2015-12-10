@@ -52,7 +52,7 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Uncomment the next line, add you're ready to test! Don't forget to chain a .then and a .catch!
+    Uncomment the next line when you're ready to test! Don't forget to chain a .then and a .catch!
      */
     // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
   });

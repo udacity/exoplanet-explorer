@@ -11,14 +11,20 @@ Instructions:
 
   var home = null;
 
-  /*
-  Helper function to show the search query.
+  /**
+   * Helper function to show the search query.
+   * @param {Object} response - The unparsed JSON response from get.
    */
   function addSearchHeader(response) {
     response = JSON.parse(response);  // you'll be moving this line out of here in the next quiz!
     home.innerHTML = '<h2 class="page-title">query: ' + response.query + '</h2>';
   };
 
+  /**
+   * XHR Wrapped in a promise
+   * @param  {String} url - The URL to fetch.
+   * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
+   */
   function get(url) {
     /*
     This code needs to get wrapped in a promise!

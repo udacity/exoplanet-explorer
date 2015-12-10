@@ -60,6 +60,7 @@ Instructions:
     home = document.querySelector('section[data-route="home"]');
     /*
     Uncomment the next line and start here when you're ready to add the first thumbnail!
+    Your code goes here!
      */
     // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
   });

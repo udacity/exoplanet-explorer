@@ -36,9 +36,7 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return fetch(url, {
-      method: 'get'
-    })
+    return fetch(url)
   };
 
   /**
@@ -57,6 +55,18 @@ Instructions:
     /*
     Your code goes here! Uncomment the next line when you're ready to start!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then(function(response) {
+      var sequence = Promise.resolve();
+
+      response.results.forEach(function (planet) {
+        return sequence = sequence.then(function() {
+          getJSON(planet)
+          .then(function(data) {
+            createPlanetThumb(data);
+          });
+        });
+      });
+    });
   });
 })(document);

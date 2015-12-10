@@ -1,9 +1,11 @@
 /*
 Instructions:
-(1) Finish the getJSON method. getJSON should take a URL and return the parsed JSON response.
+(1) Rewrite get with the Fetch API: https://davidwalsh.name/fetch
+(2) Finish the getJSON method. getJSON should take a URL and return the parsed JSON response.
   (a) getJSON needs to return a Promise!
-(2) Test by passing the query string from the JSON to addSearchHeader.
-(3) Handle errors by passing "unknown" to addSearchHeader.
+  (b) Read the Fetch API to learn how to parse JSON with Fetch.
+(3) Test by passing the query string from the JSON to addSearchHeader.
+(4) Handle errors by passing "unknown" to addSearchHeader.
  */
 
 (function(document) {
@@ -25,21 +27,9 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return new Promise(function(resolve, reject) {
-      var req = new XMLHttpRequest();
-      req.open('GET', url);
-      req.onload = function() {
-        if (req.status == 200) {
-          resolve(req.response);
-        } else {
-          reject(Error(req.statusText));
-        };
-      };
-      req.onerror = function() {
-        reject(Error('Network Error'));
-      };
-      req.send();
-    });
+    return fetch(url, {
+      method: 'get'
+    })
   };
 
   /**
@@ -49,7 +39,7 @@ Instructions:
    */
   function getJSON(url) {
     return get(url).then(function(response) {
-      return JSON.parse(response);
+      return response.json();
     });
   };
 
@@ -62,8 +52,9 @@ Instructions:
     .then(function(response) {
       addSearchHeader(response.query);
     })
-    .catch(function() {
+    .catch(function(error) {
       addSearchHeader('unknown');
+      console.log(error);
     })
   });
 })(document);

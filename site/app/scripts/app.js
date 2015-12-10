@@ -35,26 +35,14 @@ Instructions:
   }
 
   /**
-   * XHR Wrapped in a promise.
+   * XHR wrapped in a promise
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return new Promise(function(resolve, reject) {
-      var req = new XMLHttpRequest();
-      req.open('GET', url);
-      req.onload = function() {
-        if (req.status == 200) {
-          resolve(req.response);
-        } else {
-          reject(Error(req.statusText));
-        };
-      };
-      req.onerror = function() {
-        reject(Error('Network Error'));
-      };
-      req.send();
-    });
+    return fetch(url, {
+      method: 'get'
+    })
   };
 
   /**
@@ -64,7 +52,7 @@ Instructions:
    */
   function getJSON(url) {
     return get(url).then(function(response) {
-      return JSON.parse(response);
+      return response.json();
     });
   };
 

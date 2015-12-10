@@ -7,6 +7,7 @@ Instructions:
 (4) Handle errors!
   (a) Pass 'unknown' to the search header.
   (b) console.log the error.
+  (c) You're performing two network requests. Consider how you'd want to handle errors for each one.
  */
 
 (function(document) {
@@ -58,10 +59,21 @@ Instructions:
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Uncomment the next line and start here when you're ready to add the first thumbnail!
-    Your code goes here!
-     */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+
+    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    .then(function(response) {
+      addSearchHeader(response.query);
+      return getJSON(response.results[0]);
+    })
+    .catch(function() {
+      throw Error('Search Request Error');
+    })
+    .then(function(planetData) {
+      createPlanetThumb(planetData)
+    })
+    .catch(function(e) {
+      addSearchHeader('unknown');
+      console.log(e);
+    })
   });
 })(document);

@@ -26,7 +26,7 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return new Promise(function(resolve){
+    return new Promise(function(resolve) {
       var req = new XMLHttpRequest();
       req.open('GET', url);
       req.onload = function() {

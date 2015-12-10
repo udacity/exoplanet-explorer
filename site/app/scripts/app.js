@@ -61,7 +61,7 @@ Instructions:
     .then(function(response) {
       var sequence = Promise.resolve();
 
-      response.results.forEach(function (url) {
+      response.results.forEach(function(url) {
         sequence = sequence.then(function() {
           return getJSON(url)
         })

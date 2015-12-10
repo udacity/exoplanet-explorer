@@ -6,7 +6,7 @@ Instructions:
 (4) Create a thumbnail for the first planet.
 (4) Handle errors!
   (a) Pass 'unknown' to the search header.
-  (b) console.log the error
+  (b) console.log the error.
  */
 
 (function(document) {
@@ -35,7 +35,7 @@ Instructions:
   }
 
   /**
-   * XHR Wrapped in a promise
+   * XHR Wrapped in a promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */

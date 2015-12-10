@@ -13,7 +13,7 @@ Instructions:
 
   /**
    * Helper function to show the search query.
-   * @param {Object} response - The unparsed JSON response from get.
+   * @param {String} response - The unparsed JSON response from get.
    */
   function addSearchHeader(response) {
     response = JSON.parse(response);  // you'll be moving this line out of here in the next quiz!

@@ -13,12 +13,17 @@ Instructions:
 
   /**
    * Helper function to show the search query.
-   * @param {String} query - The search query
+   * @param {String} query - The search query.
    */
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
   };
 
+  /**
+   * XHR Wrapped in a promise
+   * @param  {String} url - The URL to fetch.
+   * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
+   */
   function get(url) {
     return new Promise(function(resolve){
       var req = new XMLHttpRequest();
@@ -47,7 +52,7 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Uncomment the next line you're ready to test!
+    Uncomment the next line, add you're ready to test! Don't forget to chain a .then and a .catch!
      */
     // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
   });

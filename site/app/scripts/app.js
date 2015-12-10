@@ -25,7 +25,7 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
       var req = new XMLHttpRequest();
       req.open('GET', url);
       req.onload = function() {
@@ -43,10 +43,7 @@ Instructions:
   };
 
   function getJSON(url) {
-    /*
-    Return a Promise that gets a URL and parses the JSON response.
-    Your code goes here!
-     */
+    return get(url).then(JSON.parse);
   };
 
   window.addEventListener('WebComponentsReady', function() {
@@ -54,6 +51,12 @@ Instructions:
     /*
     Uncomment the next line, add you're ready to test! Don't forget to chain a .then and a .catch!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    .then(function(response) {
+      addSearchHeader(response.query);
+    })
+    .catch(function() {
+      addSearchHeader('unknown');
+    })
   });
 })(document);

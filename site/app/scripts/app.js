@@ -55,6 +55,8 @@ Instructions:
     /*
     Your code goes here! Uncomment the next line when you're ready to start!
      */
+    // TODO: swap this out with a non local source!!!
+    // Not seeming to be in series?
     getJSON('../data/earth-like-results.json')
     .then(function(response) {
       var sequence = Promise.resolve();

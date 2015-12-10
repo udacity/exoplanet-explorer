@@ -1,9 +1,12 @@
 /*
 Instructions:
-(1) Finish the getJSON method. getJSON should take a URL and return the parsed JSON response.
-  (a) getJSON needs to return a Promise!
-(2) Test by passing the query string from the JSON to addSearchHeader.
-(3) Handle errors by passing "unknown" to addSearchHeader.
+(1) Get the master JSON with the list of planet URLs.
+(2) Add the search header.
+(3) Get the first planet's JSON.
+(4) Create a thumbnail for the first planet.
+(4) Handle errors!
+  (a) Pass 'unknown' to the search header.
+  (b) console.log the error
  */
 
 (function(document) {
@@ -18,6 +21,18 @@ Instructions:
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
   };
+
+  /**
+   * Helper function to create a planet thumbnail.
+   * @param  {Object} data - The raw data describing the planet.
+   */
+  function createPlanetThumb(data) {
+    var pT = document.createElement('planet-thumb');
+    for (let d in data) {
+      pT[d] = data[d];
+    }
+    home.appendChild(pT);
+  }
 
   /**
    * XHR Wrapped in a promise
@@ -56,14 +71,8 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Uncomment the next line, add you're ready to test! Don't forget to chain a .then and a .catch!
+    Uncomment the next line and start here when you're ready to add the first thumbnail!
      */
-    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
-    .then(function(response) {
-      addSearchHeader(response.query);
-    })
-    .catch(function() {
-      addSearchHeader('unknown');
-    })
+    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
   });
 })(document);

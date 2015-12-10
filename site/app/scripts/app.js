@@ -36,7 +36,7 @@ Instructions:
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return fetch(url)
+    return fetch(url);
   };
 
   /**
@@ -61,14 +61,15 @@ Instructions:
     .then(function(response) {
       var sequence = Promise.resolve();
 
-      response.results.forEach(function (planet) {
-        return sequence = sequence.then(function() {
-          getJSON(planet)
-          .then(function(data) {
-            createPlanetThumb(data);
-          });
-        });
+      response.results.forEach(function (url) {
+        sequence = sequence.then(function() {
+          return getJSON(url)
+        })
+        .then(createPlanetThumb);
       });
+    })
+    .catch(function(e) {
+      console.log(e);
     });
   });
 })(document);

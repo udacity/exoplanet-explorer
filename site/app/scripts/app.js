@@ -55,6 +55,17 @@ Instructions:
     /*
     Your code goes here! Uncomment the next line when you're ready to start!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    .then(function(response) {
+      return Promise.all(response.results.map(getJSON));
+    })
+    .then(function(planetData) {
+      planetData.forEach(function(planet) {
+        createPlanetThumb(planet)
+      });
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
   });
 })(document);

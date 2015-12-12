@@ -56,4 +56,5 @@ Instructions:
     Your code goes here! Uncomment the next line when you're ready to start!
      */
     // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+  });
 })(document);

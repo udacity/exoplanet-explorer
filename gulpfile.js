@@ -102,11 +102,18 @@ gulp.task('copy', function () {
     dot: true
   }).pipe(gulp.dest('dist'));
 
+  var data = gulp.src([
+    'app/data/*',
+    'app/data/**/*'
+  ]).pipe(gulp.dest('dist/data'));
+
+  var cname = gulp.src(['CNAME']).pipe(gulp.dest('dist/'));
+
   var bower = gulp.src([
     'bower_components/**/*'
   ]).pipe(gulp.dest('dist/bower_components'));
 
-  var elements = gulp.src(['app/elements/**/*.html'])
+  var elements = gulp.src(['app/elements/**/*.{html,svg}'])
     .pipe(gulp.dest('dist/elements'));
 
   var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
@@ -119,7 +126,7 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
-  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
+  return merge(app, data, bower, elements, vulcanized, swBootstrap, swToolbox, cname)
     .pipe($.size({title: 'copy'}));
 });
 

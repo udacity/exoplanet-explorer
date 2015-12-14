@@ -31,23 +31,22 @@ Copyright (c) 2015 Udacity. All rights reserved.
     <paper-material elevation="1">
       <div class="layout vertical">
       <h2>{{pl_name}}</h2>
-      <div class="vis" hidden$="{{!doesntExist(earthRadii)}}">
+      <div class="vis" hidden$="{{!exists(earthRadii)}}">
         <scale-visualizer
           color$="{{color}}"
           earth-radii$="{{earthRadii}}">
         </scale-visualizer>
-        ***** IS THIS THING BROKEN??? JUPITER AIN'T SHOWING
-        <p class="subtext">Earth and {{pl_name}} to scale</p> ****what if jupiter?
+        <p class="subtext">{{scaleMessage(pl_name)}}</p>
       </div>
       <div class="vacation">
         <h3>Thinking about vacationing here?</h3>
-        <p hidden$="{{!doesntExist(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{pl_name}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
-        <p hidden$="{{!doesntExist(pl_pnum)}}">{{pl_name}} is just one of {{pl_pnum}} planets orbiting {{starName}}.</p>
-        <p hidden$="{{!doesntExist(pl_pnum)}}">{{pl_name}} is the only planet orbiting {{starName}}.</p>
+        <p hidden$="{{exists(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{pl_name}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
+        <p hidden$="{{!exists(pl_pnum)}}">{{pl_name}} is just one of {{pl_pnum}} planets orbiting {{starName}}.</p>
+        <p hidden$="{{!exists(pl_pnum)}}">{{pl_name}} is the only planet orbiting {{starName}}.</p>
       </div>
       <div class="basic">
         <h3>Basic Info</h3>
-        <p>Spotted in {{pl_disc}} with {{pl_facility}}'s {{pl_telescope}} by using the <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets">{{toLowercase(discmethod)}} method</a>.</p>
+        <p>Spotted in {{pl_disc}} with {{pl_facility}}'s {{pl_telescope}} by using the <a href$="{{getDiscmethodUrl(pl_discmethod)}}">{{toLowercase(pl_discmethod)}} method</a>.</p>
       </div>
       <div class="detailed">
         <h3>Detailed Info</h3>
@@ -82,13 +81,26 @@ Copyright (c) 2015 Udacity. All rights reserved.
             type: String,
             notify: true,
             computed: 'tempToColor(pl_eqt)'
-          },
-          discmethod: {
-            type: String,
-            notify: true
           }
         },
-        doesntExist: function(val) {
+        getDiscmethodUrl: function(discmethod) {
+          var url = "";
+          
+          return url;
+        },
+        scaleMessage: function(name) {
+          var message = "";
+          var largeEnough = null;
+          this.earthRadii > 7 ? largeEnough = true : largeEnough = false;
+
+          if (largeEnough) {
+            message = name + ", Earth and Jupiter to scale.";
+          } else {
+            message = name + " and Earth to scale.";
+          }
+          return message;
+        },
+        exists: function(val) {
           if (val) {
             return true;
           } else {

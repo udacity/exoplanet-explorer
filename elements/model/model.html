@@ -1,5 +1,5 @@
 <script>
-;var loader = (function(document) {
+	;var Model = (function(document) {
   'use strict';
 
   var home = null;
@@ -34,7 +34,7 @@
       req.onload = function() {
         // This is called even on 404 etc
         // so check the status
-        if (req.status == 200) {
+        if (req.status === 200) {
           // Resolve the promise with the response text
           resolve(req.response);
         }
@@ -47,7 +47,7 @@
 
       // Handle network errors
       req.onerror = function() {
-        reject(Error("Network Error"));
+        reject(Error('Network Error'));
       };
 
       // Make the request
@@ -91,7 +91,9 @@
   // Proj: add when moving routing logic to routing.html
   return {
     getJSON: getJSON,
-    loadSequence: loadSequence
+    loadSequence: loadSequence,
+    planetInfos: planetInfos
   }
 })(document);
+
 </script>

@@ -7,9 +7,10 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<link rel="import" href="loader/loader.html">
 
+<link rel="import" href="model/model.html">
 <script src="../bower_components/page/page.js"></script>
+
 <script>
   'use strict';
 
@@ -25,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     var planetInfos = [];
 
     function loadRoot(ctx, next) {
-      loader.loadSequence()
+      Model.loadSequence()
       .then(function(data) {
         planetInfos = data;
         next();
@@ -67,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           reject();
         }
       }).catch(function() {
-        return loader.getJSON('/data/planets/' + ctx.params.name.replace(/ /g, '') + '.json');
+        return Model.getJSON('/data/planets/' + ctx.params.name.replace(/ /g, '') + '.json');
       })
       .then(function(data) {
         for (var d in data) {
@@ -76,14 +77,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
-    page('/contact', scrollToTop, function() {
-      app.route = 'contact';
-    });
-
     // add #! before urls
     page({
       hashbang: true
     });
-
   });
 </script>

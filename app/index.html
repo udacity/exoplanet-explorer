@@ -85,10 +85,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-            <section data-route="home"></section>
+            <section data-route="home">
+              <paper-material>
+                <h1>This is home content!</h1>
+                <input type="text" placeholder="Search me!">
+              </paper-material>
+            </section>
 
+            <section data-route="search">
+              <search-page></search-page>
+            </section>
+            
             <section data-route="planet">
               <planet-info></planet-info>
+            </section>
+
+            <section data-route="about">
+              <paper-material>
+                <h1>I made this!</h1>
+              </paper-material>
             </section>
 
           </iron-pages>

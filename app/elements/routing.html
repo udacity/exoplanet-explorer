@@ -41,15 +41,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     // Routes
-    page('/', loadRoot, function() {
+    page('/', scrollToTop, function() {
       app.route = 'home';
     });
 
+    page('/search', loadRoot, function() {
+      app.route = 'search';
+    });
+
     page('/search/:query', scrollToTop, function() {
-      app.route = 'users';
+      app.route = 'search';
       // when searching, will need to add to planetInfos
       // TODO: two search states: 1) load every planet at start, and 2) load specific planets on search
     });
+
+    page('/about', scrollToTop, function() {
+      app.route = 'about';
+    });    
 
     page('/planet/:name', scrollToTop, function(ctx) {
       app.route = 'planet';

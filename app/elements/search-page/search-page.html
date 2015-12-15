@@ -1,0 +1,60 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="search-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <input type="text" placeholder="Search me!">
+    <h2 class="query page-title">{{query}}</h2>
+    <div class="search-results"></div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'search-page',
+        created: function() {
+          // this.properties.query.value = 'Something!';
+          this.properties.resultsContainer.value = this.querySelector('.search-results');
+        },
+        properties: {
+          value: {
+            type: String,
+            notify: true,
+          },
+          range: {
+            type: String,
+            notify: true,
+          },
+          query: {
+            type: String,
+            notify: true,
+            value: 'Nothing yet! Try searching'
+          },
+          resultsContainer: {
+            type: Object,
+            notify: true
+          },
+          createPlanetThumb: function(data) {
+            var pT = document.createElement('planet-thumb');
+            for (var d in data) {
+              pT[d] = data[d];
+            }
+            this.resultsContainer.appendChild(pT);
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

@@ -50,15 +50,15 @@ Copyright (c) 2015 Udacity. All rights reserved.
       }
     </style>
     <div class="wrapper">
-      <div class="planet-comparison layout horizontal">
+      <div class="planet-comparison layout horizontal end-justified">
         <p class="no-radius" hidden$="{{hasRadius(earthRadii)}}"></p>
         <svg class="planet-container" width="300px" height="100%">
           <g fill$="{{color}}" stroke-width="0.5">
             <circle id="planet" r$="{{exoRadius}}" />
           </g>
         </svg>
-        <earth-img width="{{earthWidth}}px"></earth-img>
-        <jupiter-img width="{{jupiterWidth}}px" hidden$="{{isSmall(earthRadii)}}"></jupiter-img>
+        <earth-img class="" width="{{earthWidth}}px"></earth-img>
+        <jupiter-img class="" width="{{jupiterWidth}}px" hidden$="{{isSmall(earthRadii)}}"></jupiter-img>
       </div>
     </div>
   </template>
@@ -149,6 +149,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
           this.computeComparisonDimensions();
 
           var planet = this.querySelector('circle#planet');
+          var earthImg = this.querySelector('earth-img');
+
           var radiusScaler = this.earthRadii;
           if (!radiusScaler) {
             planet.style.display = 'none';
@@ -182,6 +184,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
           planet.style.transform = 'translate(' + diff + 'px,' + (this.elementHeight / 2) + 'px)';
           planet.style.webkitTransform = 'translate(' + diff + 'px,' + (this.elementHeight / 2) + 'px)';
+          
+          // there's definitely a better way of fixing the 'earth hanging off the right' bug in safari
+          // earthImg.style.webkitTransform = 'translate(-25px,0px)';
         }
       });
     })();

@@ -90,7 +90,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           elementHeight: {
             type: Number,
             notify: true,
-            value: 100
+            value: 150
           },
           comparisonWidth: {
             type: Number,
@@ -139,13 +139,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
         },
         changeSizes: function() {
           var self = this;
-          function computeComparisonDimensions() {
-            // getting the height for later
-            var elementDimensions = self.querySelector('.planet-comparison').getBoundingClientRect();
-            self.elementHeight = elementDimensions.height;
-            
+          function computeComparisonDimensions() {            
             var comparisonWidth = self.elementWidth / 3;
-            console.log(comparisonWidth);
             return comparisonWidth;
           };
           

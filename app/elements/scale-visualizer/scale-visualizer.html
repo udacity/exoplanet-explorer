@@ -3,8 +3,6 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../earth-img/earth-img.html">
-<link rel="import" href="../jupiter-img/jupiter-img.html">
 
 <dom-module id="scale-visualizer">
   <template>
@@ -23,16 +21,11 @@ Copyright (c) 2015 Udacity. All rights reserved.
       }
       .wrapper {
         background: #000000;
+        min-width: 260px;
       }
       .planet-comparison {
         width: 100%;
         height: 100%;
-      }
-      @media screen and (min-width: 600px) {
-        .planet-comparison {
-          /*width: 360px;*/
-          /*height: 200px;*/
-        }
       }
       .no-radius {
         color: white;
@@ -48,17 +41,21 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-top: auto;
         margin-bottom: auto;
       }
+      img {
+        display: block;
+        width: 150px;
+      }
     </style>
     <div class="wrapper">
       <div class="planet-comparison layout horizontal">
         <p class="no-radius" hidden$="{{hasRadius(earthRadii)}}"></p>
         <svg class="planet-container" width="300px" height="100%">
-          <g fill$="{{color}}" stroke-width="0.5">
+          <g fill$="{{color}}" stroke-width="1">
             <circle id="planet" r$="{{exoRadius}}" />
           </g>
         </svg>
-        <earth-img width="{{earthWidth}}px"></earth-img>
-        <jupiter-img width="{{jupiterWidth}}px" hidden$="{{isSmall(earthRadii)}}"></jupiter-img>
+        <img id="earth" style$="width: {{earthWidth}}px;" src="../../images/earth.svg" alt="earth" viewBox$="0 0 {{earthWidth}} {{earthWidth}}">
+        <img id="jupiter" src="../../images/jupiter.svg" alt="jupiter" hidden$="{{isSmall(earthRadii)}}" viewBox$="0 0 {{jupiterWidth}} {{jupiterWidth}}">
       </div>
     </div>
   </template>
@@ -78,27 +75,27 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthWidth: {
             type: Number,
             notify: true,
-            value: 60
+            value: 150
           },
           jupiterWidth: {
             type: Number,
             notify: true,
-            value: 60
+            value: 50
           },
           elementWidth: {
-            type: String,
+            type: Number,
             notify: true,
-            value: '180px'
+            value: 300
           },
           elementHeight: {
-            type: String,
+            type: Number,
             notify: true,
-            value: '100px'
+            value: 100
           },
           comparisonWidth: {
             type: Number,
             notify: true,
-            value: 60
+            value: 50
           },
           cutoff: {
             type: Number,
@@ -117,6 +114,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
         },
         ready: function() {
           var self = this;
+          this.changeSizes();
           window.addEventListener('resize', function() { self.windowResize(); });
         },
         windowResize: function() {
@@ -124,12 +122,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         },
         attached: function() {
           this.changeSizes();
-        },
-        computeComparisonDimensions: function() {
-          var elementDimensions = this.querySelector('.planet-comparison').getBoundingClientRect();
-          this.elementWidth = elementDimensions.width;
-          this.elementHeight = elementDimensions.height;
-          this.comparisonWidth = this.elementWidth / 3;
         },
         hasRadius: function(earthRadii) {
           if (earthRadii > 0) {
@@ -146,10 +138,18 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         changeSizes: function() {
-          this.computeComparisonDimensions();
-
-          // var element = this.querySelector('.planet-comparison');
-          // console.log(element.getBoundingClientRect());
+          var self = this;
+          function computeComparisonDimensions() {
+            // getting the height for later
+            var elementDimensions = self.querySelector('.planet-comparison').getBoundingClientRect();
+            self.elementHeight = elementDimensions.height;
+            
+            var comparisonWidth = self.elementWidth / 3;
+            console.log(comparisonWidth);
+            return comparisonWidth;
+          };
+          
+          var comparisonWidth = computeComparisonDimensions();
 
           var planet = this.querySelector('circle#planet');
           var radiusScaler = this.earthRadii;
@@ -165,22 +165,24 @@ Copyright (c) 2015 Udacity. All rights reserved.
             // 11.2 is the ratio rad_jupiter / rad_earth
             radiusScaler = radiusScaler / 11.2;
             // Earth starts at 60px
-            this.earthWidth = this.comparisonWidth / 11.2;
-            this.jupiterWidth = this.comparisonWidth;
+            this.earthWidth = comparisonWidth / 11.2;
+            this.jupiterWidth = comparisonWidth;
           } else {
             // Not too big. Use the Earth as comparison.
-            this.earthWidth = this.comparisonWidth;
+            this.earthWidth = comparisonWidth;
+            // because Safari is weird, I think?
+            this.earthWidth = this.earthWidth * 1.5;
           }
 
           // get the radius for the planet svg
-          this.exoRadius = (this.comparisonWidth * radiusScaler) / 2;
+          this.exoRadius = (comparisonWidth * radiusScaler) / 2;
 
           // move the planet depending on its size
           var diff = null;
-          if (this.exoRadius > this.comparisonWidth) {
-            diff = (this.comparisonWidth / 2) - (this.exoRadius - this.comparisonWidth);
+          if (this.exoRadius > comparisonWidth) {
+            diff = (comparisonWidth / 2) - (this.exoRadius - comparisonWidth);
           } else {
-            diff = (this.comparisonWidth / 2);
+            diff = (comparisonWidth / 2);
           }
 
           planet.style.transform = 'translate(' + diff + 'px,' + (this.elementHeight / 2) + 'px)';

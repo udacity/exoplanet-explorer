@@ -9,7 +9,7 @@
   exports.database = database;
 
 
-  var Model = {
+  var utilities = {
     database: [],
     fullLoad: function() {
       // use requestIdleTime?
@@ -20,7 +20,8 @@
     specificSearch: function(property, criteria) {
       // criteria is an object with value, upper, lower
     }
-  }
+  };
+  exports.utilities = utilities;
 
   function get(url) {
     // Return a new promise.
@@ -59,16 +60,14 @@
   exports.getJSON = getJSON;
 
   function loadSequence() {
-    // Proj: Part 1 code goes here!
     search = document.querySelector('section[data-route="search"]');
     return getJSON('/data/data.json')
       .then(function(planets) {
         planets.forEach(function(planet) {
           database.push({name: planet.pl_name, data: planet});
-          // createPlanetThumb(planet);
         });
       })
-      .then(function() {
+      .then(function(planetInfos) {
         return planetInfos;
       })
   };
@@ -78,11 +77,7 @@
     // nothing for now
   });
 
-  return {
-    getJSON: getJSON,
-    loadSequence: loadSequence,
-    planetInfos: planetInfos
-  }
+  return exports;
 })(document);
 
 </script>

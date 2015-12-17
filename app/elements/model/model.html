@@ -69,8 +69,7 @@
         });
       })
       .then(function() {
-        // Proj: this will need to be added before migrating loading logic to routing.html
-        return database;
+        return planetInfos;
       })
   };
   exports.loadSequence = loadSequence;
@@ -79,7 +78,11 @@
     // nothing for now
   });
 
-  return exports;
+  return {
+    getJSON: getJSON,
+    loadSequence: loadSequence,
+    planetInfos: planetInfos
+  }
 })(document);
 
 </script>

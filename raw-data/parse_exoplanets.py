@@ -3,14 +3,8 @@ import csv
 import json
 import os
 
-# jsondir = 'ExoplanetExplorer/app/data/planets'
-jsonfile = open('ExoplanetExplorer/app/data/data.json', 'w')
+jsonfile = open('../app/data/data.json', 'w')
 csvfile = open('data.csv', 'rb')
-
-# if not os.path.exists(jsondir):
-#     os.makedirs(jsondir)
-
-# API: http://exoplanetarchive.ipac.caltech.edu/docs/API_exoplanet_columns.html
 
 # earth-like
 # http://www.space.com/30172-six-most-earth-like-alien-planets.html
@@ -18,7 +12,35 @@ csvfile = open('data.csv', 'rb')
 # potentially habitable
 # https://en.wikipedia.org/wiki/List_of_potentially_habitable_exoplanets
 
-fieldnames = ['pl_name','pl_rade','pl_masse','pl_radj','pl_massj','pl_dens','st_dist','pl_disc','pl_telescope','pl_eqt','pl_discmethod','pl_facility','pl_mnum','pl_pelink','pl_edelink','pl_cbflag','pl_orbper','pl_pnum','ra','dec','st_spstr','st_age','pl_ratdor','st_rad','rowupdate']
+fieldnames = [
+    "pl_hostname",
+    "pl_name",
+    "pl_rade",
+    "pl_radj",
+    "pl_massj",
+    "pl_masse",
+    "pl_dens",
+    "pl_eqt",
+    "pl_telescope",
+    "pl_facility",
+    "pl_disc",
+    "pl_discmethod",
+    "pl_pnum",
+    "pl_orbper",
+    "st_dist",
+    "st_optmag",
+    "st_teff",
+    "st_mass",
+    "st_rad",
+    "hip_name",
+    "hd_name",
+    "st_age",
+    "ra",
+    "dec",
+    "pl_pelink",
+    "pl_edelink",
+    "rowupdate"
+]
 reader = csv.DictReader(csvfile, fieldnames)
 
 output = "["
@@ -27,7 +49,7 @@ for row in reader:
     # jsonfile = open(jsondir + '/' + row['pl_name'].replace(' ', '') + '.json', 'w+')
     if reader.line_num == 1:
         continue
-    output = output + json.dumps(row, separators=(',',':')) + ","
+    output = output + json.dumps(row) + ","
 
 output = output[0:-1]
 output = output + "]"
@@ -47,6 +69,6 @@ for i in keys_to_delete:
     obj = all_data[i["row"]]
     obj.pop(i["key"], None)
 
-out = json.dumps(all_data)
+out = json.dumps(all_data, separators=(',',':'))
 
 jsonfile.write(out)

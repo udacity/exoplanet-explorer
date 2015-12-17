@@ -78,7 +78,6 @@
         }, Promise.resolve())
       })
       .then(function() {
-        // Proj: this will need to be added before migrating loading logic to routing.html
         return planetInfos;
       })
   };
@@ -87,7 +86,6 @@
     // nothing for now
   });
 
-  // Proj: add when moving routing logic to routing.html
   return {
     getJSON: getJSON,
     loadSequence: loadSequence,

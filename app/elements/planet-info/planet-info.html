@@ -66,6 +66,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
       Polymer({
         is: 'planet-info',
         behaviors: [MathAndPhysics, PlanetRawData],
+        attached: function() {
+          // something, I'm sure
+        },
         properties: {
           earthRadii: {
             type: Number,

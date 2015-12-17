@@ -25,23 +25,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Proj: will need to uncomment this to maintain planet info
     var planetInfos = [];
 
-    function loadModel(ctx, next) {
-      return new Promise(function(resolve, reject) {
-        if (!Model.utilities.database) {
-          // database needs to be loaded
-          Model.loadSequence()
-          .then(function(data) {
-            Model.utilities.database = data;
-            resolve();
-          })
-          .catch(function() {
-            throw new Error('Data Load Error');
-          });
-        } else {
-          // database is already there so continue
-          resolve();
-        }
-      });
+    function initModel() {
+      return Model.database.init();
     };
 
     function scrollToTop(ctx, next) {
@@ -52,21 +37,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Routes
     page('/', scrollToTop, function() {
       app.route = 'home';
-      loadModel().then(function() {
+      initModel().then(function() {
         // data is there, let the user know the app is fully interactive?
       });
     });
 
     page('/search', scrollToTop, function() {
       app.route = 'search';
-      loadModel().then(function() {
+      initModel().then(function() {
         // data is there, time to set search params
       });
     });
 
     page('/search/:query', scrollToTop, function() {
       app.route = 'search';
-      loadModel().then(function() {
+      initModel().then(function() {
         // data is there, time to set search params
       });
       // when searching, will need to add to planetInfos
@@ -75,8 +60,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     page('/about', scrollToTop, function() {
       app.route = 'about';
-      loadModel().then(function() {
-        // data is there. cool.
+      initModel().then(function() {
+        // data is there. probably don't need to do anything else
       });
     });    
 
@@ -84,23 +69,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app.route = 'planet';
       var planetInfo = document.querySelector('planet-info');
 
-      if (planetExistsInDatabase) {
-        // render it!
-      } else {
-        // run two requests in parallel:
-        // one for immediatelly needed json, one for all the planets
-        Model.getJSON('/data/planets/' + ctx.params.name.replace(/ /g, '') + '.json').then(function() {
-          // set the data in the database
-          // for (var d in data) {
-          //   planetInfo[d] = data[d];
-          // }
-        });
-        loadModel();  // for future use
-      }
+      function bindPlanetInfo(data) {
+        for (var d in data) {
+          planetInfo[d] = data[d];
+        }
+      };
 
-      loadModel().then(function() {
-        // render the planet
-      });
+      // don't need to call initModel because getPlanetByName will
+      // init the full model if it's not there already
+      Model.database.getPlanetByName(ctx.params.name).then(bindPlanetInfo);
     });
 
     // add #! before urls

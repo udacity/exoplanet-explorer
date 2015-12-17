@@ -4,21 +4,71 @@
 
   var exports = {};
 
-  var search = null;
+  // not sure why this is here...
+  // var search = document.querySelector('section[data-route="search"]');
 
-  var utilities = {
-    database: [],
-    fullLoad: function() {
-      // use requestIdleTime?
+  var database = {
+    _database: [],
+    _index: {},
+    _requestAllPlanets: function() {
+      var self = this;
+      return getJSON('/data/data.json').then(function(planets) {
+        self._database = [];
+        planets.forEach(function(planet) {
+          self._loadPlanetIntoDatabase(planet);
+        })
+        return planets;
+      })
+      .catch(function() {
+        throw new Error('Planet Parsing Error');
+      });
+    },
+    _requestOnePlanet: function(name) {
+      return getJSON('/data/planets/' + name + '.json');
     },
     fullSearch: function(item) {
-      // regex for item in database. if any property hits, return it
+      // regex for item in _database. if any property hits, return it
     },
     specificSearch: function(property, criteria) {
       // criteria is an object with value, upper, lower
+    },
+    _loadPlanetIntoDatabase: function(planetData) {
+      this._database.push({name: planetData.pl_name, data: planetData});
+      this._index[planetData.pl_name] = this._database.length - 1;
+    },
+    exists: function() {
+      if (this._database.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    getPlanetByName: function(name) {
+      var self = this;
+      // no spaces in the planet json urls
+      name = name.replace(/ /g,'');
+      return new Promise(function(resolve, reject) {
+        var planetData = self._database[self._index[name]];
+        if (planetData) {
+          resolve(planetData);
+        } else {
+          self._requestAllPlanets();
+          resolve(self._requestOnePlanet(name));
+        }
+      });
+    },
+    init: function() {
+      var self = this;
+      return new Promise(function(resolve) {
+        if (self.exists()) {
+          resolve();
+        } else {
+          resolve(self._requestAllPlanets());
+        }
+      })
     }
   };
-  exports.utilities = utilities;
+  exports.database = database;
 
   function get(url) {
     // Return a new promise.
@@ -52,20 +102,10 @@
   }
 
   function getJSON(url) {
-    return get(url).then(JSON.parse);
+    return get(url).then(JSON.parse).catch(function() {
+      throw new Error('AJAX Error');
+    });
   };
-
-  function loadSequence() {
-    search = document.querySelector('section[data-route="search"]');
-    return getJSON('/data/data.json').then(function(planets) {
-        planets.forEach(function(planet) {
-          utilities.database.push({name: planet.pl_name, data: planet});
-        });
-        console.log('loaded model');
-        return planets;
-      })
-  };
-  exports.loadSequence = loadSequence;
 
   window.addEventListener('WebComponentsReady', function() {
     // nothing for now

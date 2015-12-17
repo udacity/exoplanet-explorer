@@ -5,6 +5,12 @@ Learn more about planets around other stars!
 * [NASA Exoplanet Archive](http://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html)
 * [SKY-MAP.org](http://server3.sky-map.org/api?locale=EN)
 
+### Earth Like Planets:
+* http://www.space.com/30172-six-most-earth-like-alien-planets.html
+
+### Potentially Habitable Planets
+* https://en.wikipedia.org/wiki/List_of_potentially_habitable_exoplanets
+
 Built from the Polymer Starter Kit. See [below](#install) for installation instructions.
 
 Here's how it works with the course:

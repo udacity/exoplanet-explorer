@@ -12,8 +12,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
         display: block;
       }
     </style>
-    <input type="text" placeholder="Search me!">
+    <h1>Search!</h1>
     <h2 class="query page-title">{{query}}</h2>
+    <input type="text" placeholder="Search me!">
     <div class="search-results"></div>
   </template>
 
@@ -24,8 +25,14 @@ Copyright (c) 2015 Udacity. All rights reserved.
       Polymer({
         is: 'search-page',
         created: function() {
-          // this.properties.query.value = 'Something!';
+          console.log('created');
           this.properties.resultsContainer.value = this.querySelector('.search-results');
+        },
+        ready: function() {
+          console.log('ready');
+        },
+        attached: function() {
+          console.log('attached');
         },
         properties: {
           value: {
@@ -44,14 +51,14 @@ Copyright (c) 2015 Udacity. All rights reserved.
           resultsContainer: {
             type: Object,
             notify: true
-          },
-          createPlanetThumb: function(data) {
-            var pT = document.createElement('planet-thumb');
-            for (var d in data) {
-              pT[d] = data[d];
-            }
-            this.resultsContainer.appendChild(pT);
           }
+        },
+        createPlanetThumb: function(data) {
+          var pT = document.createElement('planet-thumb');
+          for (var d in data) {
+            pT[d] = data[d];
+          }
+          this.resultsContainer.appendChild(pT);
         }
       });
     })();

@@ -5,9 +5,6 @@
   var exports = {};
 
   var search = null;
-  var database = [];
-  exports.database = database;
-
 
   var utilities = {
     database: [],
@@ -57,18 +54,15 @@
   function getJSON(url) {
     return get(url).then(JSON.parse);
   };
-  exports.getJSON = getJSON;
 
   function loadSequence() {
     search = document.querySelector('section[data-route="search"]');
-    return getJSON('/data/data.json')
-      .then(function(planets) {
+    return getJSON('/data/data.json').then(function(planets) {
         planets.forEach(function(planet) {
-          database.push({name: planet.pl_name, data: planet});
+          utilities.database.push({name: planet.pl_name, data: planet});
         });
-      })
-      .then(function(planetInfos) {
-        return planetInfos;
+        console.log('loaded model');
+        return planets;
       })
   };
   exports.loadSequence = loadSequence;

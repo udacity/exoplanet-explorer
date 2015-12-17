@@ -54,8 +54,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       initModel().then(function() {
         // data is there, time to set search params
       });
-      // when searching, will need to add to planetInfos
-      // TODO: two search states: 1) load every planet at start, and 2) load specific planets on search
     });
 
     page('/about', scrollToTop, function() {
@@ -68,13 +66,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     page('/planet/:name', scrollToTop, function(ctx) {
       app.route = 'planet';
       var planetInfo = document.querySelector('planet-info');
-
       function bindPlanetInfo(data) {
         for (var d in data) {
           planetInfo[d] = data[d];
         }
       };
-
       // don't need to call initModel because getPlanetByName will
       // init the full model if it's not there already
       Model.database.getPlanetByName(ctx.params.name).then(bindPlanetInfo);

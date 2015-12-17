@@ -4,19 +4,39 @@
 
   var exports = {};
 
-  // not sure why this is here...
-  // var search = document.querySelector('section[data-route="search"]');
-
   var database = {
     _database: [],
     _index: {},
+    _requestInProgress: false,
+    _debounceReturn: null,
     _requestAllPlanets: function() {
       var self = this;
+      
+      // debounce requests first
+      if (self._requestInProgress) {
+        return new Promise(function() {
+          self._debounceReturn = function(planets) {
+            resolve(planets);
+          };
+        });
+      }
+
+      // create the request
+      self._requestInProgress = true;
       return getJSON('/data/data.json').then(function(planets) {
         self._database = [];
         planets.forEach(function(planet) {
           self._loadPlanetIntoDatabase(planet);
         })
+
+        // return any promises waiting to be debounced
+        if (self._debounceReturn) {
+          self._debounceReturn(planets);
+        }
+        // no longer requesting, so unflag debouncing flags
+        self._debounceReturn = null;
+        self._requestInProgress = false;
+
         return planets;
       })
       .catch(function() {
@@ -36,7 +56,7 @@
       this._database.push({name: planetData.pl_name, data: planetData});
       this._index[planetData.pl_name] = this._database.length - 1;
     },
-    exists: function() {
+    _exists: function() {
       if (this._database.length > 0) {
         return true;
       } else {
@@ -47,12 +67,15 @@
       var self = this;
       // no spaces in the planet json urls
       name = name.replace(/ /g,'');
+
       return new Promise(function(resolve, reject) {
         var planetData = self._database[self._index[name]];
         if (planetData) {
           resolve(planetData);
         } else {
+          // requests all the data for use later
           self._requestAllPlanets();
+          // returns a promise for this planet's data
           resolve(self._requestOnePlanet(name));
         }
       });
@@ -60,7 +83,7 @@
     init: function() {
       var self = this;
       return new Promise(function(resolve) {
-        if (self.exists()) {
+        if (self._exists()) {
           resolve();
         } else {
           resolve(self._requestAllPlanets());

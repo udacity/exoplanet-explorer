@@ -3,6 +3,8 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/search-queries.html">
+<link rel="import" href="../behaviors/math-and-physics.html">
 
 <dom-module id="search-page">
   <template>
@@ -24,6 +26,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'search-page',
+        behaviors: [SearchQueries, MathAndPhysics],
         created: function() {
           // console.log('created');
           this.properties.resultsContainer.value = this.querySelector('.search-results');

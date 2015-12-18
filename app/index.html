@@ -71,7 +71,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
-            <div class="app-name">Exoplanet Explorer</div>
+            <div class="app-name"><a href="/">Exoplanet Explorer</a></div>
           </div>
 
           <!-- Application sub title -->
@@ -86,11 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
             <section data-route="home">
-              <paper-material>
-                <h1>This is home content!</h1>
-                <input type="text" placeholder="Search me!">
-                <a href="/search/">Search</a>
-              </paper-material>
+              <home-page></home-page>
             </section>
 
             <section data-route="search">

@@ -1,0 +1,85 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+
+<link rel="import" href="../behaviors/search-queries.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+
+<dom-module id="home-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-input {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      paper-slider {
+        width: 100%;
+        /*leaving these here in case I want to change them later*/
+        /*--paper-slider-knob-color: var(--paper-orange-500);
+        --paper-slider-active-color: var(--paper-orange-500);
+        --paper-slider-pin-color: var(--paper-orange-500);*/
+      }
+      .distance {
+        color: #727272;
+      }
+      @media screen and (max-width: 600px) {
+        h1 {
+          padding: 0 16px;
+        }
+      }
+    </style>
+    <h1>Search through a catalog of the 1,916 exoplanets found so far!</h1>
+    <paper-material>
+      <div>How far away? <span id="distance" class="distance">{{distanceDisplay}}</span></div><br>
+      <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distanceValue}}" class="orange"></paper-slider>
+      <paper-input type="text" placeholder="Search me!"></paper-input>
+    </paper-material>
+    <paper-material>
+      ****** all the planet poster images!!! ******
+      <div>Planet posters from <a href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">here</a>.</div>
+    </paper-material>
+    <div>FYI, this is all real data from NASA and Caltech - ***links!!!***</div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'home-page',
+        behaviors: [SearchQueries],
+        properties: {
+          distanceValue: {
+            type: Number,
+            notify: true,
+            value: 0,
+          },
+          distanceDisplay: {
+            type: String,
+            notify: true,
+            computed: 'distance(distanceValue)',
+            value: 'Any distance'
+          }
+        },
+        distance: function(distanceValue) {
+          if (distanceValue === 0) {
+            return 'Any distance';
+          } else if (distanceValue === 1) {
+            return 'Close by (less than 20 ly)';
+          } else if (distanceValue === 2) {
+            return 'Medium (20 - 100 ly)';
+          } else if (distanceValue === 3) {
+            return 'Far (more than 100 ly)';
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

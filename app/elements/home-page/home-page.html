@@ -62,6 +62,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-left: 16px;
         margin-right: 16px;
       }
+      .right {
+        float: right;
+      }
       @media screen and (min-width: 601px) {
         paper-slider {
           width: 100%;
@@ -107,22 +110,28 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </div>
     </paper-material>
 
-      **** put the search in cookies?
     <paper-material>
       <h3 class="indent">Not sure what to search for? Here are a few fantastic destinations!</h3>
       <a href="/planet/HD_40307g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
       <a href="/planet/Kepler_16b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
       <a href="/planet/Kepler_186f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
       <a href="/planet/600"><img class="full-width" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
-      <a href="/planet/PSOJ318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSO J318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
-
-      <div>Planet posters from <a href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">here</a>.</div>
+      <a href="/planet/PSOJ318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSOJ318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
+      <div class="subtext right"><a class="nolink grey" href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">Posters Source</a></div>
     </paper-material>
+
     <paper-material>
       <div class="indent" id="what-is-an-exoplanet">What is an exoplanet?</div>
       ****** more on exoplanets here
+      <div>FYI, this is all real data from NASA and Caltech - ***links!!!***</div>
     </paper-material>
-    <div>FYI, this is all real data from NASA and Caltech - ***links!!!***</div>
+
+    <paper-material>
+      <div class="layout horizontal around-justified">
+        <a class="nolink grey" href="/about"><paper-button>Contact</paper-button></a>
+        <a class="nolink grey" href="/about"><paper-button>About</paper-button></a>
+      </div>
+    </paper-material>
 
     <polymer-cookie name="last-query" id="query-cookie"></polymer-cookie>
   </template>

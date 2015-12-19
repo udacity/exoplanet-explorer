@@ -10,8 +10,62 @@ Copyright (c) 2015 Udacity. All rights reserved.
       :host {
         display: block;
       }
+      .nolink {
+        text-decoration: none;
+        color: #fff;
+      }
+      .hp {
+        background-color: var(--paper-indigo-500)
+      }
+      .twitter {
+        background-color: #55acee;
+      }
+      .github {
+        background-color: black;
+      }
+      .indent {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
     </style>
-    <h1>this is me!</h1>
+    <paper-material elevation="1">
+      <h3 class="indent">Created by Cameron Pittman</h3>
+      <p class="indent">...because I love space</p>
+      <div class="layout horizontal around-justified">
+        <a class="nolink" href="https://twitter.com/cwpittman">
+          <paper-button raised class="twitter">Twitter</paper-button>
+        </a>
+        <a class="nolink" href="https://github.com/cameronwp">
+          <paper-button raised class="github">GitHub</paper-button>
+        </a>
+        <a class="nolink" href="https://cameronwp.com">
+          <paper-button raised class="hp">Homepage</paper-button>
+        </a>
+      </div>
+    </paper-material>
+
+    <paper-material elevation="1">
+      <h3 class="indent">Why the Exoplanet Explorer?</h3>
+      <p class="indent">This originally began as the sample app for <a href="https://udacity.com/ud898">this Udacity course on JavaScript Promises</a> that I was developing. I fell in love with it and this project quickly ballooned into a production quality app.</p>
+
+      <p class="indent">The app students build in the Promises course looks similar to this one, but the internals were simplified so that students only need to worry about Promises.</p>
+
+      <p class="indent">If you want to see how this app works, check out the <a href="https://github.com/udacity/exoplanet-explorer">source code</a> on GitHub. Think you can improve it? Fork the repo and submit a pull request!</p>
+    </paper-material>
+
+    <paper-material>
+      <h3 class="indent">Data Sources, APIs, Libraries</h3>
+      <p class="indent">All rights reserved to the respective authors and copyright holders.</p>
+      <ul>
+        <li><a href="http://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html">NASA Exoplanet Archive</a></li>
+        <li><a href="http://server3.sky-map.org/api?locale=EN">SKY-MAP.org</a></li>
+        <li><a href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">Exoplanet Travel Bureau Posters</a></li>
+        <li><a href="https://www.polymer-project.org/1.0/">Polymer</a></li>
+        <li><a href="https://commons.wikimedia.org/wiki/File:Emblem-earth.svg">Earth Image</a></li>
+        <li><a href="https://commons.wikimedia.org/wiki/File:Tango_Jupiter.svg">Jupiter Image</a></li>
+      </ul>
+    </paper-material>
+
   </template>
 
   <script>

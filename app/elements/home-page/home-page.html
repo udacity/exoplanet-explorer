@@ -55,6 +55,13 @@ Copyright (c) 2015 Udacity. All rights reserved.
       .nolink {
         text-decoration: none;
       }
+      .full-width {
+        width: 100%;
+      }
+      .indent {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
       @media screen and (min-width: 601px) {
         paper-slider {
           width: 100%;
@@ -70,19 +77,19 @@ Copyright (c) 2015 Udacity. All rights reserved.
     <h1>Search through a catalog of the 1,916 exoplanets found so far!</h1>
     <paper-material>
 
-      <div class="indent">How far away? <span id="distance" class="grey">{{distanceDisplay}}</span></div><br>
+      <div>How far away? <span id="distance" class="grey">{{distanceDisplay}}</span></div><br>
       <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distanceValue}}"></paper-slider>
 
-      <div class="indent">How large? <span id="radius" class="grey">{{radiusDisplay}}</span></div><br>
+      <div>How large? <span id="radius" class="grey">{{radiusDisplay}}</span></div><br>
       <paper-slider id="radius" snaps max="3" max-markers="3" step="1" value="{{radiusValue}}"></paper-slider>
 
-      <div class="indent">How massive? <span id="mass" class="grey">{{massDisplay}}</span></div><br>
+      <div>How massive? <span id="mass" class="grey">{{massDisplay}}</span></div><br>
       <paper-slider id="mass" snaps max="3" max-markers="3" step="1" value="{{massValue}}"></paper-slider>
 
-      <div class="indent">How hot? <span id="temp" class="grey">{{tempDisplay}}</span></div><br>
+      <div>How hot? <span id="temp" class="grey">{{tempDisplay}}</span></div><br>
       <paper-slider id="temp" snaps max="4" max-markers="4" step="1" value="{{tempValue}}"></paper-slider>
 
-      <div class="indent">How likely habitable? <span id="habitable" class="grey">{{habitableDisplay}}</span></div><br>
+      <div>How likely habitable? <span id="habitable" class="grey">{{habitableDisplay}}</span></div><br>
       <paper-slider id="habitable" snaps max="3" max-markers="3" step="1" value="{{habitableValue}}"></paper-slider>
 
       <div class="layout horizontal around-justified margin-top">
@@ -102,7 +109,13 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       **** put the search in cookies?
     <paper-material>
-      ****** all the planet poster images!!! ******
+      <h3 class="indent">Not sure what to search for? Here are a few fantastic destinations!</h3>
+      <a href="/planet/HD_40307g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
+      <a href="/planet/Kepler_16b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
+      <a href="/planet/Kepler_186f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
+      <a href="/planet/600"><img class="full-width" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
+      <a href="/planet/PSOJ318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSO J318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
+
       <div>Planet posters from <a href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">here</a>.</div>
     </paper-material>
     <paper-material>

@@ -58,6 +58,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     page('/about', scrollToTop, function() {
       app.route = 'about';
+      // TODO: show seach query help if there aren't any results
       initModel().then(function() {
         // data is there. probably don't need to do anything else
       });

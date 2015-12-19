@@ -27,3 +27,5 @@ pl_pelink,
 pl_edelink,
 rowupdate
 &order=pl_name
+
+** add data to get potential of being in habitable zone??? discount binaries

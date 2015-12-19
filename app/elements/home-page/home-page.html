@@ -3,9 +3,7 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 
-<link rel="import" href="../behaviors/search-queries.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../behaviors/search-utilities.html">
 
 <dom-module id="home-page">
   <template>
@@ -18,15 +16,50 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-left: 16px;
         margin-right: 16px;
       }
+      paper-button {
+        display: block;
+      }
+      paper-button.indigo {
+        background-color: var(--paper-indigo-500);
+        color: white;
+        /* leaving this here for reference */
+        /*--paper-button-raised-keyboard-focus: {
+          background-color: var(--paper-pink-a200) !important;
+          color: white !important;
+        };*/
+      }
       paper-slider {
-        width: 100%;
-        /*leaving these here in case I want to change them later*/
+        width: 75%;
+        margin-left: 12.5%;
+        /* leaving these here for reference */
         /*--paper-slider-knob-color: var(--paper-orange-500);
         --paper-slider-active-color: var(--paper-orange-500);
         --paper-slider-pin-color: var(--paper-orange-500);*/
       }
-      .distance {
+      paper-material > div {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      .margin-top {
+        margin-top: 32px;
+      }
+      .subtext {
+        font-size: 0.75em;
+      }
+      .grey {
         color: #727272;
+      }
+      .uppercase {
+        text-transform: uppercase;
+      }
+      .nolink {
+        text-decoration: none;
+      }
+      @media screen and (min-width: 601px) {
+        paper-slider {
+          width: 100%;
+          margin-left: 0;
+        }
       }
       @media screen and (max-width: 600px) {
         h1 {
@@ -36,15 +69,49 @@ Copyright (c) 2015 Udacity. All rights reserved.
     </style>
     <h1>Search through a catalog of the 1,916 exoplanets found so far!</h1>
     <paper-material>
-      <div>How far away? <span id="distance" class="distance">{{distanceDisplay}}</span></div><br>
-      <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distanceValue}}" class="orange"></paper-slider>
-      <paper-input type="text" placeholder="Search me!"></paper-input>
+
+      <div class="indent">How far away? <span id="distance" class="grey">{{distanceDisplay}}</span></div><br>
+      <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distanceValue}}"></paper-slider>
+
+      <div class="indent">How large? <span id="radius" class="grey">{{radiusDisplay}}</span></div><br>
+      <paper-slider id="radius" snaps max="3" max-markers="3" step="1" value="{{radiusValue}}"></paper-slider>
+
+      <div class="indent">How massive? <span id="mass" class="grey">{{massDisplay}}</span></div><br>
+      <paper-slider id="mass" snaps max="3" max-markers="3" step="1" value="{{massValue}}"></paper-slider>
+
+      <div class="indent">How hot? <span id="temp" class="grey">{{tempDisplay}}</span></div><br>
+      <paper-slider id="temp" snaps max="4" max-markers="4" step="1" value="{{tempValue}}"></paper-slider>
+
+      <div class="indent">How likely habitable? <span id="habitable" class="grey">{{habitableDisplay}}</span></div><br>
+      <paper-slider id="habitable" snaps max="3" max-markers="3" step="1" value="{{habitableValue}}"></paper-slider>
+
+      <div class="layout horizontal around-justified margin-top">
+        <a class="nolink" href$="/search/{{queryString}}"><paper-button raised noink class="indigo">Search</paper-button></a>
+        <paper-button class="grey">Reset</paper-button>
+      </div>
+
     </paper-material>
+
+    <paper-material>
+      <paper-input type="text" label="Custom Search" value="{{customQuery}}"></paper-input>
+      <div class="layout horizontal around-justified margin-top">
+        <a class="nolink" href$="/search/{{customQuery}}"><paper-button raised noink class="indigo">Search</paper-button></a>
+        <a class="nolink grey uppercase" href="/search"><paper-button class="subtext" style="margin-top: -8px; width: 82px;">how to custom search</paper-button></a>
+      </div>
+    </paper-material>
+
+      **** put the search in cookies?
     <paper-material>
       ****** all the planet poster images!!! ******
       <div>Planet posters from <a href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">here</a>.</div>
     </paper-material>
+    <paper-material>
+      <div class="indent" id="what-is-an-exoplanet">What is an exoplanet?</div>
+      ****** more on exoplanets here
+    </paper-material>
     <div>FYI, this is all real data from NASA and Caltech - ***links!!!***</div>
+
+    <polymer-cookie name="last-query" id="query-cookie"></polymer-cookie>
   </template>
 
   <script>
@@ -53,29 +120,176 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'home-page',
-        behaviors: [SearchQueries],
+        behaviors: [SearchUtilities],
+        paramChanged: function() {
+          this.composeQueryString();
+          this.setCookie();
+        },
+        composeQueryString: function() {
+          var values = [
+            this.distanceValue,
+            this.radiusValue,
+            this.massValue,
+            this.tempValue,
+            this.habitableValue
+          ];
+        },
+        setCookie: function() {
+          var cookie = this.querySelector('#query-cookie');
+          var value = {
+            distanceValue: this.distanceValue,
+            radiusValue: this.radiusValue,
+            massValue: this.massValue,
+            tempValue: this.tempValue,
+            habitableValue: this.habitableValue
+          }
+          window.setTimeout(function() {
+            cookie.expires = 'Fri, 31 Dec 9999 23:59:59 GMT';
+            cookie.value = JSON.stringify(value);
+            cookie.createCookie();
+          },1);
+        },
+        ready: function() {
+          var cookie = this.querySelector('#query-cookie');
+          var cookieValue = cookie.readCookie();
+          var self = this;
+          function updateParams() {
+            var params = JSON.parse(cookieValue);
+            ['distanceValue', 'radiusValue', 'massValue', 'tempValue', 'habitableValue'].forEach(function(param) {
+                self[param] = params[param];
+            });
+          };
+          if (cookieValue) {
+            updateParams();
+          }
+        },
         properties: {
+          queryString: {
+            type: String,
+            notify: true,
+            value: ''
+          },
+          customQuery: {
+            type: String,
+            notify: true,
+            value: ''
+          },
           distanceValue: {
             type: Number,
             notify: true,
             value: 0,
+            observer: 'paramChanged'
           },
           distanceDisplay: {
             type: String,
             notify: true,
             computed: 'distance(distanceValue)',
             value: 'Any distance'
+          },
+          radiusValue: {
+            type: Number,
+            notify: true,
+            value: 0,
+            observer: 'paramChanged'
+          },
+          radiusDisplay: {
+            type: String,
+            notify: true,
+            computed: 'radius(radiusValue)',
+            value: 'Any radius'
+          },
+          massValue: {
+            type: Number,
+            notify: true,
+            value: 0,
+            observer: 'paramChanged'
+          },
+          massDisplay: {
+            type: String,
+            notify: true,
+            computed: 'mass(massValue)',
+            value: 'Any mass'
+          },
+          tempValue: {
+            type: Number,
+            notify: true,
+            value: 0,
+            observer: 'paramChanged'
+          },
+          tempDisplay: {
+            type: String,
+            notify: true,
+            computed: 'temp(tempValue)',
+            value: 'Any temperature'
+          },
+          habitableValue: {
+            type: Number,
+            notify: true,
+            value: 0,
+            observer: 'paramChanged'
+          },
+          habitableDisplay: {
+            type: String,
+            notify: true,
+            computed: 'habitable(habitableValue)',
+            value: 'Any habitable'
           }
         },
         distance: function(distanceValue) {
           if (distanceValue === 0) {
             return 'Any distance';
           } else if (distanceValue === 1) {
-            return 'Close by (less than 20 ly)';
+            return 'Nearby (less than 20 ly)';
           } else if (distanceValue === 2) {
             return 'Medium (20 - 100 ly)';
           } else if (distanceValue === 3) {
             return 'Far (more than 100 ly)';
+          }
+        },
+        radius: function(radiusValue) {
+          if (radiusValue === 0) {
+            return 'Any radius';
+          } else if (radiusValue === 1) {
+            return 'Earth-like (less than 2 Earth radii)';
+          } else if (radiusValue === 2) {
+            return 'Superearth (2 - 7 Earth radii)';
+          } else if (radiusValue === 3) {
+            return 'Jupiter-like (more than 7 Earth radii)';
+          }
+        },
+        mass: function(massValue) {
+          if (massValue === 0) {
+            return 'Any mass';
+          } else if (massValue === 1) {
+            return 'Earth-like (less than 2 Earth masses)';
+          } else if (massValue === 2) {
+            return 'Superearth (2 - 7 Earth masses)';
+          } else if (massValue === 3) {
+            return 'Jupiter-like (more than 7 Earth masses)';
+          }
+        },
+        temp: function(tempValue) {
+          if (tempValue === 0) {
+            return 'Any temperature';
+          } else if (tempValue === 1) {
+            return 'Way below freezing';
+          } else if (tempValue === 2) {
+            return 'Earth range';
+          } else if (tempValue === 3) {
+            return 'Hotter than Earth';
+          } else if (tempValue === 4) {
+            return 'Hotter than Mercury';
+          }
+        },
+        habitable: function(habitableValue) {
+          if (habitableValue === 0) {
+            return 'Any possibility';
+          } else if (habitableValue === 1) {
+            return 'Definitely not';
+          } else if (habitableValue === 2) {
+            return 'Maybe?';
+          } else if (habitableValue === 3) {
+            return 'Good chance';
           }
         }
       });

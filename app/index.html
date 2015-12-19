@@ -63,56 +63,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
 
-      <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+    <!-- Main Area -->
+    <paper-scroll-header-panel main condenses keep-condensed-header>
 
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
+      <!-- Main Toolbar -->
+      <paper-toolbar id="mainToolbar" class="tall">
 
-          <!-- Application name -->
-          <div class="middle middle-container center horizontal layout">
-            <div class="app-name"><a href="/">Exoplanet Explorer</a></div>
-          </div>
-
-          <!-- Application sub title -->
-          <div class="bottom bottom-container center horizontal">
-            <div class="bottom-title paper-font-subhead">Learn more about planets around other stars!</div>
-          </div>
-
-        </paper-toolbar>
-
-        <!-- Main Content -->
-        <div class="content">
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
-            <section data-route="home">
-              <home-page></home-page>
-            </section>
-
-            <section data-route="search">
-              <search-page></search-page>
-            </section>
-            
-            <section data-route="planet">
-              <planet-info></planet-info>
-            </section>
-
-            <section data-route="about">
-              <paper-material>
-                <h1>I made this!</h1>
-              </paper-material>
-            </section>
-
-          </iron-pages>
+        <!-- Application name -->
+        <div class="middle middle-container center horizontal layout">
+          <div class="app-name"><a href="/">Exoplanet Explorer</a></div>
         </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
+
+        <!-- Application sub title -->
+        <div class="bottom bottom-container center horizontal">
+          <div class="bottom-title paper-font-subhead">Learn more about planets around other stars!</div>
+        </div>
+
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div class="content">
+        <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+          <section data-route="home">
+            <home-page></home-page>
+          </section>
+
+          <section data-route="search">
+            <search-page></search-page>
+          </section>
+          
+          <section data-route="planet">
+            <planet-info></planet-info>
+          </section>
+
+          <section data-route="about">
+            <about-page></about-page>
+          </section>
+
+        </iron-pages>
+      </div>
+    </paper-scroll-header-panel>
     
     <paper-toast id="caching-complete"
                  duration="6000"
                  text="Caching complete! This app will work offline.">
     </paper-toast>
 
+    <!--
     <platinum-sw-register auto-register
                           clients-claim
                           skip-waiting
@@ -121,6 +119,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                          cache-config-file="cache-config.json">
       </platinum-sw-cache>
     </platinum-sw-register>
+    -->
 
   </template>
 

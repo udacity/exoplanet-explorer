@@ -1,12 +1,16 @@
 <script>
 	'use strict';
 
-	var SearchQueries = {
-		stringSpecific: {
+	var SearchUtilities = {
+		keyword: {
 			type: String,
 			notify: true
 		},
-		field: {
+		queries: {
+			type: Array,
+			notify: true
+		},
+		stringSpecific: {
 			type: String,
 			notify: true
 		},
@@ -21,6 +25,9 @@
 		numberLower: {
 			type: Number,
 			notify: true
+		},
+		getKeyword: function() {
+			// find the type of search
 		}
 	}
 

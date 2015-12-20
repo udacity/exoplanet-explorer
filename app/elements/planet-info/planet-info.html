@@ -39,9 +39,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </div>
       <div class="vacation">
         <h3>Thinking about vacationing here?</h3>
-        <p hidden$="{{exists(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{nameParam}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
-        <p hidden$="{{!exists(pl_pnum)}}">{{nameParam}} is just one of {{rawData.pl_pnum}} planets orbiting {{rawData.pl_hostname}}.</p>
-        <p hidden$="{{!exists(pl_pnum)}}">{{nameParam}} is the only planet orbiting {{rawData.pl_hostname}}.</p>
+        <p hidden$="{{!distance}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{nameParam}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
+        <p hidden$="{{!pl_pnum}}">{{nameParam}} is just one of {{rawData.pl_pnum}} planets orbiting {{rawData.pl_hostname}}.</p>
+        <p hidden$="{{!pl_pnum}}">{{nameParam}} is the only planet orbiting {{rawData.pl_hostname}}.</p>
       </div>
       <div class="basic">
         <h3>Basic Info</h3>
@@ -89,17 +89,18 @@ Copyright (c) 2015 Udacity. All rights reserved.
           },
           earthRadii: {
             type: Number,
-            notify: true
+            notify: true,
+            computed: 'getEarthRadii(rawData.pl_rade, rawData.pl_radj)'
           },
           distance: {
             type: String,
             notify: true,
-            value: '0'
+            computed: 'pcToLy(rawData.st_dist)'
           },
           color: {
             type: String,
             notify: true,
-            value: 'brown'
+            value: 'grey'
           },
           rawData: {
             type: Object,
@@ -108,8 +109,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         observers: [
-          'getEarthRadii(rawData.pl_rade, rawData.pl_radj)',
-          'pcToLy(rawData.st_dist)',
+          
           'tempToColor(rawData.pl_eqt)'
         ],
         getDiscmethodUrl: function(discmethod) {

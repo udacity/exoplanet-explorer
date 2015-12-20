@@ -34,7 +34,19 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
         },
         attached: function() {
-
+          var self = this;
+          Model.requests.addListener('returnedQuery', function(data) {
+            console.log(data);
+            self.renderThumbnails(planets);
+          });
+        },
+        loadData: function() {
+          Model.requests.sendQuery('query', this.queryString);
+        },
+        renderThumbnails: function(planets) {
+          for (var p in planets) {
+            this.createPlanetThumb(planets[p]);
+          }
         },
         parseQuery: function() {
           this.query = JSON.parse(this.queryString);

@@ -46,47 +46,6 @@
 
   exports.requests = new QueryableWorker('scripts/worker.js');
 
-
-  /**
-   * Get one planet by querying a specific name. Failed gets return null.
-   * @param  {String} name planet's name
-   * @return {Object}      planet data
-   */
-  function getPlanetByName(name) {
-    // pass a single string
-  };
-  exports.getPlanetByName = getPlanetByName;
-
-  /**
-   * Get an array of planets by passing an array of names. Failed gets return null.
-   * @param  {Array} names Array of string names.
-   * @return {Array}       Planet data in the same order as requested.
-   */
-  function getPlanetsByNames(names) {
-    // pass an array of strings
-  };
-  exports.getPlanetsByNames = getPlanetsByNames;
-
-  /**
-   * Deep search. Greedy regexes all properties for matches.
-   * @param  {String} payload Regex
-   * @return {Array}          Array of planets that match.
-   */
-  function queryGeneral(payload) {
-    
-  };
-  exports.queryGeneral = queryGeneral;
-
-  /**
-   * Given some fields and possible values, find planets that might criteria. Planets will be ordered from most to least relevant.
-   * @param  {Object} payload 
-   * @return {Array}         Array of planet data.
-   */
-  function querySpecific(payload) {
-    // take an 
-  };
-  exports.querySpecific = querySpecific;
-
   window.addEventListener('WebComponentsReady', function() {
     // nothing for now
   });

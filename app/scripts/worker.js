@@ -4,19 +4,18 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
-  // example #1: get the difference between two numbers:
-  getDifference: function (nMinuend, nSubtrahend) {
-    reply('printSomething', nMinuend - nSubtrahend);
-  },
-  // example #2: wait three seconds
-  waitSomething: function () {
-    setTimeout(function() { reply('alertSomething', 3, 'seconds'); }, 3000);
-  },
-  fullSearch: function(item) {
-    // regex for item in _database. if any property hits, return it
-  },
-  specificSearch: function(property, criteria) {
-    // criteria is an object with value, upper, lower
+  query: function(queryString) {
+    // TODO: parse the string
+    // TODO: query the db differently depending on string
+
+    var type = 'type of query';
+    var params = 'params of query';
+    db.makeRequest(type, params).then(function(planets) {
+      reply('returnedQuery', planets);
+    })
+    .catch(function() {
+      reply('returnedQuery', []);
+    })
   },
   getPlanetByName: function(name) {
     db.makeRequest('name', {name: name}).then(function(planet) {
@@ -24,12 +23,6 @@ var queryableFunctions = {
     }).catch(function() {
       reply('gotPlanetByName', {error: true});
     });
-  },
-  retrievePlanets: function(payload) {
-    // match planets against the payload
-    // score planets based on relevance
-    // the more fields they hit, the higher the relevance
-    // return planets in order of descending scores.
   }
 };
 
@@ -60,6 +53,18 @@ function Database() {
   var dataReceived = false;
   var searchReady = false;
   var requestError = false;
+  var fireSearchReady = function() {};
+  var fireParsingFailed = function() {};
+  this.ready = function() {
+    return new Promise(function(resolve, reject) {
+      if (searchReady) {
+        resolve();
+      } else {
+        fireSearchReady = resolve;
+        fireParsingFailed = reject;
+      }
+    })
+  };
   this._requestOnePlanet = function(name) {
     name = name.replace(/ /g, '');
     return getJSON('/data/planets/' + name + '.json');
@@ -109,7 +114,8 @@ function Database() {
     planets.forEach(function(planet) {
       self._loadPlanetIntoDatabase(planet);
     });
-    searchReady = false;
+    searchReady = true;
+    fireSearchReady();
   };
 
   /**
@@ -133,7 +139,11 @@ function Database() {
         break;
       case 'queryGeneral':
         req = function() {
-          // some shit
+          return self.ready().then(function() {
+            self.database.forEach(function (planet) {
+              // something about looking through all planet values for params
+            });
+          })
         };
         break;
       case 'querySpecific':

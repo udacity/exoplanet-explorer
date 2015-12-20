@@ -8,13 +8,28 @@ var queryableFunctions = {
     // TODO: parse the string
     // TODO: query the db differently depending on string
 
+    // if no index or index doesn't match possiblites, run general search
+
+    var params = [
+        {
+          name: 'eg: mass, radius',
+          specific: 'value',
+          upper: 10000000,
+          lower: 0
+        }
+      ]
+
     var type = 'type of query';
     var params = 'params of query';
     db.makeRequest(type, params).then(function(planets) {
+      // return object resembling:
+      // {
+      //  results: [sorted planets]
+      // }
       reply('returnedQuery', planets);
     })
     .catch(function() {
-      reply('returnedQuery', []);
+      reply('returnedQuery', {error: true});
     })
   },
   getPlanetByName: function(name) {
@@ -49,7 +64,7 @@ onmessage = function (oEvent) {
 function Database() {
   var self = this;
   var database = [];
-  var index = {};
+  var nameIndex = {};
   var dataReceived = false;
   var searchReady = false;
   var requestError = false;
@@ -95,7 +110,25 @@ function Database() {
   };
   this._loadPlanetIntoDatabase = function(planetData) {
     database.push({name: planetData.pl_name, data: planetData});
-    index[planetData.pl_name] = database.length - 1;
+    // names
+    nameIndex[planetData.pl_name] = database.length - 1;
+    // SORT THESE
+    // 
+    // distance - in pc
+    // 
+    // radius - in rade
+    // 
+    // mass - in masse
+    // 
+    // density - from rade and masse
+    // 
+    // temperature
+    // 
+    // facility
+    // 
+    // telescope
+    // 
+    // method
   };
   this._init = function() {
     function request() {
@@ -148,7 +181,29 @@ function Database() {
         break;
       case 'querySpecific':
         req = function() {
-          // something else!
+          return self.ready().then(function() {
+            // TODO: possible optimizations: create subworkers?
+
+            // create a single return object
+            var results = {};
+
+            // create an array of promises
+            Promise.all(params.map(function(p) {
+              // p.name gives index
+              // p.specific, p.upper, p.lower give tests
+              // when promise resolves with planet(s), add planet name to the return object
+              // each planet has a score. increment the score by 1
+              // if the planet is there, just increment the score
+            }))
+            .then(function() {
+              // when all finish, sort the planets by scores
+              // return the sorted array of planets
+              // if there are no results, return empty array
+            })
+            .catch(function() {
+              // something went wrong, throw error
+            })
+          })
         };
         break;
       default:

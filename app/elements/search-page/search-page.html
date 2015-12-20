@@ -16,6 +16,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
     </style>
     <h1>Search!</h1>
     <h2 class="query page-title">{{queryDisplay}}</h2>
+    <paper-material>
+      <h3>This is how you search!</h3>
+    </paper-material>
     <paper-input type="text" placeholder="Search me!"></paper-input>
     <div class="search-results"></div>
   </template>
@@ -29,9 +32,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         behaviors: [SearchUtilities, MathAndPhysics],
         created: function() {
           this.properties.resultsContainer.value = this.querySelector('.search-results');
-        },
-        ready: function() {
-
         },
         attached: function() {
           var self = this;

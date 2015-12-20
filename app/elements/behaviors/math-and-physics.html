@@ -26,12 +26,13 @@
     },
     pcToLy: function(dist) {
       // gotta respect sigfigs
+      if (!dist || typeof dist !== Number) { return '0' };
       var digits = dist.toString().length;
       if (!digits) {
         return 'unknown';
       }
       var ly = (dist / 3.26).toString();
-      ly = ly.slice(0,digits);
+      ly = ly.slice(0, digits);
       return ly.toString();
     },
     lyToTravelTime: function(ly) {

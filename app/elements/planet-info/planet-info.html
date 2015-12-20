@@ -3,7 +3,6 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../scale-visualizer/scale-visualizer.html">
 <link rel="import" href="../behaviors/math-and-physics.html">
 <link rel="import" href="../behaviors/planet-raw-data.html">
 
@@ -30,28 +29,28 @@ Copyright (c) 2015 Udacity. All rights reserved.
     </style>
     <paper-material elevation="1">
       <div class="layout vertical">
-      <h2>{{pl_name}}</h2>
+      <h2>{{nameParam}}</h2>
       <div class="vis" hidden$="{{!exists(earthRadii)}}">
         <scale-visualizer
           color$="{{color}}"
           earth-radii$="{{earthRadii}}">
         </scale-visualizer>
-        <p class="subtext">{{scaleMessage(pl_name)}}</p>
+        <p class="subtext">{{scaleMessage(nameParam)}}</p>
       </div>
       <div class="vacation">
         <h3>Thinking about vacationing here?</h3>
-        <p hidden$="{{exists(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{pl_name}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
-        <p hidden$="{{!exists(pl_pnum)}}">{{pl_name}} is just one of {{pl_pnum}} planets orbiting {{starName}}.</p>
-        <p hidden$="{{!exists(pl_pnum)}}">{{pl_name}} is the only planet orbiting {{starName}}.</p>
+        <p hidden$="{{exists(distance)}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{nameParam}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
+        <p hidden$="{{!exists(pl_pnum)}}">{{nameParam}} is just one of {{rawData.pl_pnum}} planets orbiting {{rawData.pl_hostname}}.</p>
+        <p hidden$="{{!exists(pl_pnum)}}">{{nameParam}} is the only planet orbiting {{rawData.pl_hostname}}.</p>
       </div>
       <div class="basic">
         <h3>Basic Info</h3>
-        <p>Spotted in {{pl_disc}} with {{pl_facility}}'s {{pl_telescope}} by using the <a href$="{{getDiscmethodUrl(pl_discmethod)}}">{{toLowercase(pl_discmethod)}} method</a>.</p>
+        <p>Spotted in {{rawData.pl_disc}} with {{rawData.pl_facility}}'s {{pl_telescope}} by using the <a href$="{{getDiscmethodUrl(pl_discmethod)}}">{{toLowercase(rawData.pl_discmethod)}} method</a>.</p>
       </div>
       <div class="detailed">
         <h3>Detailed Info</h3>
         <p>
-          ra: {{ra}}, dec: {{dec}} (<a href$="http://server3.sky-map.org/map?custom=1&language=EN&type=PART&w=640&h=360&angle=45&ra={{ra}}&de={{dec}}&rotation=0.0&mag=10&max_stars=100000&zoom=2.0&borders=0&border_color=400000&show_grid=1&grid_color=404040&grid_color_zero=808080&grid_lines_width=1.0&grid_ra_step=1.0&grid_de_step=15.0&show_const_lines=1&constellation_lines_color=006000&constellation_lines_width=1.0&show_const_names=1&constellation_names_color=006000&const_name_font_type=BOLD&const_name_font_name=SansSerif&const_name_font_size=16&show_const_boundaries=&constellation_boundaries_color=000060&constellation_boundaries_width=1.0&background_color=000000&output=GIF">map</a>)
+          ra: {{rawData.ra}}, dec: {{rawData.dec}} (<a href$="http://server3.sky-map.org/map?custom=1&language=EN&type=PART&w=640&h=360&angle=45&ra={{ra}}&de={{dec}}&rotation=0.0&mag=10&max_stars=100000&zoom=2.0&borders=0&border_color=400000&show_grid=1&grid_color=404040&grid_color_zero=808080&grid_lines_width=1.0&grid_ra_step=1.0&grid_de_step=15.0&show_const_lines=1&constellation_lines_color=006000&constellation_lines_width=1.0&show_const_names=1&constellation_names_color=006000&const_name_font_type=BOLD&const_name_font_name=SansSerif&const_name_font_size=16&show_const_boundaries=&constellation_boundaries_color=000060&constellation_boundaries_width=1.0&background_color=000000&output=GIF">map</a>)
           <span class="subtext"><a href="http://server3.sky-map.org/api?locale=EN">map API</a></span>
         </p>
       </div>
@@ -65,28 +64,54 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'planet-info',
-        behaviors: [MathAndPhysics, PlanetRawData],
+        behaviors: [MathAndPhysics],
         attached: function() {
-          // something, I'm sure
+          var self = this;
+          Model.requests.addListener('gotPlanetByName', function(data) {
+            console.log(data);
+            self.bindData(data);
+          });
+        },
+        loadData: function() {
+          Model.requests.sendQuery('getPlanetByName', this.nameParam);
+        },
+        bindData: function(data) {
+          for (var d in data) {
+            var path = 'rawData.' + d;
+            this.set(path, data[d]);
+          }
         },
         properties: {
+          nameParam: {
+            type: String,
+            notify: true,
+            observer: 'loadData'
+          },
           earthRadii: {
             type: Number,
-            notify: true,
-            computed: 'getEarthRadii(pl_rade, pl_radj)'
+            notify: true
           },
           distance: {
             type: String,
             notify: true,
-            computed: 'pcToLy(st_dist)'
+            value: '0'
           },
           color: {
             type: String,
             notify: true,
-            computed: 'tempToColor(pl_eqt)',
             value: 'brown'
+          },
+          rawData: {
+            type: Object,
+            notify: true,
+            value: {}
           }
         },
+        observers: [
+          'getEarthRadii(rawData.pl_rade, rawData.pl_radj)',
+          'pcToLy(rawData.st_dist)',
+          'tempToColor(rawData.pl_eqt)'
+        ],
         getDiscmethodUrl: function(discmethod) {
           var url = "";
 
@@ -112,6 +137,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         toLowercase: function(string) {
+          if (!string || typeof string !== 'string') { return ''; };
           return string.toLowerCase();
         }
       });

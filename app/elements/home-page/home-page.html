@@ -176,19 +176,19 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'home-page',
-        behaviors: [SearchUtilities],
         paramChanged: function() {
           this.composeQueryString();
           this.setCookie();
         },
         composeQueryString: function() {
-          var values = [
-            this.distanceValue,
-            this.radiusValue,
-            this.massValue,
-            this.tempValue,
-            this.habitableValue
-          ];
+          var values = {
+            distanceValue: this.distanceValue,
+            radiusValue: this.radiusValue,
+            massValue: this.massValue,
+            tempValue: this.tempValue,
+            habitableValue: this.habitableValue
+          };
+          this.queryString = JSON.stringify(values)
         },
         setCookie: function() {
           var cookie = this.querySelector('#query-cookie');

@@ -90,11 +90,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </section>
 
           <section data-route="search">
-            <search-page></search-page>
+            <search-page query-string="{{params.query}}"></search-page>
           </section>
           
           <section data-route="planet">
-            <planet-info></planet-info>
+            <planet-info name-param="{{params.name}}"></planet-info>
           </section>
 
           <section data-route="about">

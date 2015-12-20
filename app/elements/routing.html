@@ -8,7 +8,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="model/model.html">
 <script src="../bower_components/page/page.js"></script>
 
 <script>
@@ -21,13 +20,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // More info: https://visionmedia.github.io/page.js/
 
     // Middleware
-    
-    // Proj: will need to uncomment this to maintain planet info
-    var planetInfos = [];
-
-    function initModel() {
-      return Model.database.init();
-    };
 
     function scrollToTop(ctx, next) {
       app.scrollPageToTop();
@@ -37,44 +29,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Routes
     page('/', scrollToTop, function() {
       app.route = 'home';
-      initModel().then(function() {
-        // data is there, let the user know the app is fully interactive?
-      });
     });
 
     page('/search', scrollToTop, function() {
       app.route = 'search';
-      initModel().then(function() {
-        // data is there, time to set search params
-      });
     });
 
-    page('/search/:query', scrollToTop, function() {
+    page('/search/:query', scrollToTop, function(ctx) {
       app.route = 'search';
-      initModel().then(function() {
-        // data is there, time to set search params
-      });
+      app.params = ctx.params;
     });
 
     page('/about', scrollToTop, function() {
       app.route = 'about';
-      // TODO: show seach query help if there aren't any results
-      initModel().then(function() {
-        // data is there. probably don't need to do anything else
-      });
-    });    
+    });
 
     page('/planet/:name', scrollToTop, function(ctx) {
       app.route = 'planet';
-      var planetInfo = document.querySelector('planet-info');
-      function bindPlanetInfo(data) {
-        for (var d in data) {
-          planetInfo[d] = data[d];
-        }
-      };
-      // don't need to call initModel because getPlanetByName will
-      // init the full model if it's not there already
-      Model.database.getPlanetByName(ctx.params.name).then(bindPlanetInfo);
+      app.params = ctx.params;
+    });
+
+    // 404
+    page('*', function() {
+      page.redirect('/search');
     });
 
     // add #! before urls

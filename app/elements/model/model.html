@@ -4,131 +4,88 @@
 
   var exports = {};
 
-  var database = {
-    _database: [],
-    _index: {},
-    _requestInProgress: false,
-    _debounceReturn: null,
-    _requestAllPlanets: function() {
-      var self = this;
-      
-      // debounce requests first
-      if (self._requestInProgress) {
-        return new Promise(function() {
-          self._debounceReturn = function(planets) {
-            resolve(planets);
-          };
-        });
-      }
-
-      // create the request
-      self._requestInProgress = true;
-      return getJSON('/data/data.json').then(function(planets) {
-        self._database = [];
-        planets.forEach(function(planet) {
-          self._loadPlanetIntoDatabase(planet);
-        })
-
-        // return any promises waiting to be debounced
-        if (self._debounceReturn) {
-          self._debounceReturn(planets);
-        }
-        // no longer requesting, so unflag debouncing flags
-        self._debounceReturn = null;
-        self._requestInProgress = false;
-
-        return planets;
-      })
-      .catch(function() {
-        throw new Error('Planet Parsing Error');
-      });
-    },
-    _requestOnePlanet: function(name) {
-      return getJSON('/data/planets/' + name + '.json');
-    },
-    fullSearch: function(item) {
-      // regex for item in _database. if any property hits, return it
-    },
-    specificSearch: function(property, criteria) {
-      // criteria is an object with value, upper, lower
-    },
-    _loadPlanetIntoDatabase: function(planetData) {
-      this._database.push({name: planetData.pl_name, data: planetData});
-      this._index[planetData.pl_name] = this._database.length - 1;
-    },
-    _exists: function() {
-      if (this._database.length > 0) {
-        return true;
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
+  /*
+    QueryableWorker instances methods:
+     * sendQuery(queryable function name, argument to pass 1, argument to pass 2, etc. etc): calls a Worker's queryable function
+     * postMessage(string or JSON Data): see Worker.prototype.postMessage()
+     * terminate(): terminates the Worker
+     * addListener(name, function): adds a listener
+     * removeListener(name): removes a listener
+    QueryableWorker instances properties:
+     * defaultListener: the default listener executed only when the Worker calls the postMessage() function directly
+  */
+  function QueryableWorker (sURL, fDefListener, fOnError) {
+    var oInstance = this, oWorker = new Worker(sURL), oListeners = {};
+    this.defaultListener = fDefListener || function () {};
+    oWorker.onmessage = function (oEvent) {
+      if (oEvent.data instanceof Object && oEvent.data.hasOwnProperty("vo42t30") && oEvent.data.hasOwnProperty("rnb93qh")) {
+        oListeners[oEvent.data.vo42t30].apply(oInstance, oEvent.data.rnb93qh);
       } else {
-        return false;
+        this.defaultListener.call(oInstance, oEvent.data);
       }
-    },
-    getPlanetByName: function(name) {
-      var self = this;
-      // no spaces in the planet json urls
-      name = name.replace(/ /g,'');
-
-      return new Promise(function(resolve, reject) {
-        var planetData = self._database[self._index[name]];
-        if (planetData) {
-          resolve(planetData);
-        } else {
-          // requests all the data for use later
-          self._requestAllPlanets();
-          // returns a promise for this planet's data
-          resolve(self._requestOnePlanet(name));
-        }
-      });
-    },
-    init: function() {
-      var self = this;
-      return new Promise(function(resolve) {
-        if (self._exists()) {
-          resolve();
-        } else {
-          resolve(self._requestAllPlanets());
-        }
-      })
-    }
+    };
+    if (fOnError) { oWorker.onerror = fOnError; }
+    this.sendQuery = function (/* queryable function name, argument to pass 1, argument to pass 2, etc. etc */) {
+      if (arguments.length < 1) { throw new TypeError("QueryableWorker.sendQuery - not enough arguments"); return; }
+      oWorker.postMessage({ "bk4e1h0": arguments[0], "ktp3fm1": Array.prototype.slice.call(arguments, 1) });
+    };
+    this.postMessage = function (vMsg) {
+      oWorker.postMessage(vMsg);
+    };
+    this.terminate = function () {
+      oWorker.terminate();
+    };
+    this.addListener = function (sName, fListener) {
+      oListeners[sName] = fListener;
+    };
+    this.removeListener = function (sName) {
+      delete oListeners[sName];
+    };
   };
-  exports.database = database;
 
-  function get(url) {
-    // Return a new promise.
-    return new Promise(function(resolve, reject) {
-      // Do the usual XHR stuff
-      var req = new XMLHttpRequest();
-      req.open('GET', url);
+  exports.requests = new QueryableWorker('scripts/worker.js');
 
-      req.onload = function() {
-        // This is called even on 404 etc
-        // so check the status
-        if (req.status === 200) {
-          // Resolve the promise with the response text
-          resolve(req.response);
-        }
-        else {
-          // Otherwise reject with the status text
-          // which will hopefully be a meaningful error
-          reject(Error(req.statusText));
-        }
-      };
 
-      // Handle network errors
-      req.onerror = function() {
-        reject(Error('Network Error'));
-      };
-
-      // Make the request
-      req.send();
-    });
-  }
-
-  function getJSON(url) {
-    return get(url).then(JSON.parse).catch(function() {
-      throw new Error('AJAX Error');
-    });
+  /**
+   * Get one planet by querying a specific name. Failed gets return null.
+   * @param  {String} name planet's name
+   * @return {Object}      planet data
+   */
+  function getPlanetByName(name) {
+    // pass a single string
   };
+  exports.getPlanetByName = getPlanetByName;
+
+  /**
+   * Get an array of planets by passing an array of names. Failed gets return null.
+   * @param  {Array} names Array of string names.
+   * @return {Array}       Planet data in the same order as requested.
+   */
+  function getPlanetsByNames(names) {
+    // pass an array of strings
+  };
+  exports.getPlanetsByNames = getPlanetsByNames;
+
+  /**
+   * Deep search. Greedy regexes all properties for matches.
+   * @param  {String} payload Regex
+   * @return {Array}          Array of planets that match.
+   */
+  function queryGeneral(payload) {
+    
+  };
+  exports.queryGeneral = queryGeneral;
+
+  /**
+   * Given some fields and possible values, find planets that might criteria. Planets will be ordered from most to least relevant.
+   * @param  {Object} payload 
+   * @return {Array}         Array of planet data.
+   */
+  function querySpecific(payload) {
+    // take an 
+  };
+  exports.querySpecific = querySpecific;
 
   window.addEventListener('WebComponentsReady', function() {
     // nothing for now

@@ -15,8 +15,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
       }
     </style>
     <h1>Search!</h1>
-    <h2 class="query page-title">{{query}}</h2>
-    <input type="text" placeholder="Search me!">
+    <h2 class="query page-title">{{queryDisplay}}</h2>
+    <paper-input type="text" placeholder="Search me!"></paper-input>
     <div class="search-results"></div>
   </template>
 
@@ -28,15 +28,16 @@ Copyright (c) 2015 Udacity. All rights reserved.
         is: 'search-page',
         behaviors: [SearchUtilities, MathAndPhysics],
         created: function() {
-          // console.log('created');
           this.properties.resultsContainer.value = this.querySelector('.search-results');
-          // create a web worker!!! do search work and data parsing work there
         },
         ready: function() {
-          // console.log('ready');
+
         },
         attached: function() {
-          // console.log('attached');
+
+        },
+        parseQuery: function() {
+          this.query = JSON.parse(this.queryString);
         },
         properties: {
           value: {
@@ -47,12 +48,21 @@ Copyright (c) 2015 Udacity. All rights reserved.
             type: String,
             notify: true,
           },
-          query: {
+          queryDisplay: {
             type: String,
             notify: true,
             value: 'Nothing yet! Try searching'
           },
           resultsContainer: {
+            type: Object,
+            notify: true
+          },
+          queryString: {
+            type: String,
+            notify: true,
+            observer: 'parseQuery'
+          },
+          query: {
             type: Object,
             notify: true
           }
@@ -63,6 +73,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
             pT[d] = data[d];
           }
           this.resultsContainer.appendChild(pT);
+        },
+        dataToThumbs: function(data) {
+          // only load 100 thumbs at a time. mark number 80 with an event. when it's on screen, then load the next 100. and so on.
         }
       });
     })();

@@ -3,37 +3,45 @@ import csv
 import json
 import os
 
-jsondir = '../app/data/planets'
+jsondir = '../../app/data/planets'
 csvfile = open('data.csv', 'rb')
 
 fieldnames = [
-    "pl_hostname",
-    "pl_name",
-    "pl_rade",
-    "pl_radj",
-    "pl_massj",
-    "pl_masse",
+    "dec",
+    "hd_name",
+    "hip_name",
+    "pl_astflag",
+    "pl_cbflag",
     "pl_dens",
-    "pl_eqt",
-    "pl_telescope",
-    "pl_facility",
     "pl_disc",
     "pl_discmethod",
-    "pl_pnum",
+    "pl_eqt",
+    "pl_facility",
+    "pl_hostname",
+    "pl_imgflag",
+    "pl_masse",
+    "pl_massj",
+    "pl_name",
+    "pl_omflag",
+    "pl_orbeccen",
     "pl_orbper",
-    "st_dist",
-    "st_optmag",
-    "st_teff",
-    "st_mass",
-    "st_rad",
-    "hip_name",
-    "hd_name",
-    "st_age",
+    "pl_pnum",
+    "pl_rade",
+    "pl_radj",
+    "pl_ratdor",
+    "pl_rvflag",
+    "pl_telescope",
+    "pl_tranflag",
     "ra",
-    "dec",
+    "rowupdate",
+    "st_age",
+    "st_dist",
+    "st_mass",
+    "st_optmag",
+    "st_rad",
+    "st_teff",
     "pl_pelink",
-    "pl_edelink",
-    "rowupdate"
+    "pl_edelink"
 ]
 reader = csv.DictReader(csvfile, fieldnames)
 
@@ -48,10 +56,12 @@ for row in reader:
     all_data = json.loads(output)
     
     for key in row:
-        if row[key] == "":
+        if not row[key]:
             keys_to_delete.append(key)
     for i in keys_to_delete:
         all_data.pop(i, None)
+
+    keys_to_delete = []
 
     out = json.dumps(all_data, separators=(',',':'))
 

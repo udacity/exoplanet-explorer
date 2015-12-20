@@ -111,7 +111,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
     </paper-material>
 
     <paper-material>
-      <h3 class="indent">Not sure what to search for? Here are a few fantastic destinations!</h3>
+      <h3 class="indent" id="posters">Not sure what to search for? Here are a few fantastic destinations!</h3>
       <a href="/planet/HD_40307g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
       <a href="/planet/Kepler_16b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
       <a href="/planet/Kepler_186f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
@@ -121,9 +121,43 @@ Copyright (c) 2015 Udacity. All rights reserved.
     </paper-material>
 
     <paper-material>
-      <div class="indent" id="what-is-an-exoplanet">What is an exoplanet?</div>
-      ****** more on exoplanets here
-      <div>FYI, this is all real data from NASA and Caltech - ***links!!!***</div>
+      <h3 class="indent" id="what-is-an-exoplanet">What is an exoplanet?</h3>
+      <p class="indent"><a href="https://en.wikipedia.org/wiki/Exoplanet">Exoplanets</a> are planets that exist outside of our Solar System. Most exoplanets orbit other stars. In some cases, they'll orbit two (called a <a href="https://en.wikipedia.org/wiki/Binary_star">binary</a>) or three stars, and in rare cases they'll float freely through the galaxy without a home star!</p>
+
+      <p class="indent">Exoplanets take on a huge range of sizes, temperatures, compositions and distances from stars.</p>
+
+      <p class="indent">It's interesting to wonder if life could exist on different worlds, but to be honest, it's really hard to know with the little bit of data that we get from lightyears away. The key to finding life, we assume, is finding liquid water. Astronomers get excited about planets in the <a href="https://en.wikipedia.org/wiki/Circumstellar_habitable_zone">habitable zones</a> around stars, however it's still possible for life to form closer to or farther from their home stars.</p>
+
+      <p class="indent">For instance, Jupiter's moon Europa and Saturn's moon Enceladus both hold huge oceans of liquid water. Yet, both moons are well outside the Sun's habitable zone. Instead of capturing heat from sunlight, internal geological processes and insulating crusts of ice keep them warm enough for liquid water.</p>
+
+      <p class="indent">Most exoplanets that have been found so far are huge, which makes sense. The bigger the planet, the easier it is to spot. But astronomers are getting better at spotting smaller and smaller planets. The record now for smallest exoplanet spotted so far is <a href="/planet/kepler-37b">Kepler-37b</a>.</p>
+    </paper-material>
+
+    <paper-material>
+      <h3 class="indent" id="how-are-exoplanets-found">How are exoplanets found?</h3>
+
+      <h4 class="indent">The Transit Method</h4>
+      <p class="indent">Astronomers who use the <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Transit_photometry">transit method</a> measure the brightness of a star over time. They look for repeated, predictable dips in a star's brightness. The duration and intensity of the dip reveal the radius of the planet.</p>
+
+      <h4 class="indent">Radial Velocity and Astrometry Methods</h4>
+      <p class="indent">Astronomers who use <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Radial_velocity">radial velocity</a> and <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Astrometry">astrometry</a> measure the position of a star over time. Just as stars tug on planets, planets tug on stars. If a planet is much smaller or very far away from a star, the tug is difficult to measure. But if a planet is very close or very large, it's tug will make the star wobble back and forth.</p>
+
+      <p class="indent">Watch <a href="https://www.youtube.com/watch?v=Jpbgg2TRCuw">this video</a> and pay attention to the atheletes' spinning movement just before they release the hammer. See how it makes them spin around? That's exactly the kind of movement astronomer's try to spot.</p>
+
+      <p class="indent">The difference between the methods is difference in the way the motion appears to us. For radial velocity, we're seeing the motion happen from the same plane so it looks side-to-side. For astrometry, we're looking down (or up?) pependicularly to the planet's orbit so the motion looks circular.</p>
+
+      <h4 class="indent">Timing Methods</h4>
+      <p class="indent">Astronomers who use <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Timing_variations">timing methods</a> watch for changes in periodic events. There are a few different periodic events that astronomers have used to find planets.</p>
+
+      <p class="indent">Pulsars are rapidly rotating stellar cores left behind after supernovas. They emit periodic bursts of radio waves as they rotate that are incredibly regular. Nearby planets will tug on pulsars, minutely changing their periodicity. The first exoplanet, <a href="planet/psrb1257+12">PSR B1257+12</a>, was found this way.</p>
+
+      <p class="indent">Astronomers also use a combination of the transit method with timing methods to determine if there are multiple planets orbiting a star.</p>
+
+      <h4 class="indent">Gravitational Microlensing</h4>
+      <p class="indent">Astronomers who use <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Gravitational_microlensing">gravitational microlensing</a> take advantage of <a href="https://en.wikipedia.org/wiki/Introduction_to_general_relativity">general relativity</a>. Light, like normal matter, is affected by gravity. Big objects, like planets, stars and galaxies will actually bend light that passes by. By analyzing the light coming from stars or galaxies <em>behind</em> a thing and looking for distortions, astronomers can measure the mass of the thing, which in some cases, is a planet.</p>
+
+      <h4 class="indent">Direct Imaging</h4>
+      <p class="indent">Astronomers who use <a href="https://en.wikipedia.org/wiki/Methods_of_detecting_exoplanets#Direct_imaging">direct imaging</a> visually spot planets with telescopes. Planets are very, very, <em>very</em> dim compared to stars however, so astronomers have to block out the light of a planet's home star to be able to see it.</p>
     </paper-material>
 
     <paper-material>
@@ -166,7 +200,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
             habitableValue: this.habitableValue
           }
           window.setTimeout(function() {
-            cookie.expires = 'Fri, 31 Dec 9999 23:59:59 GMT';
             cookie.value = JSON.stringify(value);
             cookie.createCookie();
           },1);

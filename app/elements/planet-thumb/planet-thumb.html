@@ -1,0 +1,103 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/math-and-physics.html">
+<link rel="import" href="../behaviors/planet-raw-data.html">
+
+<dom-module id="planet-thumb">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+      svg {
+        display: block;
+      }
+      a {
+        text-decoration: none;
+        color: #212121;
+        cursor: pointer;
+      }
+      .vis {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 300px;
+      }
+      @media screen and (max-width: 435px) {
+        .vis {
+          max-width: 75%;
+        }
+        .top {
+          /* I'm only doing this because I have to... */
+          display: block !important;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+      @media screen and (min-width: 436px) {
+        .top {
+          display: flex;
+        }
+        .top-right {
+          padding-left: 32px;
+        }
+        .title {
+          margin-top: 0px;
+          font-weight: bold;
+          font-size: 1.2em;
+        }
+      }
+    </style>
+    <paper-material elevation="1">
+      <a href$="/planet/{{pl_name}}">
+        <div class="layout vertical">
+          <div class="vis">
+            <scale-visualizer
+              hidden$="{{!earthRadii}}"
+              color$="{{color}}"
+              earth-radii$="{{earthRadii}}">
+            </scale-visualizer>
+          </div>
+          <div class="top-right">
+            <p class="title">{{pl_name}}</p>
+            <p>{{distance}} lightyears away</p>
+            <p>Discovered in {{pl_disc}} with {{pl_telescope}}</p>
+          </div>
+        </div>
+      </a>
+    </paper-material>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'planet-thumb',
+        behaviors: [MathAndPhysics, PlanetRawData],
+        properties: {
+          earthRadii: {
+            type: Number,
+            notify: true,
+            computed: 'getEarthRadii(pl_rade, pl_radj)',
+            value: 0
+          },
+          distance: {
+            type: Number,
+            computed: 'pcToLy(st_dist)'
+          },
+          color: {
+            type: String,
+            notify: true,
+            computed: 'tempToColor(pl_eqt)',
+            value: 'grey'
+          }
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

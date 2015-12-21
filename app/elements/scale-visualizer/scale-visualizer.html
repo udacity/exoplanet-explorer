@@ -1,0 +1,193 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="scale-visualizer">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        max-width: 300px;
+      }
+      svg {
+        display: block;
+        height: 100%;
+      }
+      circle {
+        transform: translate(30px, 100px);
+        webkit-transform: translate(30px, 100px);
+      }
+      .wrapper {
+        background: #000000;
+        min-width: 260px;
+      }
+      .planet-comparison {
+        width: 100%;
+        height: 100%;
+      }
+      .no-radius {
+        color: white;
+        font-size: 2em;
+        padding-left: 35px;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      .no-radius::after{
+        content: "?";
+      }
+      earth-img,jupiter-img {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      img {
+        display: block;
+        width: 150px;
+      }
+    </style>
+    <div class="wrapper">
+      <div class="planet-comparison layout horizontal end-justified">
+        <p class="no-radius" hidden$="{{hasRadius(earthRadii)}}"></p>
+        <svg class="planet-container" width="300px" height="100%">
+          <g fill$="{{color}}" stroke-width="1">
+            <circle id="planet" r$="{{exoRadius}}" />
+          </g>
+        </svg>
+        <img id="earth" style$="width: {{earthWidth}}px;" src="../../images/earth.svg" alt="earth" viewBox$="0 0 {{earthWidth}} {{earthWidth}}">
+        <img id="jupiter" src="../../images/jupiter.svg" alt="jupiter" hidden$="{{isSmall(earthRadii)}}" viewBox$="0 0 {{jupiterWidth}} {{jupiterWidth}}">
+      </div>
+    </div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'scale-visualizer',
+        properties: {
+          earthRadii: {
+            type: Number,
+            notify: true,
+            observer: 'changeSizes'
+          },
+          earthWidth: {
+            type: Number,
+            notify: true,
+            value: 150
+          },
+          jupiterWidth: {
+            type: Number,
+            notify: true,
+            value: 50
+          },
+          elementWidth: {
+            type: Number,
+            notify: true,
+            value: 300
+          },
+          elementHeight: {
+            type: Number,
+            notify: true,
+            value: 150
+          },
+          comparisonWidth: {
+            type: Number,
+            notify: true,
+            value: 50
+          },
+          cutoff: {
+            type: Number,
+            value: 7
+          },
+          exoRadius: {
+            type: Number,
+            notify: true,
+            value: 0
+          },
+          color: {
+            type: String,
+            notify: true,
+            value: 'grey'
+          }
+        },
+        ready: function() {
+          var self = this;
+          this.changeSizes();
+          window.addEventListener('resize', function() { self.windowResize(); });
+        },
+        windowResize: function() {
+          this.changeSizes();
+        },
+        attached: function() {
+          this.changeSizes();
+        },
+        hasRadius: function(earthRadii) {
+          if (earthRadii > 0) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        isSmall: function(earthRadii) {
+          if (earthRadii < this.cutoff) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        changeSizes: function() {
+          var self = this;
+          function computeComparisonDimensions() {            
+            var comparisonWidth = self.elementWidth / 3;
+            return comparisonWidth;
+          };
+          
+          var comparisonWidth = computeComparisonDimensions();
+
+          var planet = this.querySelector('circle#planet');
+          var earthImg = this.querySelector('earth-img');
+
+          var radiusScaler = this.earthRadii;
+          if (!radiusScaler) {
+            planet.style.display = 'none';
+            return;
+          } else {
+            planet.style.display = 'block';
+          }
+
+          if (this.earthRadii >= this.cutoff) {
+            // The planet is huge! Show Jupiter to scale too.
+            // 11.2 is the ratio rad_jupiter / rad_earth
+            radiusScaler = radiusScaler / 11.2;
+            // Earth starts at 60px
+            this.earthWidth = comparisonWidth / 11.2;
+            this.jupiterWidth = comparisonWidth;
+          } else {
+            // Not too big. Use the Earth as comparison.
+            this.earthWidth = comparisonWidth;
+            // because Safari is weird, I think?
+            this.earthWidth = this.earthWidth * 1.5;
+          }
+
+          // get the radius for the planet svg
+          this.exoRadius = (comparisonWidth * radiusScaler) / 2;
+
+          // move the planet depending on its size
+          var diff = null;
+          if (this.exoRadius > comparisonWidth) {
+            diff = (comparisonWidth / 2) - (this.exoRadius - comparisonWidth);
+          } else {
+            diff = (comparisonWidth / 2);
+          }
+
+          planet.style.transform = 'translate(' + diff + 'px,' + (this.elementHeight / 2) + 'px)';
+          planet.style.webkitTransform = 'translate(' + diff + 'px,' + (this.elementHeight / 2) + 'px)';          
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

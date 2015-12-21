@@ -1,0 +1,144 @@
+<!--
+@license
+Copyright (c) 2015 Udacity. All rights reserved.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/search-utilities.html">
+<link rel="import" href="../behaviors/math-and-physics.html">
+
+<dom-module id="search-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h1>Search!</h1>
+    <h2 class="query page-title">{{queryDisplay}}</h2>
+    <paper-material>
+      <h3>This is how you search!</h3>
+      <p id="number-of-planets"></p>
+    </paper-material>
+    <paper-input type="text" placeholder="Search me!"></paper-input>
+    <div class="search-results">SPINNER GOES HERE!</div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'search-page',
+        behaviors: [MathAndPhysics],
+        attached: function() {
+          var self = this;
+          this.resultsContainer = this.querySelector('.search-results');
+          Model.requests.addListener('returnedQuery', function(planets) {
+            if (planets.error) {
+              self.resultsContainer.innerText = 'Something went wrong :(';
+            } else if (planets.nosearch) {
+              // do nothing because they didn't actually search
+            } else {
+              self.querySelector('#number-of-planets').innerText = planets.length + ' planets found!'
+              self.renderThumbnails(planets);
+            }
+          });
+          // https://developers.google.com/web/updates/2015/08/using-requestidlecallback?hl=en
+          window.requestIdleCallback =
+            window.requestIdleCallback ||
+            function (cb) {
+              var start = Date.now();
+              return setTimeout(function () {
+                cb({
+                  didTimeout: false,
+                  timeRemaining: function () {
+                    return Math.max(0, 50 - (Date.now() - start));
+                  }
+                });
+              }, 1);
+            }
+
+          window.cancelIdleCallback =
+            window.cancelIdleCallback ||
+            function (id) {
+              clearTimeout(id);
+            }
+        },
+        performSearch: function() {
+          Model.requests.sendQuery('query', this.queryString);
+        },
+        renderThumbnails: function(planets) {
+          var self = this;
+
+          planets.forEach(function (planet, index) {
+            if (index < 30) {
+              self.createPlanetThumb(planet);
+            } else if (index === 30) {
+              self.createPlanetThumb(planet);
+              if (self._holdingPen.pen.length === 0) {
+                self.checkNeedMoreThumbs();
+              }
+            } else if (index >= 30) {
+              self._holdingPen.pen.push(planet);
+            }
+          });
+        },
+        checkNeedMoreThumbs: function() {
+          var self = this;
+          var scroller = document.querySelector('paper-scroll-header-panel').scroller;
+          var interval = window.setInterval(function() {
+            var scrollDepth = scroller.scrollTop;
+            if (scrollDepth > (4000 * self._holdingPen.batch)) {
+              var newThumbs = self._holdingPen.pen.splice(0,20);
+              self.renderThumbnails(newThumbs);
+              self._holdingPen.batch += 1;
+            }
+            if (self._holdingPen.pen.length === 0) {
+              window.clearInterval(interval);
+            }
+          }, 1000)
+        },
+        properties: {
+          _holdingPen: {
+            type: Object,
+            value: {
+              pen: [],
+              batch: 1
+            }
+          },
+          value: {
+            type: String,
+            notify: true,
+          },
+          range: {
+            type: String,
+            notify: true,
+          },
+          queryDisplay: {
+            type: String,
+            notify: true,
+            value: 'Nothing yet! Try searching'
+          },
+          resultsContainer: {
+            type: Object,
+            notify: true
+          },
+          queryString: {
+            type: String,
+            notify: true,
+            observer: 'performSearch'
+          }
+        },
+        createPlanetThumb: function(planet, mark) {
+          var pT = document.createElement('planet-thumb');
+          for (var d in planet.data) {
+            pT[d] = planet.data[d];
+          }
+          this.resultsContainer.appendChild(pT);
+        }
+      });
+    })();
+  </script>
+
+</dom-module>

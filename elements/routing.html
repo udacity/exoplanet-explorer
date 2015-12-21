@@ -8,7 +8,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="model/model.html">
 <script src="../bower_components/page/page.js"></script>
 
 <script>
@@ -21,19 +20,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // More info: https://visionmedia.github.io/page.js/
 
     // Middleware
-    
-    // Proj: will need to uncomment this to maintain planet info
-    var planetInfos = [];
-
-    function loadRoot(ctx, next) {
-      Model.loadSequence()
-      .then(function(data) {
-        planetInfos = data;
-        next();
-      });
-
-      app.scrollPageToTop();
-    }
 
     function scrollToTop(ctx, next) {
       app.scrollPageToTop();
@@ -41,40 +27,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     // Routes
-    page('/', loadRoot, function() {
+    page('/', scrollToTop, function() {
       app.route = 'home';
     });
 
-    page('/search/:query', scrollToTop, function() {
-      app.route = 'users';
-      // when searching, will need to add to planetInfos
-      // TODO: two search states: 1) load every planet at start, and 2) load specific planets on search
+    page('/search', scrollToTop, function() {
+      app.route = 'search';
+    });
+
+    page('/search/:query', scrollToTop, function(ctx) {
+      app.route = 'search';
+      app.params = ctx.params;
+    });
+
+    page('/about', scrollToTop, function() {
+      app.route = 'about';
     });
 
     page('/planet/:name', scrollToTop, function(ctx) {
       app.route = 'planet';
-      // Proj: will need to add logic here to load planet-info
-      var planetInfo = document.querySelector('planet-info');
-      new Promise(function(resolve, reject) {
-        var planet = null;
-        planet = planetInfos.find(function(p) {
-          if (p.name === ctx.params.name) {
-            return true;
-          }
-        });
-        if (planet) {
-          resolve(planet.data);
-        } else {
-          reject();
-        }
-      }).catch(function() {
-        return Model.getJSON('/data/planets/' + ctx.params.name.replace(/ /g, '') + '.json');
-      })
-      .then(function(data) {
-        for (var d in data) {
-          planetInfo[d] = data[d];
-        }
-      });
+      app.params = ctx.params;
+    });
+
+    // 404
+    page('*', function() {
+      page.redirect('/search');
     });
 
     // add #! before urls

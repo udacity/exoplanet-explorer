@@ -26,20 +26,15 @@
     },
     pcToLy: function(dist) {
       // gotta respect sigfigs
+      if (!dist) { return '0' };
       var digits = dist.toString().length;
-      if (!digits) {
-        return 'unknown';
-      }
       var ly = (dist / 3.26).toString();
-      ly = ly.slice(0,digits);
+      ly = ly.slice(0, digits);
       return ly.toString();
     },
     lyToTravelTime: function(ly) {
-      if (!ly) {
-        return null;
-      }
+      if (!ly) { return null; }
       var digits = ly.toString().length;
-      // http://www.aerospaceweb.org/question/performance/q0023.shtml
       var years = (ly / 0.000234).toString();
       years = years.slice(0,digits);
       // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript

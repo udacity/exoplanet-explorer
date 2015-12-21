@@ -1,99 +1,56 @@
 <script>
-	;var Model = (function(document) {
+	var Model = (function(document) {
   'use strict';
 
-  var home = null;
-  var planetInfos = [];
+  var exports = {};
 
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
   /*
-  Helper function to show the search query.
-   */
-  function addSearchHeader(string) {
-    home.innerHTML = '<h2 class="page-title">query: ' + string + '</h2>';
+    QueryableWorker instances methods:
+     * sendQuery(queryable function name, argument to pass 1, argument to pass 2, etc. etc): calls a Worker's queryable function
+     * postMessage(string or JSON Data): see Worker.prototype.postMessage()
+     * terminate(): terminates the Worker
+     * addListener(name, function): adds a listener
+     * removeListener(name): removes a listener
+    QueryableWorker instances properties:
+     * defaultListener: the default listener executed only when the Worker calls the postMessage() function directly
+  */
+  function QueryableWorker (sURL, fDefListener, fOnError) {
+    var oInstance = this, oWorker = new Worker(sURL), oListeners = {};
+    this.defaultListener = fDefListener || function () {};
+    oWorker.onmessage = function (oEvent) {
+      if (oEvent.data instanceof Object && oEvent.data.hasOwnProperty("vo42t30") && oEvent.data.hasOwnProperty("rnb93qh")) {
+        oListeners[oEvent.data.vo42t30].apply(oInstance, oEvent.data.rnb93qh);
+      } else {
+        this.defaultListener.call(oInstance, oEvent.data);
+      }
+    };
+    if (fOnError) { oWorker.onerror = fOnError; }
+    this.sendQuery = function (/* queryable function name, argument to pass 1, argument to pass 2, etc. etc */) {
+      if (arguments.length < 1) { throw new TypeError("QueryableWorker.sendQuery - not enough arguments"); return; }
+      oWorker.postMessage({ "bk4e1h0": arguments[0], "ktp3fm1": Array.prototype.slice.call(arguments, 1) });
+    };
+    this.postMessage = function (vMsg) {
+      oWorker.postMessage(vMsg);
+    };
+    this.terminate = function () {
+      oWorker.terminate();
+    };
+    this.addListener = function (sName, fListener) {
+      oListeners[sName] = fListener;
+    };
+    this.removeListener = function (sName) {
+      delete oListeners[sName];
+    };
   };
 
-  /*
-  Helper function to create thumbnails
-   */
-  function createPlanetThumb(data) {
-    planetInfos.push({name: data.pl_name, data: data});
-    var pT = document.createElement('planet-thumb');
-    for (var d in data) {
-      pT[d] = data[d];
-    }
-    home.appendChild(pT);
-  }
-
-  function get(url) {
-    // Return a new promise.
-    return new Promise(function(resolve, reject) {
-      // Do the usual XHR stuff
-      var req = new XMLHttpRequest();
-      req.open('GET', url);
-
-      req.onload = function() {
-        // This is called even on 404 etc
-        // so check the status
-        if (req.status === 200) {
-          // Resolve the promise with the response text
-          resolve(req.response);
-        }
-        else {
-          // Otherwise reject with the status text
-          // which will hopefully be a meaningful error
-          reject(Error(req.statusText));
-        }
-      };
-
-      // Handle network errors
-      req.onerror = function() {
-        reject(Error('Network Error'));
-      };
-
-      // Make the request
-      req.send();
-    });
-  }
-
-  function getJSON(url) {
-    return get(url).then(JSON.parse);
-  };
-
-  function loadSequence() {
-    // Proj: Part 1 code goes here!
-    home = document.querySelector('section[data-route="home"]');
-    return getJSON('/data/earth-like-results.json')
-      .then(function(d) {
-        addSearchHeader(d.query);
-        return d.results;
-      })
-      .then(function(urls) {
-        urls.reduce(function (sequence, planetURL) {
-          return sequence.then(function () {
-            return getJSON(planetURL);
-          })
-          .then(function(planetData) {
-            createPlanetThumb(planetData)
-          });
-        }, Promise.resolve())
-      })
-      .then(function() {
-        // Proj: this will need to be added before migrating loading logic to routing.html
-        return planetInfos;
-      })
-  };
+  exports.requests = new QueryableWorker('scripts/worker.js');
 
   window.addEventListener('WebComponentsReady', function() {
-    // Proj: Uncomment for start of project
-    // loadSequence();
+    // nothing for now
   });
 
-  // Proj: add when moving routing logic to routing.html
-  return {
-    getJSON: getJSON,
-    loadSequence: loadSequence,
-    planetInfos: planetInfos
-  }
+  return exports;
 })(document);
 
 </script>

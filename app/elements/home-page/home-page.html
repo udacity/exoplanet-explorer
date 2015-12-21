@@ -81,22 +81,19 @@ Copyright (c) 2015 Udacity. All rights reserved.
     <paper-material>
 
       <div>How far away? <span id="distance" class="grey">{{distanceDisplay}}</span></div><br>
-      <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distanceValue}}"></paper-slider>
+      <paper-slider id="distance" snaps max="3" max-markers="3" step="1" value="{{distance}}"></paper-slider>
 
       <div>How large? <span id="radius" class="grey">{{radiusDisplay}}</span></div><br>
-      <paper-slider id="radius" snaps max="3" max-markers="3" step="1" value="{{radiusValue}}"></paper-slider>
+      <paper-slider id="radius" snaps max="3" max-markers="3" step="1" value="{{radius}}"></paper-slider>
 
       <div>How massive? <span id="mass" class="grey">{{massDisplay}}</span></div><br>
-      <paper-slider id="mass" snaps max="3" max-markers="3" step="1" value="{{massValue}}"></paper-slider>
+      <paper-slider id="mass" snaps max="3" max-markers="3" step="1" value="{{mass}}"></paper-slider>
 
       <div>How hot? <span id="temp" class="grey">{{tempDisplay}}</span></div><br>
-      <paper-slider id="temp" snaps max="4" max-markers="4" step="1" value="{{tempValue}}"></paper-slider>
-
-      <div>How likely habitable? <span id="habitable" class="grey">{{habitableDisplay}}</span></div><br>
-      <paper-slider id="habitable" snaps max="3" max-markers="3" step="1" value="{{habitableValue}}"></paper-slider>
+      <paper-slider id="temp" snaps max="4" max-markers="4" step="1" value="{{temperature}}"></paper-slider>
 
       <div class="layout horizontal around-justified margin-top">
-        <a class="nolink" href$="/search/{{queryString}}"><paper-button raised noink class="indigo">Search</paper-button></a>
+        <a class="nolink" href$="/search/sliders-{{queryString}}"><paper-button raised noink class="indigo">Search</paper-button></a>
         <paper-button class="grey">Reset</paper-button>
       </div>
 
@@ -174,6 +171,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
     (function () {
       'use strict';
 
+      // TODO:
+      // - setCustomValidity on custom search box
+
       Polymer({
         is: 'home-page',
         paramChanged: function() {
@@ -182,10 +182,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
         },
         composeQueryString: function() {
           var values = {
-            distanceValue: this.distanceValue,
-            radiusValue: this.radiusValue,
-            massValue: this.massValue,
-            tempValue: this.tempValue,
+            distance: this.distance,
+            radius: this.radius,
+            mass: this.mass,
+            temperature: this.temperature,
             habitableValue: this.habitableValue
           };
           this.queryString = JSON.stringify(values)
@@ -193,10 +193,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
         setCookie: function() {
           var cookie = this.querySelector('#query-cookie');
           var value = {
-            distanceValue: this.distanceValue,
-            radiusValue: this.radiusValue,
-            massValue: this.massValue,
-            tempValue: this.tempValue,
+            distance: this.distance,
+            radius: this.radius,
+            mass: this.mass,
+            temperature: this.temperature,
             habitableValue: this.habitableValue
           }
           window.setTimeout(function() {
@@ -210,7 +210,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           var self = this;
           function updateParams() {
             var params = JSON.parse(cookieValue);
-            ['distanceValue', 'radiusValue', 'massValue', 'tempValue', 'habitableValue'].forEach(function(param) {
+            ['distance', 'radius', 'mass', 'temperature'].forEach(function(param) {
                 self[param] = params[param];
             });
           };
@@ -229,7 +229,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             notify: true,
             value: ''
           },
-          distanceValue: {
+          distance: {
             type: Number,
             notify: true,
             value: 0,
@@ -238,10 +238,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
           distanceDisplay: {
             type: String,
             notify: true,
-            computed: 'distance(distanceValue)',
+            computed: 'distanceRender(distance)',
             value: 'Any distance'
           },
-          radiusValue: {
+          radius: {
             type: Number,
             notify: true,
             value: 0,
@@ -250,10 +250,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
           radiusDisplay: {
             type: String,
             notify: true,
-            computed: 'radius(radiusValue)',
+            computed: 'radiusRender(radius)',
             value: 'Any radius'
           },
-          massValue: {
+          mass: {
             type: Number,
             notify: true,
             value: 0,
@@ -262,10 +262,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
           massDisplay: {
             type: String,
             notify: true,
-            computed: 'mass(massValue)',
+            computed: 'massRender(mass)',
             value: 'Any mass'
           },
-          tempValue: {
+          temperature: {
             type: Number,
             notify: true,
             value: 0,
@@ -274,77 +274,54 @@ Copyright (c) 2015 Udacity. All rights reserved.
           tempDisplay: {
             type: String,
             notify: true,
-            computed: 'temp(tempValue)',
+            computed: 'tempRender(temperature)',
             value: 'Any temperature'
-          },
-          habitableValue: {
-            type: Number,
-            notify: true,
-            value: 0,
-            observer: 'paramChanged'
-          },
-          habitableDisplay: {
-            type: String,
-            notify: true,
-            computed: 'habitable(habitableValue)',
-            value: 'Any habitable'
           }
         },
-        distance: function(distanceValue) {
-          if (distanceValue === 0) {
+        distanceRender: function(distance) {
+          if (distance === 0) {
             return 'Any distance';
-          } else if (distanceValue === 1) {
+          } else if (distance === 1) {
             return 'Nearby (less than 20 ly)';
-          } else if (distanceValue === 2) {
-            return 'Medium (20 - 100 ly)';
-          } else if (distanceValue === 3) {
-            return 'Far (more than 100 ly)';
+          } else if (distance === 2) {
+            return 'Medium (20 - 1000 ly)';
+          } else if (distance === 3) {
+            return 'Far (more than 1000 ly)';
           }
         },
-        radius: function(radiusValue) {
-          if (radiusValue === 0) {
+        radiusRender: function(radius) {
+          if (radius === 0) {
             return 'Any radius';
-          } else if (radiusValue === 1) {
+          } else if (radius === 1) {
             return 'Earth-like (less than 2 Earth radii)';
-          } else if (radiusValue === 2) {
+          } else if (radius === 2) {
             return 'Superearth (2 - 7 Earth radii)';
-          } else if (radiusValue === 3) {
+          } else if (radius === 3) {
             return 'Jupiter-like (more than 7 Earth radii)';
           }
         },
-        mass: function(massValue) {
-          if (massValue === 0) {
+        massRender: function(mass) {
+          if (mass === 0) {
             return 'Any mass';
-          } else if (massValue === 1) {
+          } else if (mass === 1) {
             return 'Earth-like (less than 2 Earth masses)';
-          } else if (massValue === 2) {
-            return 'Superearth (2 - 7 Earth masses)';
-          } else if (massValue === 3) {
-            return 'Jupiter-like (more than 7 Earth masses)';
+          } else if (mass === 2) {
+            return 'Superearth (2 - 100 Earth masses)';
+          } else if (mass === 3) {
+            return 'Jupiter-like (more than 100 Earth masses)';
           }
         },
-        temp: function(tempValue) {
-          if (tempValue === 0) {
+        tempRender: function(temperature) {
+          if (temperature === 0) {
             return 'Any temperature';
-          } else if (tempValue === 1) {
+          } else if (temperature === 1) {
             return 'Way below freezing';
-          } else if (tempValue === 2) {
+          } else if (temperature === 2) {
             return 'Earth range';
-          } else if (tempValue === 3) {
+          } else if (temperature === 3) {
             return 'Hotter than Earth';
-          } else if (tempValue === 4) {
+          } else if (temperature === 4) {
             return 'Hotter than Mercury';
-          }
-        },
-        habitable: function(habitableValue) {
-          if (habitableValue === 0) {
-            return 'Any possibility';
-          } else if (habitableValue === 1) {
-            return 'Definitely not';
-          } else if (habitableValue === 2) {
-            return 'Maybe?';
-          } else if (habitableValue === 3) {
-            return 'Good chance';
           }
         }
       });

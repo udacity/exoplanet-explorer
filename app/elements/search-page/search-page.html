@@ -20,36 +20,39 @@ Copyright (c) 2015 Udacity. All rights reserved.
       <h3>This is how you search!</h3>
     </paper-material>
     <paper-input type="text" placeholder="Search me!"></paper-input>
-    <div class="search-results"></div>
+    <div class="search-results">SPINNER GOES HERE!</div>
   </template>
 
   <script>
     (function () {
       'use strict';
-      // TODO: show difference between exact matches and close matches?
+
       Polymer({
         is: 'search-page',
-        behaviors: [SearchUtilities, MathAndPhysics],
+        behaviors: [MathAndPhysics],
         created: function() {
+          // I feel like there's a better way to do this...
           this.properties.resultsContainer.value = this.querySelector('.search-results');
         },
         attached: function() {
           var self = this;
-          Model.requests.addListener('returnedQuery', function(data) {
-            console.log(data);
+          // return object resembling:
+          // { results: [sorted planets] }
+          Model.requests.addListener('returnedQuery', function(planets) {
+            // TODO: logic to check if planets were returned
+            // look for nosearch, error, results
+            console.log(planets);
             self.renderThumbnails(planets);
           });
         },
-        loadData: function() {
+        performSearch: function() {
           Model.requests.sendQuery('query', this.queryString);
         },
         renderThumbnails: function(planets) {
+          // TODO: only load 100 thumbs at a time. mark number 80 with an event. when it's on screen, then load the next 100. and so on.
           for (var p in planets) {
             this.createPlanetThumb(planets[p]);
           }
-        },
-        parseQuery: function() {
-          this.query = JSON.parse(this.queryString);
         },
         properties: {
           value: {
@@ -72,11 +75,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           queryString: {
             type: String,
             notify: true,
-            observer: 'parseQuery'
-          },
-          query: {
-            type: Object,
-            notify: true
+            observer: 'performSearch'
           }
         },
         createPlanetThumb: function(data) {
@@ -85,9 +84,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
             pT[d] = data[d];
           }
           this.resultsContainer.appendChild(pT);
-        },
-        dataToThumbs: function(data) {
-          // only load 100 thumbs at a time. mark number 80 with an event. when it's on screen, then load the next 100. and so on.
         }
       });
     })();

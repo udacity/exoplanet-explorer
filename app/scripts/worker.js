@@ -7,25 +7,31 @@
 /**
  * Performs a binary search on the host array. This method can either be
  * injected into Array.prototype or called with a specified scope like this:
- * binaryIndexOf.call(someArray, searchElement);
+ * binaryIndexOfClosestNumber.call(someArray, searchElement);
  *
  * @param {*} searchElement The item to search for within the array.
  * @return {Number} The index of the element which defaults to -1 when not found.
  */
-function binaryIndexOf(searchElement) {
+function binaryIndexOfClosestNumber(searchElement, searchProperty) {
   var minIndex = 0;
   var maxIndex = this.length - 1;
   var currentIndex;
   var currentElement;
 
+  var diff;
+  var lastDiff;
+
   while (minIndex <= maxIndex) {
     currentIndex = (minIndex + maxIndex) / 2 | 0;
-    currentElement = this[currentIndex];
+    currentElement = this[currentIndex][searchProperty];
+    diff = currentElement - searchElement;
 
-    if (currentElement < searchElement) {
+    if (diff < -1) {
       minIndex = currentIndex + 1;
-    } else if (currentElement > searchElement) {
+    } else if (diff > 1) {
       maxIndex = currentIndex - 1;
+    } else if (diff < lastDiff) { // this logic is wrong. need different criteria for stopping
+      lastDiff = diff;
     } else {
       return currentIndex;
     }
@@ -34,31 +40,195 @@ function binaryIndexOf(searchElement) {
   return -1;
 }
 
+// http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
+function clone(obj) {
+  var copy;
+
+  // Handle the 3 simple types, and null or undefined
+  if (null == obj || "object" != typeof obj) return obj;
+
+  // Handle Array
+  if (obj instanceof Array) {
+    copy = [];
+    for (var i = 0, len = obj.length; i < len; i++) {
+      copy[i] = clone(obj[i]);
+    }
+    return copy;
+  }
+
+  // Handle Object
+  if (obj instanceof Object) {
+    copy = {};
+    for (var attr in obj) {
+      if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+    }
+    return copy;
+  }
+
+  throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+
+// match what the homepage says
+var queryPairings = {
+  radius: {
+    '0': {
+      specific: -1
+    },
+    '1': {
+      lower: 0,
+      upper: 20
+    },
+    '2': {
+      lower: 20,
+      upper: 100
+    },
+    '3': {
+      lower: 100,
+      upper: -1
+    }
+  },
+  mass: {
+    '0': {
+      specific: -1
+    },
+    '1': {
+      lower: 0,
+      upper: 2
+    },
+    '2': {
+      lower: 2,
+      upper: 100
+    },
+    '3': {
+      lower: 100,
+      upper: -1
+    }
+  },
+  distance: {
+    '0': {
+      specific: -1
+    },
+    '1': {
+      lower: 0,
+      upper: 20
+    },
+    '2': {
+      lower: 20,
+      upper: 1000
+    },
+    '3': {
+      lower: 1000,
+      upper: -1
+    }
+  },
+  temperature: {
+    '0': {
+      specific: -1
+    },
+    '1': {
+      lower: 0,
+      upper: 200
+    },
+    '2': {
+      lower: 200,
+      upper: 330
+    },
+    '3': {
+      lower: 330,
+      upper: 700
+    },
+    '4': {
+      lower: 700,
+      upper: -1
+    }
+  }
+}
+
+// queryString > queryParts > parts > pieces
+function handleSlidersQuery(queryString) {
+  var params = [];
+  queryString = JSON.parse(queryString.replace('sliders-', ''));
+
+  // matches the slider query with the pairings above
+  for (var q in queryString) {
+    var param = {
+      field: q
+    };
+    var values = queryPairings[q][queryString[q]];
+    for (var r in values) {
+      param[r] = values[r];
+    }
+    params.push(param);
+  }
+
+  return params;
+};
+
+// queryString eg: distance 10 20, mass 1 3
+// distance between 10 and 20 ly and mass between 1 and 3 masse
+function handleCustomQuery(queryString) {
+  var params = [];
+  // split on commas
+  // split result on spaces
+  // if known field and 1 value, specific
+  // if known field and 2 values, lower and upper
+
+  var queryParts = queryString.split(',');
+  queryParts.forEach(function (part) {
+    var pieces = part.replace(/\W+/g, ' ').split(' ');
+
+    if (pieces.length === 2) {
+      params.push({
+        field: pieces[0],
+        specific: pieces[1]
+      });
+    } else if (pieces.length === 3) {
+      params.push({
+        field: pieces[0],
+        lower: pieces[1],
+        upper: pieces[2]
+      })
+    }
+  });
+  return params;
+};
+
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
   query: function(queryString) {
-    // TODO: parse the string
-    // TODO: query the db differently depending on string
+    performance.mark('mark_start_searching');
 
-    // if no index or index doesn't match possiblites, run general search
+    if (!queryString || typeof queryString !== 'string') {
+      reply('returnedQuery', {nosearch: true});
+      return;
+    }
 
-    var params = [
-      {
-        name: 'eg: mass, radius',
-        specific: 'value',
-        upper: 10000000,
-        lower: 0
+    // query payload
+    var params = {};
+    var type = 'byField';
+
+    try {
+      if (queryString.indexOf('sliders-') === 0) {
+        // made with sliders
+        params = handleSlidersQuery(queryString);
+      } else {
+        // it's custom
+        params = handleCustomQuery(queryString);
       }
-    ]
+    } catch (e) {
+      // if something is wrong with the payload, just search all fields
+      type = 'general';
+      params = {
+        specific: queryString
+      }
+    }
 
-    // if general search, just pass a single param with a single value
-
-    var type = 'type of query';
     db.makeRequest(type, params).then(function(planets) {
-      // return object resembling:
-      // {
-      //  results: [sorted planets]
-      // }
+      performance.mark('mark_end_searching');
+      performance.measure('measure_planet_searching', 'mark_start_searching', 'mark_end_searching');
+      var time = performance.getEntriesByName('measure_planet_searching');
+      console.log('Retrieved search results in: ' + Math.round(time[0].duration) + 'ms');
+
       reply('returnedQuery', planets);
     })
     .catch(function() {
@@ -66,6 +236,10 @@ var queryableFunctions = {
     })
   },
   getPlanetByName: function(name) {
+    if (!name || typeof name !== 'string') {
+      reply('gotPlanetByName', {noname: true});
+      return;
+    }
     db.makeRequest('name', {name: name}).then(function(planet) {
       reply('gotPlanetByName', planet);
     }).catch(function() {
@@ -100,7 +274,7 @@ function Database() {
   // master database
   var database = [];
 
-  // indexes position of planet in master database
+  // planet indexes in master database
   var nameIndex = {};
 
   // data from commonly searched fields sorted by value
@@ -159,15 +333,16 @@ function Database() {
       return {missing: true};
     })
   };
-  this._loadPlanetIntoDatabase = function(planetData) {
+  this._indexPlanet = function(planetData) {
     var planetName = planetData.pl_name;
-
+    // add to main database
     database.push({name: planetName, data: planetData});
     nameIndex[planetName] = database.length - 1;
 
+    // add to indexes
     var distance = planetData.st_dist;
     if (distance) {
-      distanceIndex.push({planetName: distance});
+      distanceIndex.push({planetName: planetName, distance: distance});
     }
 
     var radius = null;
@@ -177,7 +352,7 @@ function Database() {
       radius = planetData.pl_radj * 11.2;
     }
     if (radius) {
-      radiusIndex.push({planetName: radius});
+      radiusIndex.push({planetName: planetName, radius: radius});
     }
 
     var mass = null;
@@ -187,33 +362,32 @@ function Database() {
       mass = planetData.pl_massj * 317.8;
     }
     if (mass) {
-      massIndex.push({planetName: mass});
+      massIndex.push({planetName: planetName, mass: mass});
     }
 
     if (radius && mass) {
-      var density = mass / ( (4/3) * (Math.PI) * (radius * radius * radius) );
-
-      densityIndex.push({planetName: density});
+      var density = mass / ((4 / 3) * (Math.PI) * (radius * radius * radius));
+      densityIndex.push({planetName: planetName, density: density});
     }
 
     if (planetData.pl_eqt) {
       var temperature = planetData.pl_eqt;
-      temperatureIndex.push({planetName: temperature});
+      temperatureIndex.push({planetName: planetName, temperature: temperature});
     }
 
     if (planetData.pl_facility) {
       var facility = planetData.pl_facility;
-      facilityIndex.push({planetName: facility});
+      facilityIndex.push({planetName: planetName, facility: facility});
     }
 
     if (planetData.pl_telescope) {
       var telescope = planetData.pl_telescope;
-      telescopeIndex.push({planetName: telescope});
+      telescopeIndex.push({planetName: planetName, telescope: telescope});
     }
 
     if (planetData.pl_discmethod) {
       var method = planetData.pl_discmethod;
-      methodIndex.push({planetName: method});
+      methodIndex.push({planetName: planetName, method: method});
     }
   };
   this._init = function() {
@@ -230,20 +404,62 @@ function Database() {
     .then(self._prepDatabase);
   };
   this._prepDatabase = function(planets) {
-    performance.mark('mark_start_load');
-    planets.forEach(function(planet) {
-      self._loadPlanetIntoDatabase(planet);
-    });
-    self._sort();
-    searchReady = true;
-    fireSearchReady();
-    performance.mark('mark_end_load');
-    performance.measure('measure_planet_indexing', 'mark_start_load', 'mark_end_load');
-    var time = performance.getEntriesByName('measure_planet_indexing');
-    console.log('Indexed planets in: ' + time[0].duration + 'ms');
-  };
-  this._sort = function() {
+    performance.mark('mark_start_indexing');
 
+    planets.forEach(function(planet) {
+      self._indexPlanet(planet);
+    });
+    self._sortIndexes();
+
+    searchReady = true;
+    performance.mark('mark_end_indexing');
+
+    fireSearchReady();
+
+    performance.measure('measure_planet_indexing', 'mark_start_indexing', 'mark_end_indexing');
+    var time = performance.getEntriesByName('measure_planet_indexing');
+    console.log('Indexed planets in: ' + Math.round(time[0].duration) + 'ms');
+  };
+  this._sortIndexes = function() {
+    radiusIndex.sort(function(a, b) {
+      return a.radius - b.radius;
+    });
+    massIndex.sort(function(a, b) {
+      return a.mass - b.mass;
+    });
+    densityIndex.sort(function(a, b) {
+      return a.density - b.density;
+    });
+    temperatureIndex.sort(function(a, b) {
+      return a.temperature - b.temperature;
+    });
+    facilityIndex.sort(function(a, b) {
+      if (a.facility < b.facility) {
+        return -1;
+      } else if (a.facility > b.facility) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    telescopeIndex.sort(function(a, b) {
+      if (a.telescope < b.telescope) {
+        return -1;
+      } else if (a.telescope > b.telescope) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    methodIndex.sort(function(a, b) {
+      if (a.method < b.method) {
+        return -1;
+      } else if (a.method > b.method) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   };
 
   /**
@@ -274,36 +490,66 @@ function Database() {
           })
         };
         break;
-      case 'querySpecific':
+      case 'byField':
         req = function() {
+          // the idea is to start with all planets and then exclude planets
+          // that don't meet search criteria
           return self.ready().then(function() {
-            // TODO: possible optimizations: create subworkers?
+            var possibleResults = clone(database);
+            params.forEach(function(param) {
+              console.log(param);
+              if (param.lower !== undefined && param.upper !== undefined) {
+                var index = null;
+                switch (param.field) {
+                  case 'distance':
+                    index = distanceIndex;
+                    break;
+                  case 'radius':
+                    index = radiusIndex;
+                    break;
+                  case 'mass':
+                    index = massIndex;
+                    break;
+                  case 'temperature':
+                    index = temperatureIndex;
+                    break;
+                  default:
+                    // not sure how this could happen
+                    break;
+                }
 
-            // create a single return object
-            // TODO: results could have:
-            // good matches and almost matches
-            var results = {};
+                var lower, upper;
+                if (param.lower === -1) {
+                  lower = 0;
+                } else {
+                  lower = binaryIndexOfClosestNumber.call(index, param.lower, param.field);
+                }
+                if (param.upper === -1) {
+                  upper = index[index.length -1 ];
+                } else {
+                  upper = binaryIndexOfClosestNumber.call(index, param.upper, param.field);
+                }
 
-            // create an array of promises
-            // this should probably be a sequence that pairs down the main index
-            var sequence = Promise.resolve();
-            params.forEach(function(p) {
-              sequence = sequence.then(function(p) {
-                // p.name gives index
-                // p.specific, p.upper, p.lower give tests
-                // when promise resolves with planet(s), add planet name to the return object
-              })
-              // each planet has a score. increment the score by 1
-              // if the planet is there, just increment the score
-            })
-            .then(function() {
-              // when all finish, sort the planets by scores
-              // return the sorted array of planets
-              // if there are no results, return empty array
-            })
-            .catch(function() {
-              // something went wrong, throw error
-            })
+                console.log(param.field, 'request lower: ' + param.lower, 'index of lower: ' + lower);
+                console.log(param.field, 'request upper: ' + param.upper, 'index of upper: ' + upper);
+                console.log(index);
+              } else if (param.specific !== undefined) {
+                console.log('specific!');
+              }
+            });
+            return possibleResults;
+          })
+          .then(function() {
+            console.log('finished');
+            // when all finish, sort the planets by name
+            // return the sorted array of planets
+            // if there are no results, return empty array
+            
+            return results;
+          })
+          .catch(function(e) {
+            console.log(e);
+            // something went wrong, throw error
           })
         };
         break;

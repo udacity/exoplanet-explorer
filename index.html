@@ -265,7 +265,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="shared-styles" assetpath="styles/"><template><style>paper-material {border-radius: 2px;height: 100%;padding: 16px 0 16px 0;width: calc(98.66% - 16px);max-width: 600px;margin: 16px auto;background: white;}.page-title {@apply(--paper-font-display2);}@media (max-width: 600px) {.page-title {font-size: 24px!important;}}</style></template></dom-module><dom-module id="planet-info" assetpath="elements/planet-info/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;}paper-material {padding: 16px;}.vis {margin-left: auto;margin-right: auto;max-width: 75%;}.subtext {font-style: italic;font-size: 0.75em;}</style>
+    <style>:host {display: block;}paper-material {padding: 16px;}paper-input {display: block;max-width: 230px;margin-left: auto;margin-right: auto;}.vis {margin-left: auto;margin-right: auto;max-width: 75%;}.subtext {font-style: italic;font-size: 0.75em;}</style>
     <paper-material elevation="1">
       <div class="layout vertical">
       <h2>{{nameParam}}</h2>
@@ -274,21 +274,43 @@ Copyright (c) 2015 Udacity. All rights reserved.
         </scale-visualizer>
         <p class="subtext">{{scaleMessage(nameParam)}}</p>
       </div>
-      <div class="vacation">
-        <h3>Thinking about vacationing here?</h3>
-        <p hidden$="{{!distance}}">At {{distance}} lightyears away, you'll need {{lyToTravelTime(distance)}} years to reach {{nameParam}} if you were traveling <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p>
-        <p hidden$="{{!pl_pnum}}">{{nameParam}} is just one of {{rawData.pl_pnum}} planets orbiting {{rawData.pl_hostname}}.</p>
-        <p hidden$="{{!pl_pnum}}">{{nameParam}} is the only planet orbiting {{rawData.pl_hostname}}.</p>
-      </div>
-      <div class="basic">
-        <h3>Basic Info</h3>
-        <p>Spotted in {{rawData.pl_disc}} with {{rawData.pl_facility}}'s {{pl_telescope}} by using the <a href$="{{getDiscmethodUrl(pl_discmethod)}}">{{toLowercase(rawData.pl_discmethod)}} method</a>.</p>
-      </div>
-      <div class="detailed">
-        <h3>Detailed Info</h3>
+
+      <div class="info">
+        <div hidden$="{{!distance}}">
+          <h3>How far away?</h3>
+          <p>{{nameParam}} is {{distance}} lightyears away, which means that it would take you {{lyToTravelTime(distance)}} years to reach it going <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p><p></p>
+        </div>
+        <div hidden$="{{!hasMassOrRadius}}">
+          <h3>How big is it?</h3>
+          <p hidden$="{{!earthRadii}}"><strong>Radius: </strong> {{earthRadii}} Earth radii</p>
+          <p hidden$="{{!earthMass}}"><strong>Mass: </strong> {{earthMass}} Earth masses</p>
+        </div>
+        <div hidden$="{{!gravity}}">
+          <h3>How much would you weigh?</h3>
+          <paper-input type="number" label="Type in your weight (kg or lb)!" value="{{yourEarthWeight}}"></paper-input>
+          <p><strong>Gravity:</strong> {{gravity}} gee</p>
+          <p hidden$="{{!yourEarthWeight}}"><strong>Your weight: </strong> {{yourPlanetWeight}} (kg/lbs)</p>
+        </div>
+        <div hidden$="{{!temperature}}">
+          <h3>How hot is it?</h3>
+          <p>There's an average temperature of {{temperature}} degrees C on {{nameParam}}.</p>
+        </div>
+        <div hidden$="{{!hasWhereAndHowData}}">
+          <h3>How was it found?</h3>
+          <p hidden$="{{!pl_discmethod}}"><strong>Method:</strong> {{pl_discmethod}}</p>
+          <p hidden$="{{!pl_facility}}"><strong>Facility:</strong> {{pl_facility}}</p>
+          <p hidden$="{{!pl_telescope}}"><strong>Telescope:</strong> {{pl_telescope}}</p>
+        </div>
+        <div hidden$="{{!hasStellarInfo}}">
+          <h3>What star does it orbit?</h3>
+          <p hidden$="{{!pl_hostname}}"><strong>Name:</strong> {{pl_hostname}}</p>
+          <p hidden$="{{!pl_pnum}}"><strong>Number of planets:</strong> {{pl_pnum}}</p>
+          <p hidden$="{{!st_age}}"><strong>Age:</strong> {{st_age}} billion years</p>
+          <p hidden$="{{!st_mass}}"><strong>Mass:</strong> {{st_mass}} Solar masses</p>
+          <p hidden$="{{!st_teff}}"><strong>Surface Temperature:</strong> {{st_teff}} K</p>
+        </div>
         <p>
-          ra: {{rawData.ra}}, dec: {{rawData.dec}} (<a href$="http://server3.sky-map.org/map?custom=1&amp;language=EN&amp;type=PART&amp;w=640&amp;h=360&amp;angle=45&amp;ra={{ra}}&amp;de={{dec}}&amp;rotation=0.0&amp;mag=10&amp;max_stars=100000&amp;zoom=2.0&amp;borders=0&amp;border_color=400000&amp;show_grid=1&amp;grid_color=404040&amp;grid_color_zero=808080&amp;grid_lines_width=1.0&amp;grid_ra_step=1.0&amp;grid_de_step=15.0&amp;show_const_lines=1&amp;constellation_lines_color=006000&amp;constellation_lines_width=1.0&amp;show_const_names=1&amp;constellation_names_color=006000&amp;const_name_font_type=BOLD&amp;const_name_font_name=SansSerif&amp;const_name_font_size=16&amp;show_const_boundaries=&amp;constellation_boundaries_color=000060&amp;constellation_boundaries_width=1.0&amp;background_color=000000&amp;output=GIF">map</a>)
-          <span class="subtext"><a href="http://server3.sky-map.org/api?locale=EN">map API</a></span>
+          ra: {{ra}}, dec: {{dec}} (<a href$="http://server3.sky-map.org/map?custom=1&amp;language=EN&amp;type=PART&amp;w=640&amp;h=360&amp;angle=45&amp;ra={{ra}}&amp;de={{dec}}&amp;rotation=0.0&amp;mag=10&amp;max_stars=100000&amp;zoom=2.0&amp;borders=0&amp;border_color=400000&amp;show_grid=1&amp;grid_color=404040&amp;grid_color_zero=808080&amp;grid_lines_width=1.0&amp;grid_ra_step=1.0&amp;grid_de_step=15.0&amp;show_const_lines=1&amp;constellation_lines_color=006000&amp;constellation_lines_width=1.0&amp;show_const_names=1&amp;constellation_names_color=006000&amp;const_name_font_type=BOLD&amp;const_name_font_name=SansSerif&amp;const_name_font_size=16&amp;show_const_boundaries=&amp;constellation_boundaries_color=000060&amp;constellation_boundaries_width=1.0&amp;background_color=000000&amp;output=GIF">map</a>)
         </p>
       </div>
       <p class="subtext">Last updated: {{rowupdate}}</p>
@@ -476,7 +498,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="scale-visualizer" assetpath="elements/scale-visualizer/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;}svg {display: block;height: 100%;}circle {transform: translate(30px, 100px);webkit-transform: translate(30px, 100px);}.wrapper {background: #000000;min-width: 260px;}.planet-comparison {width: 100%;height: 100%;}.no-radius {color: white;font-size: 2em;padding-left: 35px;margin-top: auto;margin-bottom: auto;}.no-radius::after{content: "?";}earth-img,jupiter-img {margin-top: auto;margin-bottom: auto;}img {display: block;width: 150px;}</style>
+    <style>:host {display: block;max-width: 300px;}svg {display: block;height: 100%;}circle {transform: translate(30px, 100px);webkit-transform: translate(30px, 100px);}.wrapper {background: #000000;min-width: 260px;}.planet-comparison {width: 100%;height: 100%;}.no-radius {color: white;font-size: 2em;padding-left: 35px;margin-top: auto;margin-bottom: auto;}.no-radius::after{content: "?";}earth-img,jupiter-img {margin-top: auto;margin-bottom: auto;}img {display: block;width: 150px;}</style>
     <div class="wrapper">
       <div class="planet-comparison layout horizontal end-justified">
         <p class="no-radius" hidden$="{{hasRadius(earthRadii)}}"></p>

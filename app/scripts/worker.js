@@ -26,9 +26,9 @@ function binaryIndexOfClosestNumber(searchElement, searchProperty) {
     currentElement = this[currentIndex][searchProperty];
     diff = currentElement - searchElement;
 
-    if (diff < -1) {
+    if (diff < 0) {
       minIndex = currentIndex + 1;
-    } else if (diff > 1) {
+    } else if (diff > 0) {
       maxIndex = currentIndex - 1;
     } else if (diff < lastDiff) { // this logic is wrong. need different criteria for stopping
       lastDiff = diff;
@@ -522,17 +522,29 @@ function Database() {
                 if (param.lower === -1) {
                   lower = 0;
                 } else {
-                  lower = binaryIndexOfClosestNumber.call(index, param.lower, param.field);
+                  lower = (function() {
+                    var i = 0;
+                    index.forEach(function (p, ind) {
+                      if (p[param.field] < param.lower) {
+                        i = ind;
+                      }
+                    });
+                    return i;
+                  })();
                 }
                 if (param.upper === -1) {
-                  upper = index[index.length -1 ];
+                  upper = index[index.length - 1 ];
                 } else {
-                  upper = binaryIndexOfClosestNumber.call(index, param.upper, param.field);
+                  upper = (function() {
+                    var i = 0;
+                    for (var i = index.length - 1; i === 0; i--) {
+                      if (index[i][param.field] > param.upper) {
+                        i = ind;
+                      }
+                    }
+                    return i;
+                  })();
                 }
-
-                console.log(param.field, 'request lower: ' + param.lower, 'index of lower: ' + lower);
-                console.log(param.field, 'request upper: ' + param.upper, 'index of upper: ' + upper);
-                console.log(index);
               } else if (param.specific !== undefined) {
                 console.log('specific!');
               }
@@ -545,7 +557,7 @@ function Database() {
             // return the sorted array of planets
             // if there are no results, return empty array
             
-            return results;
+            return possibleResults;
           })
           .catch(function(e) {
             console.log(e);

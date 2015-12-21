@@ -1,6 +1,38 @@
+'use strict';
 // if a search request arrives before the data is ready,
 // send back a pending state, then send the data when it's
 // ready to the same requester.
+
+// http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/
+/**
+ * Performs a binary search on the host array. This method can either be
+ * injected into Array.prototype or called with a specified scope like this:
+ * binaryIndexOf.call(someArray, searchElement);
+ *
+ * @param {*} searchElement The item to search for within the array.
+ * @return {Number} The index of the element which defaults to -1 when not found.
+ */
+function binaryIndexOf(searchElement) {
+  var minIndex = 0;
+  var maxIndex = this.length - 1;
+  var currentIndex;
+  var currentElement;
+
+  while (minIndex <= maxIndex) {
+    currentIndex = (minIndex + maxIndex) / 2 | 0;
+    currentElement = this[currentIndex];
+
+    if (currentElement < searchElement) {
+      minIndex = currentIndex + 1;
+    } else if (currentElement > searchElement) {
+      maxIndex = currentIndex - 1;
+    } else {
+      return currentIndex;
+    }
+  }
+
+  return -1;
+}
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
@@ -11,16 +43,17 @@ var queryableFunctions = {
     // if no index or index doesn't match possiblites, run general search
 
     var params = [
-        {
-          name: 'eg: mass, radius',
-          specific: 'value',
-          upper: 10000000,
-          lower: 0
-        }
-      ]
+      {
+        name: 'eg: mass, radius',
+        specific: 'value',
+        upper: 10000000,
+        lower: 0
+      }
+    ]
+
+    // if general search, just pass a single param with a single value
 
     var type = 'type of query';
-    var params = 'params of query';
     db.makeRequest(type, params).then(function(planets) {
       // return object resembling:
       // {
@@ -63,13 +96,31 @@ onmessage = function (oEvent) {
 
 function Database() {
   var self = this;
+
+  // master database
   var database = [];
+
+  // indexes position of planet in master database
   var nameIndex = {};
+
+  // data from commonly searched fields sorted by value
+  var distanceIndex = [];
+  var massIndex = [];
+  var radiusIndex = [];
+  var densityIndex = [];
+  var temperatureIndex = [];
+  var facilityIndex = [];
+  var telescopeIndex = [];
+  var methodIndex = [];
+
+  // state variables
   var dataReceived = false;
   var searchReady = false;
   var requestError = false;
   var fireSearchReady = function() {};
   var fireParsingFailed = function() {};
+
+  // methods
   this.ready = function() {
     return new Promise(function(resolve, reject) {
       if (searchReady) {
@@ -109,26 +160,61 @@ function Database() {
     })
   };
   this._loadPlanetIntoDatabase = function(planetData) {
-    database.push({name: planetData.pl_name, data: planetData});
-    // names
-    nameIndex[planetData.pl_name] = database.length - 1;
-    // SORT THESE
-    // 
-    // distance - in pc
-    // 
-    // radius - in rade
-    // 
-    // mass - in masse
-    // 
-    // density - from rade and masse
-    // 
-    // temperature
-    // 
-    // facility
-    // 
-    // telescope
-    // 
-    // method
+    var planetName = planetData.pl_name;
+
+    database.push({name: planetName, data: planetData});
+    nameIndex[planetName] = database.length - 1;
+
+    var distance = planetData.st_dist;
+    if (distance) {
+      distanceIndex.push({planetName: distance});
+    }
+
+    var radius = null;
+    if (planetData.pl_rade) {
+      radius = planetData.pl_rade;
+    } else if (planetData.pl_radj) {
+      radius = planetData.pl_radj * 11.2;
+    }
+    if (radius) {
+      radiusIndex.push({planetName: radius});
+    }
+
+    var mass = null;
+    if (planetData.pl_masse) {
+      mass = planetData.pl_masse;
+    } else if (planetData.pl_massj) {
+      mass = planetData.pl_massj * 317.8;
+    }
+    if (mass) {
+      massIndex.push({planetName: mass});
+    }
+
+    if (radius && mass) {
+      var density = mass / ( (4/3) * (Math.PI) * (radius * radius * radius) );
+
+      densityIndex.push({planetName: density});
+    }
+
+    if (planetData.pl_eqt) {
+      var temperature = planetData.pl_eqt;
+      temperatureIndex.push({planetName: temperature});
+    }
+
+    if (planetData.pl_facility) {
+      var facility = planetData.pl_facility;
+      facilityIndex.push({planetName: facility});
+    }
+
+    if (planetData.pl_telescope) {
+      var telescope = planetData.pl_telescope;
+      telescopeIndex.push({planetName: telescope});
+    }
+
+    if (planetData.pl_discmethod) {
+      var method = planetData.pl_discmethod;
+      methodIndex.push({planetName: method});
+    }
   };
   this._init = function() {
     function request() {
@@ -144,11 +230,20 @@ function Database() {
     .then(self._prepDatabase);
   };
   this._prepDatabase = function(planets) {
+    performance.mark('mark_start_load');
     planets.forEach(function(planet) {
       self._loadPlanetIntoDatabase(planet);
     });
+    self._sort();
     searchReady = true;
     fireSearchReady();
+    performance.mark('mark_end_load');
+    performance.measure('measure_planet_indexing', 'mark_start_load', 'mark_end_load');
+    var time = performance.getEntriesByName('measure_planet_indexing');
+    console.log('Indexed planets in: ' + time[0].duration + 'ms');
+  };
+  this._sort = function() {
+
   };
 
   /**
@@ -185,16 +280,22 @@ function Database() {
             // TODO: possible optimizations: create subworkers?
 
             // create a single return object
+            // TODO: results could have:
+            // good matches and almost matches
             var results = {};
 
             // create an array of promises
-            Promise.all(params.map(function(p) {
-              // p.name gives index
-              // p.specific, p.upper, p.lower give tests
-              // when promise resolves with planet(s), add planet name to the return object
+            // this should probably be a sequence that pairs down the main index
+            var sequence = Promise.resolve();
+            params.forEach(function(p) {
+              sequence = sequence.then(function(p) {
+                // p.name gives index
+                // p.specific, p.upper, p.lower give tests
+                // when promise resolves with planet(s), add planet name to the return object
+              })
               // each planet has a score. increment the score by 1
               // if the planet is there, just increment the score
-            }))
+            })
             .then(function() {
               // when all finish, sort the planets by scores
               // return the sorted array of planets
@@ -233,8 +334,7 @@ function get(url) {
       if (req.status === 200) {
         // Resolve the promise with the response text
         resolve(req.response);
-      }
-      else {
+      } else {
         // Otherwise reject with the status text
         // which will hopefully be a meaningful error
         reject(Error(req.statusText));

@@ -32,8 +32,7 @@ st_mass,
 st_optmag,
 st_rad,
 st_teff,
-pl_pelink,
-pl_edelink,
 &order=pl_name
 
-** add data to get potential of being in habitable zone??? discount binaries
+** add st_spstr
+** removed links

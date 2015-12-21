@@ -310,6 +310,7 @@ function Database() {
       mass = Number(planetData.pl_massj) * 317.8;
     }
 
+    // TODO: use pl_dens
     var density = null;
     if (radius && mass) {
       density = mass / ((4 / 3) * (Math.PI) * (radius * radius * radius));

@@ -16,8 +16,12 @@ Instructions:
    * @param {String} response - The unparsed JSON response from get.
    */
   function addSearchHeader(response) {
-    response = JSON.parse(response);  // you'll be moving this line out of here in the next quiz!
-    home.innerHTML = '<h2 class="page-title">query: ' + response.query + '</h2>';
+    try {
+      response = JSON.parse(response).query;  // you'll be moving this line out of here in the next quiz!
+    } catch (e) {
+      // it's 'unknown', so leave it alone
+    }
+    home.innerHTML = '<h2 class="page-title">query: ' + response + '</h2>';
   };
 
   /**
@@ -45,15 +49,12 @@ Instructions:
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Uncomment the next line you're ready to start chaining and testing!
-    You'll need to add a .then and a .catch.
-     */
     get('../data/earth-like-results.json')
     .then(function(response) {
       addSearchHeader(response);
     })
     .catch(function(error) {
+      addSearchHeader('unknown');
       console.log(error);
     });
   });

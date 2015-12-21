@@ -1,0 +1,91 @@
+<script>
+	'use strict';
+
+	var MathAndPhysics = {
+    getSigFigs: function(input1, input2, output) {
+      var length1 = input1.toString().length;
+      var length2 = input2.toString().length;
+      var length = null;
+
+      if (length1 < length2) {
+        length = length1;
+      } else {
+        length = length2;
+      }
+      output = output.toString();
+      output = output.slice(0,length);
+      return Number(output);
+    },
+		tempToColor: function(temp) {
+      if (!temp) {
+      	return 'grey';
+      }
+      var color = '#ccc';
+      if (temp < 200) {
+        color = '#33f';
+      } else if (temp >= 200 && temp < 253) {
+      	color = '#99f';
+      } else if (temp >= 253 && temp < 273) {
+      	color = '#99f';
+      } else if (temp >= 273 && temp < 313) {
+      	color = '#9d9';
+      } else if (temp >= 313 && temp < 333) {
+      	color = '#d99';
+      } else if (temp >= 313 && temp < 700) {
+        color = '#f99';
+      } else if (temp >= 700) {
+        color = '#fe9';
+      }
+      return color;
+    },
+    getTemperatureInCelsius: function(tempK) {
+      if (!tempK) { return 0; };
+      var temp = tempK - 273;
+      return this.getSigFigs(tempK, 273, temp);
+    },
+    pcToLy: function(dist) {
+      // gotta respect sigfigs
+      if (!dist) { return '0' };
+      var digits = dist.toString().length;
+      var ly = (dist / 3.26).toString();
+      ly = ly.slice(0, digits);
+      return ly.toString();
+    },
+    lyToTravelTime: function(ly) {
+      if (!ly) { return null; }
+      var digits = ly.toString().length;
+      var years = (ly / 0.000234).toString();
+      years = years.slice(0,digits);
+      // http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+      return years.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    getEarthRadii: function(earthRad, jupiterRad) {
+      if (!earthRad && !jupiterRad) {
+        return 0;
+      } else if (earthRad) {
+        return earthRad;
+      } else {
+        var radii = jupiterRad * 11.2;
+        return this.getSigFigs(jupiterRad, 11.2, radii);
+      }
+    },
+    getEarthMass: function(earthMass, jupiterMass) {
+    if (!earthMass && !jupiterMass) {
+        return 0;
+      } else if (earthMass) {
+        return earthMass;
+      } else {
+        var mass = jupiterMass * 317.8;
+        return this.getSigFigs(jupiterMass, 317.8, mass);
+      }
+    },
+    getGravity: function(earthRadii, earthMass) {
+      var gravity = earthMass / (earthRadii * earthRadii);
+      return this.getSigFigs(earthRadii, earthMass, gravity);
+    },
+    getPlanetWeight: function(earthWeight, gravity) {
+      var weight = earthWeight * gravity;
+      return this.getSigFigs(earthWeight, gravity, weight);
+    }
+	};
+</script>

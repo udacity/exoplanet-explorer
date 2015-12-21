@@ -240,16 +240,6 @@ function Database() {
   // planet indexes in master database
   var nameIndex = {};
 
-  // data from commonly searched fields sorted by value
-  var distanceIndex = [];
-  var massIndex = [];
-  var radiusIndex = [];
-  var densityIndex = [];
-  var temperatureIndex = [];
-  var facilityIndex = [];
-  var telescopeIndex = [];
-  var methodIndex = [];
-
   // state variables
   var dataReceived = false;
   var searchReady = false;
@@ -303,7 +293,6 @@ function Database() {
     var distance = null;
     if (planetData.st_dist) {
       distance = planetData.st_dist * 3.26;
-      distanceIndex.push({planetName: planetName, distance: distance});
     }
 
     var radius = null;
@@ -312,9 +301,7 @@ function Database() {
     } else if (planetData.pl_radj) {
       radius = planetData.pl_radj * 11.2;
     }
-    if (radius) {
-      radiusIndex.push({planetName: planetName, radius: radius});
-    }
+
 
     var mass = null;
     if (planetData.pl_masse) {
@@ -322,38 +309,30 @@ function Database() {
     } else if (planetData.pl_massj) {
       mass = Number(planetData.pl_massj) * 317.8;
     }
-    if (mass) {
-      massIndex.push({planetName: planetName, mass: mass});
-    }
 
     var density = null;
     if (radius && mass) {
       density = mass / ((4 / 3) * (Math.PI) * (radius * radius * radius));
-      densityIndex.push({planetName: planetName, density: density});
     }
 
     var temperature = null;
     if (planetData.pl_eqt) {
       temperature = Number(planetData.pl_eqt);
-      temperatureIndex.push({planetName: planetName, temperature: temperature});
     }
 
     var facility = null;
     if (planetData.pl_facility) {
       facility = planetData.pl_facility;
-      facilityIndex.push({planetName: planetName, facility: facility});
     }
 
     var telescope = null;
     if (planetData.pl_telescope) {
       telescope = planetData.pl_telescope;
-      telescopeIndex.push({planetName: planetName, telescope: telescope});
     }
 
     var method = null;
     if (planetData.pl_discmethod) {
       method = planetData.pl_discmethod;
-      methodIndex.push({planetName: planetName, method: method});
     }
 
     // add to main database
@@ -386,7 +365,6 @@ function Database() {
     planets.forEach(function(planet) {
       self._indexPlanet(planet);
     });
-    self._sortIndexes();
 
     searchReady = true;
     performance.mark('mark_end_indexing');
@@ -396,47 +374,6 @@ function Database() {
     performance.measure('measure_planet_indexing', 'mark_start_indexing', 'mark_end_indexing');
     var time = performance.getEntriesByName('measure_planet_indexing');
     console.log('Indexed planets in: ' + Math.round(time[0].duration) + 'ms');
-  };
-  this._sortIndexes = function() {
-    radiusIndex.sort(function(a, b) {
-      return a.radius - b.radius;
-    });
-    massIndex.sort(function(a, b) {
-      return a.mass - b.mass;
-    });
-    densityIndex.sort(function(a, b) {
-      return a.density - b.density;
-    });
-    temperatureIndex.sort(function(a, b) {
-      return a.temperature - b.temperature;
-    });
-    facilityIndex.sort(function(a, b) {
-      if (a.facility < b.facility) {
-        return -1;
-      } else if (a.facility > b.facility) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    telescopeIndex.sort(function(a, b) {
-      if (a.telescope < b.telescope) {
-        return -1;
-      } else if (a.telescope > b.telescope) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    methodIndex.sort(function(a, b) {
-      if (a.method < b.method) {
-        return -1;
-      } else if (a.method > b.method) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
   };
 
   /**

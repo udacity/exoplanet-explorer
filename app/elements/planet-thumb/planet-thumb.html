@@ -57,6 +57,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <div class="layout vertical">
           <div class="vis">
             <scale-visualizer
+              hidden$="{{!earthRadii}}"
               color$="{{color}}"
               earth-radii$="{{earthRadii}}">
             </scale-visualizer>
@@ -82,7 +83,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthRadii: {
             type: Number,
             notify: true,
-            computed: 'getEarthRadii(pl_rade, pl_radj)'
+            computed: 'getEarthRadii(pl_rade, pl_radj)',
+            value: 0
           },
           distance: {
             type: Number,

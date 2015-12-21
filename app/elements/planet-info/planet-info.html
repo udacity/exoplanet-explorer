@@ -68,7 +68,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         attached: function() {
           var self = this;
           Model.requests.addListener('gotPlanetByName', function(data) {
-            console.log(data);
             self.bindData(data);
           });
         },
@@ -90,7 +89,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthRadii: {
             type: Number,
             notify: true,
-            computed: 'getEarthRadii(rawData.pl_rade, rawData.pl_radj)'
+            computed: 'getEarthRadii(rawData.pl_rade, rawData.pl_radj)',
+            value: 0
           },
           distance: {
             type: String,

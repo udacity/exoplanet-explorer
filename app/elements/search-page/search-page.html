@@ -86,9 +86,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
         },
         checkNeedMoreThumbs: function() {
           var self = this;
+          var scroller = document.querySelector('paper-scroll-header-panel').scroller;
           var interval = window.setInterval(function() {
-            var scrollDepth = document.querySelector('#mainContainer').scrollTop;
-            if (scrollDepth > (6000 * self._holdingPen.batch)) {
+            var scrollDepth = scroller.scrollTop;
+            if (scrollDepth > (4000 * self._holdingPen.batch)) {
               var newThumbs = self._holdingPen.pen.splice(0,20);
               self.renderThumbnails(newThumbs);
               self._holdingPen.batch += 1;

@@ -3,43 +3,6 @@
 // send back a pending state, then send the data when it's
 // ready to the same requester.
 
-// http://oli.me.uk/2013/06/08/searching-javascript-arrays-with-a-binary-search/
-/**
- * Performs a binary search on the host array. This method can either be
- * injected into Array.prototype or called with a specified scope like this:
- * binaryIndexOfClosestNumber.call(someArray, searchElement);
- *
- * @param {*} searchElement The item to search for within the array.
- * @return {Number} The index of the element which defaults to -1 when not found.
- */
-function binaryIndexOfClosestNumber(searchElement, searchProperty) {
-  var minIndex = 0;
-  var maxIndex = this.length - 1;
-  var currentIndex;
-  var currentElement;
-
-  var diff;
-  var lastDiff;
-
-  while (minIndex <= maxIndex) {
-    currentIndex = (minIndex + maxIndex) / 2 | 0;
-    currentElement = this[currentIndex][searchProperty];
-    diff = currentElement - searchElement;
-
-    if (diff < 0) {
-      minIndex = currentIndex + 1;
-    } else if (diff > 0) {
-      maxIndex = currentIndex - 1;
-    } else if (diff < lastDiff) { // this logic is wrong. need different criteria for stopping
-      lastDiff = diff;
-    } else {
-      return currentIndex;
-    }
-  }
-
-  return -1;
-}
-
 // http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
 function clone(obj) {
   var copy;
@@ -295,7 +258,7 @@ function Database() {
   var fireParsingFailed = function() {};
 
   // methods
-  this.ready = function() {
+  this._ready = function() {
     return new Promise(function(resolve, reject) {
       if (searchReady) {
         resolve();
@@ -335,13 +298,11 @@ function Database() {
   };
   this._indexPlanet = function(planetData) {
     var planetName = planetData.pl_name;
-    // add to main database
-    database.push({name: planetName, data: planetData});
-    nameIndex[planetName] = database.length - 1;
 
     // add to indexes
-    var distance = planetData.st_dist;
-    if (distance) {
+    var distance = null;
+    if (planetData.st_dist) {
+      distance = planetData.st_dist * 3.26;
       distanceIndex.push({planetName: planetName, distance: distance});
     }
 
@@ -357,38 +318,54 @@ function Database() {
 
     var mass = null;
     if (planetData.pl_masse) {
-      mass = planetData.pl_masse;
+      mass = Number(planetData.pl_masse);
     } else if (planetData.pl_massj) {
-      mass = planetData.pl_massj * 317.8;
+      mass = Number(planetData.pl_massj) * 317.8;
     }
     if (mass) {
       massIndex.push({planetName: planetName, mass: mass});
     }
 
+    var density = null;
     if (radius && mass) {
-      var density = mass / ((4 / 3) * (Math.PI) * (radius * radius * radius));
+      density = mass / ((4 / 3) * (Math.PI) * (radius * radius * radius));
       densityIndex.push({planetName: planetName, density: density});
     }
 
+    var temperature = null;
     if (planetData.pl_eqt) {
-      var temperature = planetData.pl_eqt;
+      temperature = Number(planetData.pl_eqt);
       temperatureIndex.push({planetName: planetName, temperature: temperature});
     }
 
+    var facility = null;
     if (planetData.pl_facility) {
-      var facility = planetData.pl_facility;
+      facility = planetData.pl_facility;
       facilityIndex.push({planetName: planetName, facility: facility});
     }
 
+    var telescope = null;
     if (planetData.pl_telescope) {
-      var telescope = planetData.pl_telescope;
+      telescope = planetData.pl_telescope;
       telescopeIndex.push({planetName: planetName, telescope: telescope});
     }
 
+    var method = null;
     if (planetData.pl_discmethod) {
-      var method = planetData.pl_discmethod;
+      method = planetData.pl_discmethod;
       methodIndex.push({planetName: planetName, method: method});
     }
+
+    // add to main database
+    database.push({
+      name: planetName,
+      data: planetData,
+      distance: distance,
+      temperature: temperature,
+      mass: mass,
+      radius: radius
+    });
+    nameIndex[planetName] = database.length - 1;
   };
   this._init = function() {
     function request() {
@@ -470,6 +447,55 @@ function Database() {
    */
   this.makeRequest = function(type, params) {
     var req = function() {};
+
+    function getPlanetMatch(planet, params) {
+      var isMatch = false;
+      var score = 0;
+
+      params.forEach(function (param, index) {
+        if (index > 0 && !isMatch) { return; };
+
+        var value = planet[param.field] || planet.data[param.field];
+        if (!value) { return; };
+
+        if (param.lower !== undefined && param.upper !== undefined) {
+          if (value >= param.lower && value <= param.upper) {
+            isMatch = true;
+            score += 1;
+          } else if (param.upper === -1 && value >= param.lower) {
+            isMatch = true;
+            score += 1;
+          } else {
+            isMatch = false;
+          }
+        } else if (param.specific !== undefined) {
+          if (param.specific === -1) {
+            isMatch = true;
+            return;
+          }
+
+          try {
+            if (value.match('.*' + param.specific + '.*')) {
+              score += 1;
+              isMatch = true;
+            } else {
+              isMatch = false;
+            }
+          } catch (e) {
+            // this means the field isn't there, right?
+            isMatch = true;
+          }
+        }
+      });
+
+      if (isMatch) {
+        var result = clone(planet);
+        result.score = score;
+        return result;
+      } else {
+        return null;
+      }
+    };
     if (arguments.length !== 2) { throw new Error('Database - ' + arguments.length + ' request arguments received. 2 expected.'); };
     switch (type) {
       case 'name':
@@ -481,9 +507,9 @@ function Database() {
           }
         };
         break;
-      case 'queryGeneral':
+      case 'general':
         req = function() {
-          return self.ready().then(function() {
+          return self._ready().then(function() {
             self.database.forEach(function (planet) {
               // something about looking through all planet values for params
             });
@@ -492,76 +518,19 @@ function Database() {
         break;
       case 'byField':
         req = function() {
-          // the idea is to start with all planets and then exclude planets
-          // that don't meet search criteria
-          return self.ready().then(function() {
-            var possibleResults = clone(database);
-            params.forEach(function(param) {
-              console.log(param);
-              if (param.lower !== undefined && param.upper !== undefined) {
-                var index = null;
-                switch (param.field) {
-                  case 'distance':
-                    index = distanceIndex;
-                    break;
-                  case 'radius':
-                    index = radiusIndex;
-                    break;
-                  case 'mass':
-                    index = massIndex;
-                    break;
-                  case 'temperature':
-                    index = temperatureIndex;
-                    break;
-                  default:
-                    // not sure how this could happen
-                    break;
-                }
-
-                var lower, upper;
-                if (param.lower === -1) {
-                  lower = 0;
-                } else {
-                  lower = (function() {
-                    var i = 0;
-                    index.forEach(function (p, ind) {
-                      if (p[param.field] < param.lower) {
-                        i = ind;
-                      }
-                    });
-                    return i;
-                  })();
-                }
-                if (param.upper === -1) {
-                  upper = index[index.length - 1 ];
-                } else {
-                  upper = (function() {
-                    var i = 0;
-                    for (var i = index.length - 1; i === 0; i--) {
-                      if (index[i][param.field] > param.upper) {
-                        i = ind;
-                      }
-                    }
-                    return i;
-                  })();
-                }
-              } else if (param.specific !== undefined) {
-                console.log('specific!');
-              }
-            });
-            return possibleResults;
-          })
-          .then(function() {
-            console.log('finished');
-            // when all finish, sort the planets by name
-            // return the sorted array of planets
-            // if there are no results, return empty array
-            
-            return possibleResults;
+          return self._ready().then(function() {
+            var results = [];
+            database.forEach(function(planet) {
+              var hit = getPlanetMatch(planet, params)
+              if (hit) { results.push(hit); };
+            })
+            results.sort(function(a, b) {
+              return b.score - a.score;
+            })
+            return results;
           })
           .catch(function(e) {
-            console.log(e);
-            // something went wrong, throw error
+            throw new Error('Database - search error');
           })
         };
         break;

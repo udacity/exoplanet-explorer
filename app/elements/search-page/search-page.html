@@ -18,6 +18,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
     <h2 class="query page-title">{{queryDisplay}}</h2>
     <paper-material>
       <h3>This is how you search!</h3>
+      <p id="number-of-planets"></p>
     </paper-material>
     <paper-input type="text" placeholder="Search me!"></paper-input>
     <div class="search-results">SPINNER GOES HERE!</div>
@@ -30,31 +31,81 @@ Copyright (c) 2015 Udacity. All rights reserved.
       Polymer({
         is: 'search-page',
         behaviors: [MathAndPhysics],
-        created: function() {
-          // I feel like there's a better way to do this...
-          this.properties.resultsContainer.value = this.querySelector('.search-results');
-        },
         attached: function() {
           var self = this;
-          // return object resembling:
-          // { results: [sorted planets] }
+          this.resultsContainer = this.querySelector('.search-results');
           Model.requests.addListener('returnedQuery', function(planets) {
-            // TODO: logic to check if planets were returned
-            // look for nosearch, error, results
-            console.log(planets);
-            self.renderThumbnails(planets);
+            if (planets.error) {
+              self.resultsContainer.innerText = 'Something went wrong :(';
+            } else if (planets.nosearch) {
+              // do nothing because they didn't actually search
+            } else {
+              self.querySelector('#number-of-planets').innerText = planets.length + ' planets found!'
+              self.renderThumbnails(planets);
+            }
           });
+          // https://developers.google.com/web/updates/2015/08/using-requestidlecallback?hl=en
+          window.requestIdleCallback =
+            window.requestIdleCallback ||
+            function (cb) {
+              var start = Date.now();
+              return setTimeout(function () {
+                cb({
+                  didTimeout: false,
+                  timeRemaining: function () {
+                    return Math.max(0, 50 - (Date.now() - start));
+                  }
+                });
+              }, 1);
+            }
+
+          window.cancelIdleCallback =
+            window.cancelIdleCallback ||
+            function (id) {
+              clearTimeout(id);
+            }
         },
         performSearch: function() {
           Model.requests.sendQuery('query', this.queryString);
         },
         renderThumbnails: function(planets) {
-          // TODO: only load 100 thumbs at a time. mark number 80 with an event. when it's on screen, then load the next 100. and so on.
-          for (var p in planets) {
-            this.createPlanetThumb(planets[p]);
-          }
+          var self = this;
+
+          planets.forEach(function (planet, index) {
+            if (index < 30) {
+              self.createPlanetThumb(planet);
+            } else if (index === 30) {
+              self.createPlanetThumb(planet);
+              if (self._holdingPen.pen.length === 0) {
+                self.checkNeedMoreThumbs();
+              }
+            } else if (index >= 30) {
+              self._holdingPen.pen.push(planet);
+            }
+          });
+        },
+        checkNeedMoreThumbs: function() {
+          var self = this;
+          var interval = window.setInterval(function() {
+            var scrollDepth = document.querySelector('#mainContainer').scrollTop;
+            if (scrollDepth > (6000 * self._holdingPen.batch)) {
+              var newThumbs = self._holdingPen.pen.splice(0,20);
+              self.renderThumbnails(newThumbs);
+              self._holdingPen.batch += 1;
+            }
+            if (self._holdingPen.pen.length === 0) {
+              window.clearInterval(interval);
+            }
+          }, 1000)
         },
         properties: {
+          _holdingPen: {
+            type: Object,
+            value: {
+              pen: [],
+              batch: 1
+            }
+          },
           value: {
             type: String,
             notify: true,
@@ -78,10 +129,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
             observer: 'performSearch'
           }
         },
-        createPlanetThumb: function(data) {
+        createPlanetThumb: function(planet, mark) {
           var pT = document.createElement('planet-thumb');
-          for (var d in data) {
-            pT[d] = data[d];
+          for (var d in planet.data) {
+            pT[d] = planet.data[d];
           }
           this.resultsContainer.appendChild(pT);
         }

@@ -1,5 +1,6 @@
 node_modules
 dist
+site
 bower_components
 .tmp
 .DS_Store

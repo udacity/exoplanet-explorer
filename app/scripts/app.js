@@ -3,6 +3,7 @@ Instructions:
 (1) Use Promise.all to refactor the .map code by passing Promise.all an array of Promises.
   (a) Each Promise will be executed in parallel.
   (b) The return values will be returned in the same order as the Promises were created.
+Hint: you'll probably still need to use .map.
  */
 
 (function(document) {

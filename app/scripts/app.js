@@ -3,7 +3,7 @@ Instructions:
 (1) Rewrite get with the Fetch API: https://davidwalsh.name/fetch
 (2) Finish the getJSON method. getJSON should take a URL and return the parsed JSON response.
   (a) getJSON needs to return a Promise!
-(3) Test by passing the query string from the JSON to addSearchHeader.
+(3) Test by console.logging the response and by passing the query string from getJSON to addSearchHeader.
 (4) Handle errors by passing "unknown" to addSearchHeader.
  */
 
@@ -21,7 +21,7 @@ Instructions:
   };
 
   /**
-   * XHR wrapped in a Promise.
+   * XHR wrapped in a Promise using Fetch.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
@@ -34,9 +34,15 @@ Instructions:
      */
   };
 
+  /**
+   * Performs an XHR for a JSON and returns a parsed JSON response.
+   * @param  {String} url - The JSON URL to fetch.
+   * @return {Promise}    - A promise that passes the parsed JSON response.
+   */
   function getJSON(url) {
     /*
     Return a Promise that gets a URL and parses the JSON response. Use your get method!
+
     Your code goes here!
      */
   };
@@ -44,8 +50,11 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Uncomment the next line when you're ready to test! Don't forget to chain a .then and a .catch!
+    Uncomment the next line when you're ready to test!
+    Don't forget to chain with a .then and a .catch!
+
+    Your code goes here too!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    // getJSON('../data/earth-like-results.json')
   });
 })(document);

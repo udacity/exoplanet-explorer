@@ -62,7 +62,7 @@ proper order even if all the requests haven't finished.
       });
 
       arrayOfExecutingPromises.forEach(function (request) {
-        // Loop through the pending requests that were returned by map (and are in order) and
+        // Loop through the pending requests that were returned by .map (and are in order) and
         // turn them into a sequence.
         // request is a getJSON() that's currently executing.
         sequence = sequence.then(request.then(createPlanetThumb));

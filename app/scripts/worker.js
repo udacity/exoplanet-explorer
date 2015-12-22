@@ -159,7 +159,6 @@ function handleCustomQuery(queryString) {
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
   query: function(queryString) {
-    performance.mark('mark_start_searching');
 
     if (!queryString || typeof queryString !== 'string') {
       reply('returnedQuery', {nosearch: true});
@@ -187,11 +186,6 @@ var queryableFunctions = {
     }
 
     db.makeRequest(type, params).then(function(planets) {
-      performance.mark('mark_end_searching');
-      performance.measure('measure_planet_searching', 'mark_start_searching', 'mark_end_searching');
-      var time = performance.getEntriesByName('measure_planet_searching');
-      console.log('Retrieved search results in: ' + Math.round(time[0].duration) + 'ms');
-
       reply('returnedQuery', planets);
     })
     .catch(function() {
@@ -361,20 +355,13 @@ function Database() {
     .then(self._prepDatabase);
   };
   this._prepDatabase = function(planets) {
-    performance.mark('mark_start_indexing');
-
     planets.forEach(function(planet) {
       self._indexPlanet(planet);
     });
 
     searchReady = true;
-    performance.mark('mark_end_indexing');
 
     fireSearchReady();
-
-    performance.measure('measure_planet_indexing', 'mark_start_indexing', 'mark_end_indexing');
-    var time = performance.getEntriesByName('measure_planet_indexing');
-    console.log('Indexed planets in: ' + Math.round(time[0].duration) + 'ms');
   };
 
   /**

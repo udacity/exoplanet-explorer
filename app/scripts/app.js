@@ -1,8 +1,7 @@
 /*
 Instructions:
-(1) Use .forEach to create a sequence of Promises.
-  (a) Fetch each planet's JSON from the array of URLs in the search results.
-  (b) Call createPlanetThumb on each planet's response data to add it to the page.
+(1) Use .map to fetch all the planets in parallel.
+  (a) Pass .map an array of Promises and each one will be executed seperately and immediately.
  */
 
 (function(document) {
@@ -55,6 +54,7 @@ Instructions:
     /*
     Your code goes here! Uncomment the next line when you're ready to start!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+
+    // getJSON('../data/earth-like-results.json')
   });
 })(document);

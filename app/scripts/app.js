@@ -1,7 +1,7 @@
 /*
 Instructions:
 (1) Refactor .forEach below to create a sequence of Promises that always resolves in the same
-    order they were created.
+    order it was created.
   (a) Fetch each planet's JSON from the array of URLs in the search results.
   (b) Call createPlanetThumb on each planet's response data to add it to the page.
  */

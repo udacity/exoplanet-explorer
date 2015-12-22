@@ -1,13 +1,22 @@
-# YouPromised
-Music videos for broken promises
+# Exoplanet Explorer
+Learn more about planets around other stars!
 
-Built from the Polymer Starter Kit. See below for installation instructions.
+## APIs:
+* [NASA Exoplanet Archive](http://exoplanetarchive.ipac.caltech.edu/docs/program_interfaces.html)
+* [SKY-MAP.org](http://server3.sky-map.org/api?locale=EN)
+
+Built from the Polymer Starter Kit. See [below](#install) for installation instructions.
 
 Here's how it works with the course:
 
-1. Switch to branch for quiz.
-2. Do work.
-3. Observe site. If YouPromised loads correctly, you probably did it right!
+1. Switch to the branch for a specific quiz. You'll find the branch in the instructor notes.
+2. Run `gulp serve`.
+3. Do work.
+4. Check results by navigating to the URL that `gulp serve` outputs.
+
+This project was developed with...
+
+---
 
 ![](https://cloud.githubusercontent.com/assets/110953/7877439/6a69d03e-0590-11e5-9fac-c614246606de.png)
 ## Polymer Starter Kit

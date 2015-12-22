@@ -3,7 +3,6 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../scale-visualizer/scale-visualizer.html">
 <link rel="import" href="../behaviors/math-and-physics.html">
 <link rel="import" href="../behaviors/planet-raw-data.html">
 
@@ -34,7 +33,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         .top {
           /* I'm only doing this because I have to... */
           display: block !important;
-          /* TODO: center */
           margin-left: auto;
           margin-right: auto;
         }
@@ -42,8 +40,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
       @media screen and (min-width: 436px) {
         .top {
           display: flex;
-        }
-        .planet-comparison {
         }
         .top-right {
           padding-left: 32px;
@@ -60,6 +56,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <div class="layout vertical">
           <div class="vis">
             <scale-visualizer
+              hidden$="{{!earthRadii}}"
               color$="{{color}}"
               earth-radii$="{{earthRadii}}">
             </scale-visualizer>
@@ -85,17 +82,19 @@ Copyright (c) 2015 Udacity. All rights reserved.
           earthRadii: {
             type: Number,
             notify: true,
-            computed: 'getEarthRadii(pl_rade, pl_radj)'
+            computed: 'getEarthRadii(pl_rade, pl_radj)',
+            value: 0
           },
           distance: {
             type: Number,
+            notify: true,
             computed: 'pcToLy(st_dist)'
           },
           color: {
             type: String,
             notify: true,
             computed: 'tempToColor(pl_eqt)',
-            value: 'brown'
+            value: 'grey'
           }
         }
       });

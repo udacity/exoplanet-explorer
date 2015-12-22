@@ -56,7 +56,7 @@ Hint: you'll probably still need to use .map.
     /*
     Refactor this code with Promise.all!
      */
-    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
     .then(function(response) {
       response.results.map(function(url) {
         getJSON(url).then(createPlanetThumb);

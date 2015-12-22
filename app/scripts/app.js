@@ -4,6 +4,7 @@ Instructions:
     order it was created.
   (a) Fetch each planet's JSON from the array of URLs in the search results.
   (b) Call createPlanetThumb on each planet's response data to add it to the page.
+(2) Use developer tools to determine if the planets are being fetched in series or in parallel.
  */
 
 (function(document) {

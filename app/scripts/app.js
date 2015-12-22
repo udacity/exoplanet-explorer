@@ -56,7 +56,7 @@ proper order even if all the requests haven't finished.
     getJSON('../data/earth-like-results.json').then(function(response) {
       var sequence = Promise.resolve();
 
-      // .map executes all of the network requests immediately
+      // .map executes all of the network requests immediately.
       var arrayOfExecutingPromises = response.results.map(function(result) {
         return getJSON(result);
       });

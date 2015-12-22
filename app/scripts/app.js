@@ -1,7 +1,8 @@
 /*
 Instructions:
 (1) Use .map to fetch all the planets in parallel.
-  (a) Pass .map an array of Promises and each one will be executed seperately and immediately.
+  (a) Call .map on an array and pass it a function.
+  (b) .map will execute the function against each element in the array immediately.
  */
 
 (function(document) {

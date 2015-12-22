@@ -1,6 +1,7 @@
 /*
 Instructions:
-(1) Use .forEach to create a sequence of Promises.
+(1) Refactor .forEach below to create a sequence of Promises that always resolves in the same
+    order they were created.
   (a) Fetch each planet's JSON from the array of URLs in the search results.
   (b) Call createPlanetThumb on each planet's response data to add it to the page.
  */
@@ -31,7 +32,7 @@ Instructions:
   };
 
   /**
-   * XHR wrapped in a promise
+   * XHR wrapped in a promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
@@ -55,8 +56,13 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
     /*
-    Your code goes here! Uncomment the next line when you're ready to start!
+    Refactor this code!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then(function(response) {
+      response.results.forEach(function(url) {
+        getJSON(url).then(createPlanetThumb);
+      });
+    });
   });
 })(document);

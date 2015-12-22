@@ -1,9 +1,8 @@
 /*
-Instructions:
-(1) Use Promise.all to refactor the .map code by passing Promise.all an array of Promises.
-  (a) Each Promise will be executed in parallel.
-  (b) The return values will be returned in the same order as the Promises were created.
-Hint: you'll probably still need to use .map.
+Challenge:
+
+Use what you've learned about Promises to request thumbnails in parallel but create them in the
+proper order even if all the requests haven't finished.
  */
 
 (function(document) {
@@ -53,18 +52,9 @@ Hint: you'll probably still need to use .map.
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-
-    getJSON('../data/earth-like-results.json')
-    .then(function(response) {
-      return Promise.all(response.results.map(getJSON));
-    })
-    .then(function(planetData) {
-      planetData.forEach(function(planet) {
-        createPlanetThumb(planet);
-      });
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
+    /*
+    Your code goes here!
+     */
+    // getJSON('../data/earth-like-results.json')
   });
 })(document);

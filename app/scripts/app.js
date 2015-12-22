@@ -1,13 +1,10 @@
 /*
 Instructions:
-(1) Get the master JSON with the list of planet URLs.
-(2) Add the search header.
-(3) Get the first planet's JSON.
-(4) Create a thumbnail for the first planet.
-(4) Handle errors!
+(1) Get the planet data and add the search header.
+(2) Create the first thumbnail with createPlanetThumb(data)
+(3) Handle errors!
   (a) Pass 'unknown' to the search header.
   (b) console.log the error.
-  (c) You're performing two network requests. Consider how you'd want to handle errors for each one.
  */
 
 (function(document) {
@@ -36,7 +33,7 @@ Instructions:
   }
 
   /**
-   * XHR wrapped in a promise
+   * XHR wrapped in a promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
@@ -60,7 +57,7 @@ Instructions:
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
 
-    getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
     .then(function(response) {
       addSearchHeader(response.query);
       return getJSON(response.results[0]);
@@ -69,7 +66,7 @@ Instructions:
       throw Error('Search Request Error');
     })
     .then(function(planetData) {
-      createPlanetThumb(planetData)
+      createPlanetThumb(planetData);
     })
     .catch(function(e) {
       addSearchHeader('unknown');

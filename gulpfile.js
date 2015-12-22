@@ -110,6 +110,8 @@ gulp.task('copy', function () {
 
   var cname = gulp.src(['CNAME']).pipe(gulp.dest('dist/'));
 
+  var worker = gulp.src(['app/scripts/worker.js']).pipe(gulp.dest('dist/scripts'));
+
   var bower = gulp.src([
     'bower_components/**/*'
   ]).pipe(gulp.dest('dist/bower_components'));
@@ -127,7 +129,7 @@ gulp.task('copy', function () {
     .pipe($.rename('elements.vulcanized.html'))
     .pipe(gulp.dest('dist/elements'));
 
-  return merge(app, data, bower, elements, vulcanized, swBootstrap, swToolbox, cname)
+  return merge(app, data, bower, elements, vulcanized, swBootstrap, swToolbox, cname, worker)
     .pipe($.size({title: 'copy'}));
 });
 

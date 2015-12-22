@@ -28,7 +28,7 @@ Instructions:
   function get(url) {
     /*
     Use the Fetch API to GET a URL.
-    Return the fetch as a Promise.
+    Return the fetch.
 
     Your code goes here!
      */

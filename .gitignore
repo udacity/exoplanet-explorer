@@ -1,7 +1,8 @@
+.DS_Store
 node_modules
-dist
 bower_components
+dist
+site
 .tmp
 .publish
-.DS_Store
 TODO

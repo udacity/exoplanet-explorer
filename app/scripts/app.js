@@ -21,14 +21,17 @@ Instructions:
   };
 
   /**
-   * XHR wrapped in a Promise.
+   * XHR wrapped in a Promise using Fetch.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
   function get(url) {
-    return fetch(url, {
-      method: 'get'
-    })
+    /*
+    Use the Fetch API to GET a URL.
+    Return the fetch as a Promise.
+
+    Your code goes here!
+     */
   };
 
   /**
@@ -37,21 +40,21 @@ Instructions:
    * @return {Promise}    - A promise that passes the parsed JSON response.
    */
   function getJSON(url) {
-    return get(url).then(function(response) {
-      return response.json();
-    });
+    /*
+    Return a Promise that gets a URL and parses the JSON response. Use your get method!
+
+    Your code goes here!
+     */
   };
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    getJSON('../data/earth-like-results.json')
-    .then(function(response) {
-      addSearchHeader(response.query);
-      console.log(response);
-    })
-    .catch(function(error) {
-      addSearchHeader('unknown');
-      console.log(error);
-    })
+    /*
+    Uncomment the next line when you're ready to test!
+    Don't forget to chain with a .then and a .catch!
+
+    Your code goes here too!
+     */
+    // getJSON('../data/earth-like-results.json')
   });
 })(document);

@@ -1,8 +1,10 @@
 /*
 Instructions:
-(1) Use .forEach to create a sequence of Promises.
+(1) Refactor .forEach below to create a sequence of Promises that always resolves in the same
+    order it was created.
   (a) Fetch each planet's JSON from the array of URLs in the search results.
   (b) Call createPlanetThumb on each planet's response data to add it to the page.
+(2) Use developer tools to determine if the planets are being fetched in series or in parallel.
  */
 
 (function(document) {
@@ -52,11 +54,7 @@ Instructions:
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Your code goes here! Uncomment the next line when you're ready to start!
-     */
-    // TODO: swap this out with a non local source!!!
-    // Not seeming to be in series?
+
     getJSON('../data/earth-like-results.json')
     .then(function(response) {
       var sequence = Promise.resolve();

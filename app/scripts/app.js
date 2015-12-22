@@ -52,9 +52,21 @@ proper order even if all the requests haven't finished.
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Your code goes here!
-     */
-    // getJSON('../data/earth-like-results.json')
+
+    getJSON('../data/earth-like-results.json').then(function(response) {
+      var sequence = Promise.resolve();
+
+      // .map executes all of the network requests immediately
+      var arrayOfExecutingPromises = response.results.map(function(result) {
+        return getJSON(result);
+      });
+
+      arrayOfExecutingPromises.forEach(function (request) {
+        // Loop through the pending requests that were returned by map (and are in order) and
+        // turn them into a sequence.
+        // request is a getJSON() that's currently executing.
+        sequence = sequence.then(request.then(createPlanetThumb));
+      });
+    })
   });
 })(document);

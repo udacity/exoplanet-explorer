@@ -1,10 +1,8 @@
 /*
 Instructions:
-(1) Get the master JSON with the list of planet URLs.
-(2) Add the search header.
-(3) Get the first planet's JSON.
-(4) Create a thumbnail for the first planet.
-(4) Handle errors!
+(1) Get the planet data and add the search header.
+(2) Create the first thumbnail with createPlanetThumb(data)
+(3) Handle errors!
   (a) Pass 'unknown' to the search header.
   (b) console.log the error.
  */
@@ -28,7 +26,7 @@ Instructions:
    */
   function createPlanetThumb(data) {
     var pT = document.createElement('planet-thumb');
-    for (let d in data) {
+    for (var d in data) {
       pT[d] = data[d];
     }
     home.appendChild(pT);
@@ -60,8 +58,9 @@ Instructions:
     home = document.querySelector('section[data-route="home"]');
     /*
     Uncomment the next line and start here when you're ready to add the first thumbnail!
+
     Your code goes here!
      */
-    // getJSON('http://udacity.github.io/exoplanet-explorer/site/app/data/earth-like-results.json')
+    // getJSON('../data/earth-like-results.json')
   });
 })(document);

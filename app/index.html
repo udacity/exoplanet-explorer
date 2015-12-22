@@ -63,38 +63,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
 
-      <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+    <!-- Main Area -->
+    <paper-scroll-header-panel main condenses keep-condensed-header>
 
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
+      <!-- Main Toolbar -->
+      <paper-toolbar id="mainToolbar" class="tall">
 
-          <!-- Application name -->
-          <div class="middle middle-container center horizontal layout">
-            <div class="app-name">Exoplanet Explorer</div>
-          </div>
-
-          <!-- Application sub title -->
-          <div class="bottom bottom-container center horizontal">
-            <div class="bottom-title paper-font-subhead">Learn more about planets around other stars!</div>
-          </div>
-
-        </paper-toolbar>
-
-        <!-- Main Content -->
-        <div class="content">
-          <iron-pages attr-for-selected="data-route" selected="{{route}}">
-
-            <section data-route="home"></section>
-
-            <section data-route="planet">
-              <planet-info></planet-info>
-            </section>
-
-          </iron-pages>
+        <!-- Application name -->
+        <div class="middle middle-container center horizontal layout">
+          <div class="app-name">Exoplanet Explorer</div>
         </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
+
+        <!-- Application sub title -->
+        <div class="bottom bottom-container center horizontal">
+          <div class="bottom-title paper-font-subhead">Learn more about planets around other stars!</div>
+        </div>
+
+      </paper-toolbar>
+
+      <!-- Main Content -->
+      <div class="content">
+        <iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+          <section data-route="home"></section>
+
+        </iron-pages>
+      </div>
+    </paper-scroll-header-panel>
 
   </template>
 
@@ -102,8 +97,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="scripts/app.js"></script>
   <!-- endbuild-->
 
-  <!-- build:js scripts/animate-header-transitions.js -->
-  <script src="scripts/animate-header-transitions.js"></script>
+  <!-- build:js scripts/polymer-starter-kit-misc.js -->
+  <script src="scripts/polymer-starter-kit-misc.js"></script>
   <!-- endbuild-->
 </body>
 

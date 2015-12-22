@@ -19,7 +19,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // More info: https://visionmedia.github.io/page.js/
 
     // Middleware
-
     function scrollToTop(ctx, next) {
       app.scrollPageToTop();
       next();
@@ -28,13 +27,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Routes
     page('/', scrollToTop, function(ctx) {
       app.route = 'home';
-    });
-
-    /*
-    Not working for now...
-     */
-    page('/planet/:name', scrollToTop, function(ctx) {
-      app.route = 'planet';
     });
 
     // add #! before urls

@@ -110,7 +110,7 @@ gulp.task('copy', function () {
 
   var cname = gulp.src(['CNAME']).pipe(gulp.dest('dist/'));
 
-  var worker = gulp.src(['app/scripts/worker.js']).pipe(gulp.dest('dist/scripts'));
+  var worker = gulp.src(['app/scripts/search-worker.js']).pipe(gulp.dest('dist/scripts'));
 
   var bower = gulp.src([
     'bower_components/**/*'

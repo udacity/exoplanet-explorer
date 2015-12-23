@@ -16,7 +16,7 @@ proper order even if all the requests haven't finished.
    */
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
-  };
+  }
 
   /**
    * Helper function to create a planet thumbnail.
@@ -24,11 +24,11 @@ proper order even if all the requests haven't finished.
    */
   function createPlanetThumb(data) {
     var pT = document.createElement('planet-thumb');
-    for (let d in data) {
+    for (var d in data) {
       pT[d] = data[d];
     }
     home.appendChild(pT);
-  };
+  }
 
   /**
    * XHR wrapped in a promise
@@ -37,7 +37,7 @@ proper order even if all the requests haven't finished.
    */
   function get(url) {
     return fetch(url);
-  };
+  }
 
   /**
    * Performs an XHR for a JSON and returns a parsed JSON response.
@@ -48,7 +48,7 @@ proper order even if all the requests haven't finished.
     return get(url).then(function(response) {
       return response.json();
     });
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');

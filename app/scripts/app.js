@@ -22,7 +22,7 @@ Instructions:
       // it's 'unknown', so leave it alone
     }
     home.innerHTML = '<h2 class="page-title">query: ' + response + '</h2>';
-  };
+  }
 
   /**
    * XHR wrapped in a promise.
@@ -42,14 +42,14 @@ Instructions:
       } else {
         // It failed :(
         // Be nice and reject with req.statusText
-      };
+      }
     };
     req.onerror = function() {
       // It failed :(
       // Pass a 'Network Error' to reject
     };
     req.send();
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');

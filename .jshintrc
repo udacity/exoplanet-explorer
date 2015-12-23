@@ -21,6 +21,7 @@
     "page": true,
     "app": true,
     "MathAndPhysics": true,
-    "PlanetRawData": true
+    "PlanetRawData": true,
+    "Promise": true
   }
 }

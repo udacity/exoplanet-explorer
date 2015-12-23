@@ -34,12 +34,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
       .center-text {
         text-align: center;
       }
-      @media screen and (max-width: 600px) {
-        .indent-xs {
-          margin-left: 16px;
-          margin-right: 16px;
-        }
-      }
       @keyframes rotate {
         from {
           transform: rotate(0deg);
@@ -56,33 +50,33 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
     </style>
 
-    <h2 class="results indent-xs">Search</h2>
-    <p class="grey indent-xs" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
+    <h2 class="results indent">Search</h2>
+    <p class="grey indent" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
     <paper-input hidden$="{{queryString}}" type="text" class="indent" label="Custom search"></paper-input>
     <paper-material hidden$="{{queryString}}">
-      <h3 class="indent-xs">How to create a custom search</h3>
-      <p class="indent-xs">Use comma separated queries to perform more complex searches.</p>
-      <h4 class="indent-xs">Each part of the search should look like:</h4>
-      <p class="indent-xs"><code>field specific-value</code></p>
-      <p class="indent-xs center-text">or</p>
-      <p class="indent-xs"><code>field lower-number upper-number</code></p>
-      <h4 class="indent-xs">Examples</h4>
-      <p class="indent-xs"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
-      <p class="indent-xs"><code>mass 0 20, method transit</code> searches for planets that:
+      <h3 class="indent">How to create a custom search</h3>
+      <p class="indent">Use comma separated queries to perform more complex searches.</p>
+      <h4 class="indent">Each part of the search should look like:</h4>
+      <p class="indent"><code>field specific-value</code></p>
+      <p class="indent center-text">or</p>
+      <p class="indent"><code>field lower-number upper-number</code></p>
+      <h4 class="indent">Examples</h4>
+      <p class="indent"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
+      <p class="indent"><code>mass 0 20, method transit</code> searches for planets that:
         <ul>
           <li>have a mass between 0 and 20 Earth masses</li>
           <li>and were discovered using the transit method.</li>
         </ul>
       </p>
-      <p class="indent-xs"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
+      <p class="indent"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
         <ul>
           <li>are part of a system with only two planets</li>
           <li>were discovered between 2005 and 2009</li>
           <li>and have a mass 100-300 times the mass of the Sun.</li>
         </ul>
       </p>
-      <h4 class="indent-xs">Possible fields</h4>
-      <ul class="indent-xs">
+      <h4 class="indent">Possible fields</h4>
+      <ul class="indent">
         <li><code>radius</code> (in Earth radii)</li>
         <li><code>mass</code> (Earth masses)</li>
         <li><code>temperature</code> (K)</li>
@@ -92,8 +86,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <li><code>facility</code> (where it was found)</li>
         <li><code>telescope</code> (name of the telescope used)</li>
       </ul>
-      <p class="indent-xs">or any of these</p>
-      <ul>
+      <p class="indent">or any of these</p>
+      <ul class="indent">
         <li><code>ra</code> (degrees)</li>
         <li><code>dec</code> (degrees)</li>
         <li><code>pl_disc</code> (year discovered)</li>

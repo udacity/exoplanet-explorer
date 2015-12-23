@@ -343,35 +343,35 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="search-page" assetpath="elements/search-page/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;}code {font-weight: bold;font-size: 1.25em;}.subtext {font-size: 0.75em;}.grey {color: #727272;}.indent {margin-left: 16px;margin-right: 16px;}.center {margin-left: auto;margin-right: auto;}.center-text {text-align: center;}@media screen and (max-width: 600px) {.indent-xs {margin-left: 16px;margin-right: 16px;}}@keyframes rotate {from {transform: rotate(0deg);}to {transform: rotate(359deg);}}.spinner {animation: rotate 2s infinite linear;width: 100px;display: block;}</style>
+    <style>:host {display: block;}code {font-weight: bold;font-size: 1.25em;}.subtext {font-size: 0.75em;}.grey {color: #727272;}.indent {margin-left: 16px;margin-right: 16px;}.center {margin-left: auto;margin-right: auto;}.center-text {text-align: center;}@keyframes rotate {from {transform: rotate(0deg);}to {transform: rotate(359deg);}}.spinner {animation: rotate 2s infinite linear;width: 100px;display: block;}</style>
 
-    <h2 class="results indent-xs">Search</h2>
-    <p class="grey indent-xs" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
+    <h2 class="results indent">Search</h2>
+    <p class="grey indent" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
     <paper-input hidden$="{{queryString}}" type="text" class="indent" label="Custom search"></paper-input>
     <paper-material hidden$="{{queryString}}">
-      <h3 class="indent-xs">How to create a custom search</h3>
-      <p class="indent-xs">Use comma separated queries to perform more complex searches.</p>
-      <h4 class="indent-xs">Each part of the search should look like:</h4>
-      <p class="indent-xs"><code>field specific-value</code></p>
-      <p class="indent-xs center-text">or</p>
-      <p class="indent-xs"><code>field lower-number upper-number</code></p>
-      <h4 class="indent-xs">Examples</h4>
-      <p class="indent-xs"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
-      <p class="indent-xs"><code>mass 0 20, method transit</code> searches for planets that:
+      <h3 class="indent">How to create a custom search</h3>
+      <p class="indent">Use comma separated queries to perform more complex searches.</p>
+      <h4 class="indent">Each part of the search should look like:</h4>
+      <p class="indent"><code>field specific-value</code></p>
+      <p class="indent center-text">or</p>
+      <p class="indent"><code>field lower-number upper-number</code></p>
+      <h4 class="indent">Examples</h4>
+      <p class="indent"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
+      <p class="indent"><code>mass 0 20, method transit</code> searches for planets that:
         </p><ul>
           <li>have a mass between 0 and 20 Earth masses</li>
           <li>and were discovered using the transit method.</li>
         </ul>
       <p></p>
-      <p class="indent-xs"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
+      <p class="indent"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
         </p><ul>
           <li>are part of a system with only two planets</li>
           <li>were discovered between 2005 and 2009</li>
           <li>and have a mass 100-300 times the mass of the Sun.</li>
         </ul>
       <p></p>
-      <h4 class="indent-xs">Possible fields</h4>
-      <ul class="indent-xs">
+      <h4 class="indent">Possible fields</h4>
+      <ul class="indent">
         <li><code>radius</code> (in Earth radii)</li>
         <li><code>mass</code> (Earth masses)</li>
         <li><code>temperature</code> (K)</li>
@@ -381,8 +381,8 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <li><code>facility</code> (where it was found)</li>
         <li><code>telescope</code> (name of the telescope used)</li>
       </ul>
-      <p class="indent-xs">or any of these</p>
-      <ul>
+      <p class="indent">or any of these</p>
+      <ul class="indent">
         <li><code>ra</code> (degrees)</li>
         <li><code>dec</code> (degrees)</li>
         <li><code>pl_disc</code> (year discovered)</li>
@@ -428,27 +428,20 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       <div class="layout horizontal around-justified margin-top">
         <a class="nolink" href$="/search/sliders-{{queryString}}"><paper-button raised="" noink="" class="indigo">Search</paper-button></a>
-        <paper-button class="grey">Reset</paper-button>
+        <a class="nolink grey uppercase" href="/search/how"><paper-button class="subtext" style="margin-top: 4px;">Custom search</paper-button></a>
       </div>
 
-    </paper-material>
-
-    <paper-material>
-      <paper-input type="text" label="Custom Search" value="{{customQuery}}"></paper-input>
-      <div class="layout horizontal around-justified margin-top">
-        <a class="nolink" href$="/search/{{customQuery}}"><paper-button raised="" noink="" class="indigo">Search</paper-button></a>
-        <a class="nolink grey uppercase" href="/search/how"><paper-button class="subtext" style="margin-top: -8px; width: 82px;">how to custom search</paper-button></a>
-      </div>
     </paper-material>
 
     <paper-material>
       <h3 class="indent" id="posters">Not sure what to search for? Here are a few fantastic destinations!</h3>
-      <a href="/planet/HD_40307g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
-      <a href="/planet/Kepler_16b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
-      <a href="/planet/Kepler_186f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
-      <a href="/planet/600"><img class="full-width" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
-      <a href="/planet/PSOJ318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSOJ318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
+      <a href="/planet/Kepler-16%20b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
+      <a href="/planet/Kepler-186%20f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
+      <a href="/planet/HD40307%20g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
+      <a href="/planet/51Peg%20b"><img class="full-width" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
+      <a href="https://en.wikipedia.org/wiki/PSO_J318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSOJ318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
       <div class="subtext right"><a class="nolink grey" href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">Posters Source</a></div>
+      <p class="indent">Or, try searching for <a href="/search/sliders-%7B%22distance%22:0,%22radius%22:1,%22mass%22:1,%22temperature%22:2%7D">Earth-like planets</a>!</p>
     </paper-material>
 
     <paper-material>

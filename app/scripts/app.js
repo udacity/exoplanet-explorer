@@ -18,7 +18,7 @@ Instructions:
    */
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
-  };
+  }
 
   /**
    * XHR wrapped in a Promise using Fetch.
@@ -32,7 +32,7 @@ Instructions:
 
     Your code goes here!
      */
-  };
+  }
 
   /**
    * Performs an XHR for a JSON and returns a parsed JSON response.
@@ -45,7 +45,7 @@ Instructions:
 
     Your code goes here!
      */
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');

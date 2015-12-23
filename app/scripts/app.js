@@ -1,10 +1,10 @@
 /*
 Instructions:
-(1) Rewrite get with the Fetch API: https://davidwalsh.name/fetch
-(2) Finish the getJSON method. getJSON should take a URL and return the parsed JSON response.
-  (a) getJSON needs to return a Promise!
-(3) Test by console.logging the response and by passing the query string from getJSON to addSearchHeader.
-(4) Handle errors by passing "unknown" to addSearchHeader.
+(1) Get the planet data and add the search header.
+(2) Create the first thumbnail with createPlanetThumb(data)
+(3) Handle errors!
+  (a) Pass 'unknown' to the search header.
+  (b) console.log the error.
  */
 
 (function(document) {
@@ -21,7 +21,19 @@ Instructions:
   };
 
   /**
-   * XHR wrapped in a Promise.
+   * Helper function to create a planet thumbnail.
+   * @param  {Object} data - The raw data describing the planet.
+   */
+  function createPlanetThumb(data) {
+    var pT = document.createElement('planet-thumb');
+    for (let d in data) {
+      pT[d] = data[d];
+    }
+    home.appendChild(pT);
+  }
+
+  /**
+   * XHR wrapped in a promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
@@ -44,14 +56,21 @@ Instructions:
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
+
     getJSON('../data/earth-like-results.json')
     .then(function(response) {
       addSearchHeader(response.query);
-      console.log(response);
+      return getJSON(response.results[0]);
     })
-    .catch(function(error) {
+    .catch(function() {
+      throw Error('Search Request Error');
+    })
+    .then(function(planetData) {
+      createPlanetThumb(planetData);
+    })
+    .catch(function(e) {
       addSearchHeader('unknown');
-      console.log(error);
+      console.log(e);
     })
   });
 })(document);

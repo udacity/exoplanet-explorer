@@ -1,7 +1,4 @@
 'use strict';
-// if a search request arrives before the data is ready,
-// send back a pending state, then send the data when it's
-// ready to the same requester.
 
 // http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
 function clone(obj) {
@@ -28,10 +25,10 @@ function clone(obj) {
     return copy;
   }
 
-  throw new Error("Unable to copy obj! Its type isn't supported.");
+  throw new Error('Unable to copy object! Its type isn\'t supported.');
 }
 
-// match what the homepage says
+// match what the homepage sliders say
 var queryPairings = {
   radius: {
     '0': {
@@ -110,7 +107,7 @@ var queryPairings = {
 // queryString > queryParts > parts > pieces
 function handleSlidersQuery(queryString) {
   var params = [];
-  queryString = JSON.parse(queryString.replace('sliders-', ''));
+  queryString = JSON.parse(queryString.replace('s=', ''));
 
   // matches the slider query with the pairings above
   for (var q in queryString) {
@@ -131,6 +128,7 @@ function handleSlidersQuery(queryString) {
 // distance between 10 and 20 ly and mass between 1 and 3 masse
 function handleCustomQuery(queryString) {
   var params = [];
+  queryString = JSON.parse(queryString.replace('q=', ''));
   // split on commas
   // split result on spaces
   // if known field and 1 value, specific
@@ -172,10 +170,10 @@ var queryableFunctions = {
     var type = 'byField';
 
     try {
-      if (queryString.indexOf('sliders-') === 0) {
+      if (queryString.indexOf('s=') === 0) {
         // made with sliders
         params = handleSlidersQuery(queryString);
-      } else {
+      } else if (queryString.indexOf('q=') === 0){
         // it's custom
         params = handleCustomQuery(queryString);
       }

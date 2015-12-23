@@ -22,7 +22,7 @@ Instructions:
       // it's 'unknown', so leave it alone
     }
     home.innerHTML = '<h2 class="page-title">query: ' + response + '</h2>';
-  };
+  }
 
   /**
    * XHR wrapped in a promise. Credit to Jake Archibald.
@@ -38,14 +38,14 @@ Instructions:
           resolve(req.response);
         } else {
           reject(Error(req.statusText));
-        };
+        }
       };
       req.onerror = function() {
         reject(Error('Network Error'));
       };
       req.send();
     });
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');

@@ -39,13 +39,13 @@
       return color;
     },
     getTemperatureInCelsius: function(tempK) {
-      if (!tempK) { return 0; };
+      if (!tempK) { return 0; }
       var temp = tempK - 273;
       return this.getSigFigs(tempK, 273, temp);
     },
     pcToLy: function(dist) {
       // gotta respect sigfigs
-      if (!dist) { return '0' };
+      if (!dist) { return '0'; }
       var digits = dist.toString().length;
       var ly = (dist / 3.26).toString();
       ly = ly.slice(0, digits);

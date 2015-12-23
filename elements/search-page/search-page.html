@@ -3,8 +3,6 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../behaviors/search-utilities.html">
-<link rel="import" href="../behaviors/math-and-physics.html">
 
 <dom-module id="search-page">
   <template>
@@ -47,13 +45,23 @@ Copyright (c) 2015 Udacity. All rights reserved.
         width: 100px;
         display: block;
       }
+      paper-input#custom-search {
+        max-width: 600px;
+      }
+
+      @media screen and (min-width: 601px) {
+        paper-input#custom-search {
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
 
     </style>
 
     <h2 class="results indent">Search</h2>
     <p class="grey indent" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
     <form is="iron-form" id="form" method="get" action$="#!/search/q={{customQuery}}">
-      <paper-input hidden$="{{queryString}}" type="text" class="indent" label="Custom search" on-submit$="{{test}}" value="{{customQuery}}"></paper-input>
+      <paper-input id="custom-search" hidden$="{{queryString}}" type="text" class="indent" label="Custom search" value="{{customQuery}}"></paper-input>
     </form>
     <paper-material hidden$="{{queryString}}">
       <h3 class="indent">How to create a custom search</h3>
@@ -119,7 +127,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'search-page',
-        behaviors: [MathAndPhysics],
         attached: function() {
           var self = this;
           this.resultsContainer = this.querySelector('.search-results');

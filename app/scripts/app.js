@@ -17,7 +17,7 @@ Hint: you'll probably still need to use .map.
    */
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
-  };
+  }
 
   /**
    * Helper function to create a planet thumbnail.
@@ -25,11 +25,11 @@ Hint: you'll probably still need to use .map.
    */
   function createPlanetThumb(data) {
     var pT = document.createElement('planet-thumb');
-    for (let d in data) {
+    for (var d in data) {
       pT[d] = data[d];
     }
     home.appendChild(pT);
-  };
+  }
 
   /**
    * XHR wrapped in a promise
@@ -38,7 +38,7 @@ Hint: you'll probably still need to use .map.
    */
   function get(url) {
     return fetch(url);
-  };
+  }
 
   /**
    * Performs an XHR for a JSON and returns a parsed JSON response.
@@ -49,13 +49,16 @@ Hint: you'll probably still need to use .map.
     return get(url).then(function(response) {
       return response.json();
     });
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
 
     getJSON('../data/earth-like-results.json')
     .then(function(response) {
+
+      addSearchHeader(response.query);
+
       return Promise.all(response.results.map(getJSON));
     })
     .then(function(planetData) {

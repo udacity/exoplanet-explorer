@@ -18,7 +18,7 @@ Instructions:
    */
   function addSearchHeader(query) {
     home.innerHTML = '<h2 class="page-title">query: ' + query + '</h2>';
-  };
+  }
 
   /**
    * Helper function to create a planet thumbnail.
@@ -26,11 +26,11 @@ Instructions:
    */
   function createPlanetThumb(data) {
     var pT = document.createElement('planet-thumb');
-    for (let d in data) {
+    for (var d in data) {
       pT[d] = data[d];
     }
     home.appendChild(pT);
-  };
+  }
 
   /**
    * XHR wrapped in a promise
@@ -39,7 +39,7 @@ Instructions:
    */
   function get(url) {
     return fetch(url);
-  };
+  }
 
   /**
    * Performs an XHR for a JSON and returns a parsed JSON response.
@@ -50,7 +50,7 @@ Instructions:
     return get(url).then(function(response) {
       return response.json();
     });
-  };
+  }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
@@ -59,9 +59,11 @@ Instructions:
     .then(function(response) {
       var sequence = Promise.resolve();
 
+      addSearchHeader(response.query);
+
       response.results.forEach(function(url) {
         sequence = sequence.then(function() {
-          return getJSON(url)
+          return getJSON(url);
         })
         .then(createPlanetThumb);
       });

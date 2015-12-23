@@ -13,15 +13,108 @@ Copyright (c) 2015 Udacity. All rights reserved.
       :host {
         display: block;
       }
+      code {
+        font-weight: bold;
+        font-size: 1.25em;
+      }
+      .subtext {
+        font-size: 0.75em;
+      }
+      .grey {
+        color: #727272;
+      }
+      .indent {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+      .center {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .center-text {
+        text-align: center;
+      }
+      @media screen and (max-width: 600px) {
+        .indent-xs {
+          margin-left: 16px;
+          margin-right: 16px;
+        }
+      }
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to { 
+          transform: rotate(359deg);
+        }
+      }
+      .spinner {
+        animation: rotate 2s infinite linear;
+        width: 100px;
+        display: block;
+      }
+
     </style>
-    <h1>Search!</h1>
-    <h2 class="query page-title">{{queryDisplay}}</h2>
-    <paper-material>
-      <h3>This is how you search!</h3>
-      <p id="number-of-planets"></p>
+
+    <h2 class="results indent-xs">Search</h2>
+    <p class="grey indent-xs" hidden$="{{!numberReturned}}">{{numberReturned}} planets found</p>
+    <paper-input hidden$="{{queryString}}" type="text" class="indent" label="Custom search"></paper-input>
+    <paper-material hidden$="{{queryString}}">
+      <h3 class="indent-xs">How to create a custom search</h3>
+      <p class="indent-xs">Use comma separated queries to perform more complex searches.</p>
+      <h4 class="indent-xs">Each part of the search should look like:</h4>
+      <p class="indent-xs"><code>field specific-value</code></p>
+      <p class="indent-xs center-text">or</p>
+      <p class="indent-xs"><code>field lower-number upper-number</code></p>
+      <h4 class="indent-xs">Examples</h4>
+      <p class="indent-xs"><code>name kepler 22-b</code> searches for Kepler 22-b specifically.</p>
+      <p class="indent-xs"><code>mass 0 20, method transit</code> searches for planets that:
+        <ul>
+          <li>have a mass between 0 and 20 Earth masses</li>
+          <li>and were discovered using the transit method.</li>
+        </ul>
+      </p>
+      <p class="indent-xs"><code>pl_pnum 2, pl_disc 2005 2009, mass 100 300</code> searches for planets that:
+        <ul>
+          <li>are part of a system with only two planets</li>
+          <li>were discovered between 2005 and 2009</li>
+          <li>and have a mass 100-300 times the mass of the Sun.</li>
+        </ul>
+      </p>
+      <h4 class="indent-xs">Possible fields</h4>
+      <ul class="indent-xs">
+        <li><code>radius</code> (in Earth radii)</li>
+        <li><code>mass</code> (Earth masses)</li>
+        <li><code>temperature</code> (K)</li>
+        <li><code>distance</code> (lightyears)</li>
+        <li><code>name</code> (the planet's name)</li>
+        <li><code>method</code> (how it was found)</li>
+        <li><code>facility</code> (where it was found)</li>
+        <li><code>telescope</code> (name of the telescope used)</li>
+      </ul>
+      <p class="indent-xs">or any of these</p>
+      <ul>
+        <li><code>ra</code> (degrees)</li>
+        <li><code>dec</code> (degrees)</li>
+        <li><code>pl_disc</code> (year discovered)</li>
+        <li><code>pl_dens</code> (density in g/cm<sup>3</sup>)</li>
+        <li><code>pl_pnum</code> (number of other planets in system)</li>
+        <li><code>pl_hostname</code> (host star's name)</li>
+        <li><code>hd_name</code> (star's Draper name)</li>
+        <li><code>hip_name</code> (star's Hipparcos name)</li>
+        <li><code>pl_cbflag</code> (<code>1</code> for binary stary)</li>
+        <li><code>st_age</code> (star's age in billions of years)</li>
+        <li><code>st_mass</code> (star's mass in Solar masses)</li>
+        <li><code>st_rad</code> (star's radius in Solar radii)</li>
+        <li><code>st_teff</code> (star's temperature)</li>
+        <li><code>st_optmag</code> (star's optical magnitude)</li>
+        <li><code>pl_orbeccen</code> (eccentricity)</li>
+        <li><code>pl_orbper</code> (orbital period in days)</li>
+      </ul>
+      
     </paper-material>
-    <paper-input type="text" placeholder="Search me!"></paper-input>
-    <div class="search-results">SPINNER GOES HERE!</div>
+    <img hidden$="{{hideSpinner}}" src="/images/jupiter.svg" class="spinner center">
+    <div class="search-results"></div>
   </template>
 
   <script>
@@ -36,18 +129,34 @@ Copyright (c) 2015 Udacity. All rights reserved.
           this.resultsContainer = this.querySelector('.search-results');
           Model.requests.addListener('returnedQuery', function(planets) {
             self.resultsContainer.innerHTML = '';
+            self.hideSpinner = true;
             if (planets.error) {
               self.resultsContainer.innerText = 'Something went wrong :(';
             } else if (planets.nosearch) {
-              // do nothing because they didn't actually search
+              self.resultsContainer.innerHTML = '';
+              self.queryString = '';
+            } else if (planets.length === 0) {
+              self.numberReturned = planets.length;
+              self.resultsContainer.innerText = 'Try widening your search!'
             } else {
-              self.querySelector('#number-of-planets').innerText = planets.length + ' planets found!'
+              self.numberReturned = planets.length;
               self.renderThumbnails(planets);
             }
           });
         },
-        performSearch: function() {
-          Model.requests.sendQuery('query', this.queryString);
+        reactToQuery: function() {
+          if (!this.queryString) {
+            this.resultsContainer.innerHTML = '';
+            this.hideSpinner = true;
+          } else if (this.queryString === 'how') {
+            this.numberReturned = 0;
+            this.resultsContainer.innerHTML = '';
+            this.queryString = false;
+            this.hideSpinner = true;
+          } else {
+            this.hideSpinner = false;
+            Model.requests.sendQuery('query', this.queryString);
+          }
         },
         renderThumbnails: function(planets) {
           var self = this;
@@ -88,13 +197,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
               batch: 1
             }
           },
-          value: {
-            type: String,
+          numberReturned: {
+            type: Number,
             notify: true,
-          },
-          range: {
-            type: String,
-            notify: true,
+            value: 0
           },
           queryDisplay: {
             type: String,
@@ -105,10 +211,15 @@ Copyright (c) 2015 Udacity. All rights reserved.
             type: Object,
             notify: true
           },
+          hideSpinner: {
+            type: Boolean,
+            notify: true,
+            value: true
+          },
           queryString: {
             type: String,
             notify: true,
-            observer: 'performSearch'
+            observer: 'reactToQuery'
           }
         },
         createPlanetThumb: function(planet, mark) {

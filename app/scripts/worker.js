@@ -135,6 +135,8 @@ function handleCustomQuery(queryString) {
   // split result on spaces
   // if known field and 1 value, specific
   // if known field and 2 values, lower and upper
+  // search differently whether numbers or strings
+  // need to smartly parse strings - remove punctuation and spaces
 
   var queryParts = queryString.split(',');
   queryParts.forEach(function (part) {

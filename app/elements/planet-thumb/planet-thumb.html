@@ -26,6 +26,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-right: auto;
         max-width: 300px;
       }
+      @media screen and (max-width: 600px) {
+        .indent-xs {
+          margin-left: 16px;
+          margin-right: 16px;
+        }
+      }
       @media screen and (max-width: 435px) {
         .vis {
           max-width: 75%;
@@ -45,11 +51,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         .top-right {
           padding-left: 32px;
         }
-        .title {
-          margin-top: 0px;
-          font-weight: bold;
-          font-size: 1.2em;
-        }
       }
     </style>
     <paper-material elevation="1">
@@ -63,9 +64,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
             </scale-visualizer>
           </div>
           <div class="top-right">
-            <p class="title">{{pl_name}}</p>
-            <p>{{distance}} lightyears away</p>
-            <p>Discovered in {{pl_disc}} with {{pl_telescope}}</p>
+            <h4 class="indent-xs">{{pl_name}}</h4>
+            <p class="indent-xs">{{distance}} lightyears away</p>
+            <p class="indent-xs">Discovered in {{pl_disc}} with {{pl_telescope}}</p>
           </div>
         </div>
       </a>

@@ -72,14 +72,13 @@ gulp.task('jshint', function () {
       'app/scripts/*.js',
       'app/elements/**/*.js',
       'app/elements/**/*.html',
-      '!app/elements/behaviors/**/*.html',
-      'gulpfile.js'
+      '!app/elements/behaviors/**/*.html'
     ])
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint.extract()) // Extract JS from .html files
     .pipe($.jshint())
     .pipe($.jshint.reporter('jshint-stylish'))
-    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
+    // .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
 });
 
 // Optimize images
@@ -253,6 +252,7 @@ gulp.task('serve', ['styles', 'elements', 'images'], function () {
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
   gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['jshint']);
+  gulp.watch(['app/scripts/*.js'], ['jshint']);
   gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -285,7 +285,7 @@ gulp.task('default', ['clean'], function (cb) {
   runSequence(
     ['copy', 'styles'],
     'elements',
-    ['images', 'fonts', 'html'],
+    ['jshint', 'images', 'fonts', 'html'],
     'vulcanize','rename-index', 'cache-config',
     cb);
 });

@@ -180,7 +180,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             temperature: this.temperature,
             habitableValue: this.habitableValue
           };
-          this.queryString = JSON.stringify(values)
+          this.queryString = JSON.stringify(values);
         },
         setCookie: function() {
           var cookie = this.querySelector('#query-cookie');
@@ -190,7 +190,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             mass: this.mass,
             temperature: this.temperature,
             habitableValue: this.habitableValue
-          }
+          };
           window.setTimeout(function() {
             cookie.value = JSON.stringify(value);
             cookie.createCookie();
@@ -205,7 +205,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             ['distance', 'radius', 'mass', 'temperature'].forEach(function(param) {
                 self[param] = params[param];
             });
-          };
+          }
           if (cookieValue) {
             updateParams();
           }

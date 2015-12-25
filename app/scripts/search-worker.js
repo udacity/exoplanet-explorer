@@ -5,7 +5,7 @@ function clone(obj) {
   var copy;
 
   // Handle the 3 simple types, and null or undefined
-  if (null == obj || "object" != typeof obj) return obj;
+  if (null === obj || 'object' !== typeof obj) { return obj; }
 
   // Handle Array
   if (obj instanceof Array) {
@@ -20,7 +20,7 @@ function clone(obj) {
   if (obj instanceof Object) {
     copy = {};
     for (var attr in obj) {
-      if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+      if (obj.hasOwnProperty(attr)) { copy[attr] = clone(obj[attr]); }
     }
     return copy;
   }
@@ -102,7 +102,7 @@ var queryPairings = {
       upper: -1
     }
   }
-}
+};
 
 // queryString > queryParts > parts > pieces
 function handleSlidersQuery(queryString) {
@@ -122,7 +122,7 @@ function handleSlidersQuery(queryString) {
   }
 
   return params;
-};
+}
 
 // queryString eg: distance 10 20, mass 1 3
 // distance between 10 and 20 ly and mass between 1 and 3 masse
@@ -150,11 +150,11 @@ function handleCustomQuery(queryString) {
         field: pieces[0],
         lower: pieces[1],
         upper: pieces[2]
-      })
+      });
     }
   });
   return params;
-};
+}
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
@@ -173,7 +173,7 @@ var queryableFunctions = {
       if (queryString.indexOf('s=') === 0) {
         // made with sliders
         params = handleSlidersQuery(queryString);
-      } else if (queryString.indexOf('q=') === 0){
+      } else if (queryString.indexOf('q=') === 0) {
         // it's custom
         params = handleCustomQuery(queryString);
       }
@@ -182,7 +182,7 @@ var queryableFunctions = {
       type = 'general';
       params = {
         specific: queryString
-      }
+      };
     }
 
     db.makeRequest(type, params).then(function(planets) {
@@ -190,7 +190,7 @@ var queryableFunctions = {
     })
     .catch(function() {
       reply('returnedQuery', {error: true});
-    })
+    });
   },
   getPlanetByName: function(name) {
     if (!name || typeof name !== 'string') {
@@ -213,8 +213,10 @@ function defaultQuery (vMsg) {
 }
 
 function reply (/* listener name, argument to pass 1, argument to pass 2, etc. etc */) {
-  if (arguments.length < 1) { throw new TypeError('reply - not enough arguments'); return; }
-  postMessage({'vo42t30': arguments[0], 'rnb93qh': Array.prototype.slice.call(arguments, 1)});
+  if (arguments.length < 1) {
+    throw new TypeError('reply - not enough arguments');
+  }
+  postMessage({'vo42t30': arguments[0],'rnb93qh': Array.prototype.slice.call(arguments, 1)});
 }
 
 onmessage = function (oEvent) {
@@ -250,14 +252,14 @@ function Database() {
         fireSearchReady = resolve;
         fireParsingFailed = reject;
       }
-    })
+    });
   };
   this._requestOnePlanet = function(name) {
     name = name.replace(/ /g, '');
     return getJSON('/data/planets/' + name + '.json');
   };
   this._reqByName = function(name) {
-    if (!name) { throw new TypeError('Database - getPlanetByName needs a name'); };
+    if (!name) { throw new TypeError('Database - getPlanetByName needs a name'); }
     return new Promise(function(resolve, reject) {
       if (searchReady) {
         var planet = database[index[name]];
@@ -278,7 +280,7 @@ function Database() {
     .catch(function(e) {
       // can't find the planet at all
       return {missing: true};
-    })
+    });
   };
   this._indexPlanet = function(planetData) {
     var planetName = planetData.pl_name;
@@ -295,7 +297,6 @@ function Database() {
     } else if (planetData.pl_radj) {
       radius = planetData.pl_radj * 11.2;
     }
-
 
     var mass = null;
     if (planetData.pl_masse) {
@@ -347,7 +348,7 @@ function Database() {
         dataReceived = true;
         return planets;
       });
-    };
+    }
     request().catch(function() {
       // try it one more time
       return request();
@@ -378,10 +379,10 @@ function Database() {
       var score = 0;
 
       params.forEach(function (param, index) {
-        if (index > 0 && !isMatch) { return; };
+        if (index > 0 && !isMatch) { return; }
 
         var value = planet[param.field] || planet.data[param.field];
-        if (!value) { return; };
+        if (!value) { return; }
 
         if (param.lower !== undefined && param.upper !== undefined) {
           if (value >= param.lower && value <= param.upper) {
@@ -420,8 +421,8 @@ function Database() {
       } else {
         return null;
       }
-    };
-    if (arguments.length !== 2) { throw new Error('Database - ' + arguments.length + ' request arguments received. 2 expected.'); };
+    }
+    if (arguments.length !== 2) { throw new Error('Database - ' + arguments.length + ' request arguments received. 2 expected.'); }
     switch (type) {
       case 'name':
         req = function() {
@@ -438,7 +439,7 @@ function Database() {
             self.database.forEach(function (planet) {
               // something about looking through all planet values for params
             });
-          })
+          });
         };
         break;
       case 'byField':
@@ -446,30 +447,29 @@ function Database() {
           return self._ready().then(function() {
             var results = [];
             database.forEach(function(planet) {
-              var hit = getPlanetMatch(planet, params)
-              if (hit) { results.push(hit); };
-            })
+              var hit = getPlanetMatch(planet, params);
+              if (hit) { results.push(hit); }
+            });
             results.sort(function(a, b) {
               return b.score - a.score;
-            })
+            });
             return results;
           })
           .catch(function(e) {
             throw new Error('Database - search error');
-          })
+          });
         };
         break;
       default:
         throw new TypeError('Database - unknown request type: ' + type + '.');
-        break;
     }
     return new Promise(function(resolve) {
       resolve(req());
-    })
+    });
   };
 
   this._init();
-};
+}
 
 var db = new Database();
 
@@ -507,4 +507,4 @@ function getJSON(url) {
   return get(url).then(JSON.parse).catch(function() {
     throw new Error('AJAX Error');
   });
-};
+}

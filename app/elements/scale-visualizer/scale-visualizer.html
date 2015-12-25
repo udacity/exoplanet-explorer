@@ -143,12 +143,11 @@ Copyright (c) 2015 Udacity. All rights reserved.
           function computeComparisonDimensions() {            
             var comparisonWidth = self.elementWidth / 3;
             return comparisonWidth;
-          };
+          }
           
           var comparisonWidth = computeComparisonDimensions();
 
           var planet = this.querySelector('circle#planet');
-          var earthImg = this.querySelector('earth-img');
 
           var radiusScaler = this.earthRadii;
           if (!radiusScaler) {

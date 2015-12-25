@@ -19,6 +19,12 @@
     "Polymer": true,
     "Platform": true,
     "page": true,
-    "app": true
+    "app": true,
+    "Promise": true,
+    "MathAndPhysics": true,
+    "PlanetRawData": true,
+    "Model": true,
+    "window": true,
+    "document": true
   }
 }

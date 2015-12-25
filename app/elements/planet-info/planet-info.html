@@ -139,12 +139,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
             'st_teff',
             'pl_pelink',
             'pl_edelink'
-          ]
+          ];
 
           rawData.forEach(function (d) {
             var path = d;
             var value = data[d];
-            if (!value) { value = '' };
+            if (!value) { value = ''; }
             self.set(path, value);
           });
         },
@@ -234,14 +234,14 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         scaleMessage: function(name) {
-          var message = "";
+          var message = '';
           var largeEnough = null;
           this.earthRadii > 7 ? largeEnough = true : largeEnough = false;
 
           if (largeEnough) {
-            message = name + ", Earth and Jupiter to scale.";
+            message = name + ', Earth and Jupiter to scale.';
           } else {
-            message = name + " and Earth to scale.";
+            message = name + ' and Earth to scale.';
           }
           return message;
         },
@@ -253,7 +253,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         toLowercase: function(string) {
-          if (!string || typeof string !== 'string') { return ''; };
+          if (!string || typeof string !== 'string') { return ''; }
           return string.toLowerCase();
         }
       });

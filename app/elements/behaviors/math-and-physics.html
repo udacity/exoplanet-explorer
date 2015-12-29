@@ -46,10 +46,11 @@
     pcToLy: function(dist) {
       // gotta respect sigfigs
       if (!dist) { return '0' };
+      // is this right? get rid of the .
       var digits = dist.toString().length;
       var ly = (dist / 3.26).toString();
       ly = ly.slice(0, digits);
-      return ly.toString();
+      return ly;
     },
     lyToTravelTime: function(ly) {
       if (!ly) { return null; }

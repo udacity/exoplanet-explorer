@@ -36,7 +36,7 @@ Instructions:
   }
 
   /**
-   * XHR wrapped in a promise
+   * XHR wrapped in a promise.
    * @param  {String} url - The URL to fetch.
    * @return {Promise}    - A Promise that resolves when the XHR succeeds and fails otherwise.
    */
@@ -59,11 +59,21 @@ Instructions:
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Uncomment the next line and start here when you're ready to add the first thumbnail!
 
-    Your code goes here!
-     */
-    // getJSON('../data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then(function(response) {
+      addSearchHeader(response.query);
+      return getJSON(response.results[0]);
+    })
+    .catch(function() {
+      throw Error('Search Request Error');
+    })
+    .then(function(planetData) {
+      createPlanetThumb(planetData);
+    })
+    .catch(function(e) {
+      addSearchHeader('unknown');
+      console.log(e);
+    });
   });
 })(document);

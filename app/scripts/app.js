@@ -6,6 +6,9 @@ Instructions:
 Hint: you'll probably still need to use .map.
  */
 
+// Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
+/* jshint unused: false */
+
 (function(document) {
   'use strict';
 

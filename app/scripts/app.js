@@ -7,9 +7,6 @@ Instructions:
 (2) Use developer tools to determine if the planets are being fetched in series or in parallel.
  */
 
-// Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
-/* jshint unused: false */
-
 (function(document) {
   'use strict';
 

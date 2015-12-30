@@ -64,7 +64,7 @@ gulp.task('jshint', function () {
       'app/scripts/**/*.js',
       'app/elements/**/*.js',
       'app/elements/**/*.html',
-      '!app/elements/behaviors/*.html'
+      '!app/elements/behaviors/*.html'  // raw data uses *_* properties
     ])
     .pipe(reload({stream: true, once: true}))
     .pipe($.jshint.extract()) // Extract JS from .html files

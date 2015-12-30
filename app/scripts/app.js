@@ -5,6 +5,9 @@ Instructions:
   (b) .map will execute the function against each element in the array immediately.
  */
 
+// Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
+/* jshint unused: false */
+
 (function(document) {
   'use strict';
 

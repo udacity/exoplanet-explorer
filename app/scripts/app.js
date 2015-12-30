@@ -5,6 +5,9 @@ Use what you've learned about Promises to request thumbnails in parallel but cre
 proper order even if all the requests haven't finished.
  */
 
+// Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
+/* jshint unused: false */
+
 (function(document) {
   'use strict';
 

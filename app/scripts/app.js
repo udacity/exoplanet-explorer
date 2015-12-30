@@ -7,6 +7,9 @@ Instructions:
 (4) Handle errors by passing "unknown" to addSearchHeader.
  */
 
+// Inline configuration for jshint below. Prevents `gulp jshint` from failing with quiz starter code.
+/* jshint unused: false */
+
 (function(document) {
   'use strict';
 

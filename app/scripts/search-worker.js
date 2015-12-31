@@ -261,13 +261,15 @@ function Database() {
     return getJSON('/data/planets/' + name + '.json');
   };
   this._reqByName = function(name) {
+    var self = this;
     if (!name) { throw new TypeError('Database - getPlanetByName needs a name'); }
+
     return new Promise(function(resolve, reject) {
       if (searchReady) {
-        var planet = database[index[name]];
+        var planet = database[nameIndex[name]];
         if (planet) {
-          // got the data so send it back
-          resolve(planet);
+          // got the data
+          resolve(planet.data);
         } else {
           // planet isn't in database
           reject();
@@ -276,7 +278,8 @@ function Database() {
         // db isn't ready so send a request for the specific planet
         reject();
       }
-    }).catch(function() {
+    })
+    .catch(function() {
       return self._requestOnePlanet(name);
     })
     .catch(function(e) {
@@ -363,7 +366,6 @@ function Database() {
     });
 
     searchReady = true;
-
     fireSearchReady();
   };
 

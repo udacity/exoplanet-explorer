@@ -14,12 +14,8 @@
   "unused": true,
   "newcap": false,
   "globals": {
-    "wrap": true,
-    "unwrap": true,
     "Polymer": true,
     "Platform": true,
-    "page": true,
-    "app": true,
     "Promise": true,
     "MathAndPhysics": true,
     "PlanetRawData": true,

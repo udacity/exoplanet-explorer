@@ -1,5 +1,7 @@
 'use strict';
 
+/* jshint unused: false */
+
 // http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
 function clone(obj) {
   var copy;

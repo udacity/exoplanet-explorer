@@ -27,13 +27,29 @@ Copyright (c) 2015 Udacity. All rights reserved.
         margin-right: auto;
         max-width: 75%;
       }
+      .center {
+        margin-left: auto;
+        margin-right: auto;
+      }
       .subtext {
         font-style: italic;
         font-size: 0.75em;
       }
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to { 
+          transform: rotate(359deg);
+        }
+      }
+      .spinner {
+        animation: rotate 2s infinite linear;
+        width: 100px;
+        display: block;
+      }
     </style>
-    <paper-material elevation="1">
-      <div class="layout vertical">
+    <paper-material hidden$="{{!hasData}}">
       <h2>{{nameParam}}</h2>
       <div class="vis" hidden$="{{!exists(earthRadii)}}">
         <scale-visualizer
@@ -83,6 +99,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </div>
       <p class="subtext">Last updated: {{rowupdate}}</p>
     </paper-material>
+    <img hidden$="{{hasData}}" src="/images/venus.svg" class="spinner center">
   </template>
 
   <script>
@@ -95,10 +112,13 @@ Copyright (c) 2015 Udacity. All rights reserved.
         attached: function() {
           var self = this;
           Model.requests.addListener('gotPlanetByName', function(data) {
+            self.hasData = true;
             self.bindData(data);
           });
+
         },
         loadData: function() {
+          this.hasData = false;
           Model.requests.sendQuery('getPlanetByName', this.nameParam);
         },
         bindData: function(data) {
@@ -149,6 +169,11 @@ Copyright (c) 2015 Udacity. All rights reserved.
           });
         },
         properties: {
+          hasData: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
           nameParam: {
             type: String,
             notify: true,
@@ -186,13 +211,15 @@ Copyright (c) 2015 Udacity. All rights reserved.
             type: Number,
             notify: true,
             computed: 'getEarthRadii(pl_rade, pl_radj)',
-            value: 0
+            value: 0,
+            reflectToAttribute: true
           },
           color: {
             type: String,
             notify: true,
             computed: 'tempToColor(pl_eqt)',
-            value: 'grey'
+            value: 'grey',
+            reflectToAttribute: true
           },
           distance: {
             type: String,

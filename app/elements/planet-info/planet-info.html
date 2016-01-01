@@ -114,6 +114,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           Model.requests.addListener('gotPlanetByName', function(data) {
             self.hasData = true;
             self.bindData(data);
+            console.log(data);
           });
 
         },

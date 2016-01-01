@@ -38,14 +38,14 @@ var queryPairings = {
     },
     '1': {
       lower: 0,
-      upper: 20
+      upper: 2
     },
     '2': {
-      lower: 20,
-      upper: 100
+      lower: 2,
+      upper: 7
     },
     '3': {
-      lower: 100,
+      lower: 7,
       upper: -1
     }
   },
@@ -378,43 +378,84 @@ function Database() {
   this.makeRequest = function(type, params) {
     var req = function() {};
 
+    function exists(value) {
+      if (value !== undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function getTypeOfMatch(param) {
+      if (exists(param.lower) && exists(param.upper) && exists(param.specific)) {
+        throw new Error('Database - Cannot have specific and range search parameters');
+      } else if (exists(param.lower) && exists(param.upper)) {
+        return 'range';
+      } else if (param.specific === -1) {
+        return 'any';
+      } else if (exists(param.specific) && typeof param.specific === 'string') {
+        return 'specific-string';
+      } else if (exists(param.specific) && typeof param.specific === 'number') {
+        return 'specific-number';
+      } else {
+        return 'any';
+      }
+    }
+
     function getPlanetMatch(planet, params) {
       var isMatch = false;
       var score = 0;
 
       params.forEach(function (param, index) {
+        // if the planet is already not a match after the first param, then skip
         if (index > 0 && !isMatch) { return; }
 
-        var value = planet[param.field] || planet.data[param.field];
-        if (!value) { return; }
+        var typeOfMatch = getTypeOfMatch(param);
 
-        if (param.lower !== undefined && param.upper !== undefined) {
-          if (value >= param.lower && value <= param.upper) {
-            isMatch = true;
-            score += 1;
-          } else if (param.upper === -1 && value >= param.lower) {
-            isMatch = true;
-            score += 1;
-          } else {
-            isMatch = false;
-          }
-        } else if (param.specific !== undefined) {
-          if (param.specific === -1) {
-            isMatch = true;
-            return;
-          }
+        // get the value to compare the planet's data against
+        var planetValue = planet[param.field] || planet.data[param.field];
 
-          try {
-            if (value.match('.*' + param.specific + '.*')) {
-              score += 1;
+        // the planet doesn't have data for this parameter
+        if (!planetValue && typeOfMatch !== 'any') {
+          isMatch = false;
+          return;
+        }
+
+        switch (typeOfMatch) {
+          case 'range':
+            if (param.upper === -1 && planetValue >= param.lower) {
               isMatch = true;
+              score += 1;
+            } else if (planetValue >= param.lower && planetValue <= param.upper) {
+              isMatch = true;
+              score += 1;
             } else {
               isMatch = false;
             }
-          } catch (e) {
-            // this means the field isn't there, right?
+            break;
+          case 'specific-string':
+            if (planetValue.match('.*' + param.specific + '.*')) {
+              isMatch = true;
+              score += 1;
+            } else {
+              isMatch = false;
+            }
+            break;
+          case 'specific-number':
+            if (Math.round(planetValue) === Math.round(param.specific)) {
+              isMatch = true;
+              score += 1;
+            } else {
+              isMatch = false;
+            }
+            break;
+          case 'any':
             isMatch = true;
-          }
+            score += 1;
+            break;
+          default:
+            throw new Error('Database - Unknown match type');
+            break;
         }
       });
 

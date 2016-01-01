@@ -265,14 +265,13 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="shared-styles" assetpath="styles/"><template><style>paper-material {border-radius: 2px;height: 100%;padding: 16px 0 16px 0;width: calc(98.66% - 16px);max-width: 600px;margin: 16px auto;background: white;}.page-title {@apply(--paper-font-display2);}@media (max-width: 600px) {.page-title {font-size: 24px!important;}}</style></template></dom-module><dom-module id="planet-info" assetpath="elements/planet-info/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;}paper-material {padding: 16px;}paper-input {display: block;max-width: 230px;margin-left: auto;margin-right: auto;}.vis {margin-left: auto;margin-right: auto;max-width: 75%;}.subtext {font-style: italic;font-size: 0.75em;}</style>
-    <paper-material elevation="1">
-      <div class="layout vertical">
+    <style>:host {display: block;}paper-material {padding: 16px;}paper-input {display: block;max-width: 230px;margin-left: auto;margin-right: auto;}.vis {margin-left: auto;margin-right: auto;max-width: 75%;}.center {margin-left: auto;margin-right: auto;}.subtext {font-style: italic;font-size: 0.75em;}@keyframes rotate {from {transform: rotate(0deg);}to {transform: rotate(359deg);}}.spinner {animation: rotate 2s infinite linear;width: 100px;display: block;}</style>
+    <paper-material hidden$="{{!hasData}}">
       <h2>{{nameParam}}</h2>
       <div class="vis" hidden$="{{!exists(earthRadii)}}">
         <scale-visualizer color$="{{color}}" earth-radii$="{{earthRadii}}">
         </scale-visualizer>
-        <p class="subtext">{{scaleMessage(nameParam)}}</p>
+        <p class="subtext">{{scaleMessage(earthRadii, nameParam)}}</p>
       </div>
 
       <div class="info">
@@ -314,8 +313,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
         </p>
       </div>
       <p class="subtext">Last updated: {{rowupdate}}</p>
-    
-  </div></paper-material></template>
+    </paper-material>
+    <img hidden$="{{hasData}}" src="/images/venus.svg" class="spinner center">
+  </template>
 
   </dom-module>
 <dom-module id="planet-thumb" assetpath="elements/planet-thumb/">
@@ -404,7 +404,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </ul>
       
     </paper-material>
-    <img hidden$="{{hideSpinner}}" src="/images/jupiter.svg" class="spinner center">
+    <img hidden$="{{hideSpinner}}" src="/images/venus.svg" class="spinner center">
     <div class="search-results"></div>
   </template>
 
@@ -536,6 +536,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <li><a href="https://www.polymer-project.org/1.0/">Polymer</a></li>
         <li><a href="https://commons.wikimedia.org/wiki/File:Emblem-earth.svg">Earth Image</a></li>
         <li><a href="https://commons.wikimedia.org/wiki/File:Tango_Jupiter.svg">Jupiter Image</a></li>
+        <li><a href="https://commons.wikimedia.org/wiki/File:Tango_Venus.svg">Venus Image (the loading spinner)</a></li>
       </ul>
     </paper-material>
 

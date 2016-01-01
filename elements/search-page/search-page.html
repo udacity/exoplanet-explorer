@@ -117,7 +117,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       </ul>
       
     </paper-material>
-    <img hidden$="{{hideSpinner}}" src="/images/jupiter.svg" class="spinner center">
+    <img hidden$="{{hideSpinner}}" src="/images/venus.svg" class="spinner center">
     <div class="search-results"></div>
   </template>
 
@@ -140,7 +140,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
               self.queryString = '';
             } else if (planets.length === 0) {
               self.numberReturned = planets.length;
-              self.resultsContainer.innerText = 'Try widening your search!'
+              self.resultsContainer.innerText = 'Try widening your search!';
             } else {
               self.numberReturned = planets.length;
               self.renderThumbnails(planets);
@@ -190,7 +190,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             if (self._holdingPen.pen.length === 0) {
               window.clearInterval(interval);
             }
-          }, 1000)
+          }, 1000);
         },
         test: function() {
           console.log('test');
@@ -232,7 +232,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             notify: true
           }
         },
-        createPlanetThumb: function(planet, mark) {
+        createPlanetThumb: function(planet) {
           var pT = document.createElement('planet-thumb');
           for (var d in planet.data) {
             pT[d] = planet.data[d];

@@ -56,7 +56,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           color$="{{color}}"
           earth-radii$="{{earthRadii}}">
         </scale-visualizer>
-        <p class="subtext">{{scaleMessage(nameParam)}}</p>
+        <p class="subtext">{{scaleMessage(earthRadii, nameParam)}}</p>
       </div>
 
       <div class="info">
@@ -260,15 +260,15 @@ Copyright (c) 2015 Udacity. All rights reserved.
             return false;
           }
         },
-        scaleMessage: function(name) {
+        scaleMessage: function(earthRadii, nameParam) {
           var message = '';
           var largeEnough = null;
-          this.earthRadii > 7 ? largeEnough = true : largeEnough = false;
+          earthRadii > 7 ? largeEnough = true : largeEnough = false;
 
           if (largeEnough) {
-            message = name + ', Earth and Jupiter to scale.';
+            message = nameParam + ', Earth and Jupiter to scale.';
           } else {
-            message = name + ' and Earth to scale.';
+            message = nameParam + ' and Earth to scale.';
           }
           return message;
         },

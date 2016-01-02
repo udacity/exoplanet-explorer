@@ -290,7 +290,6 @@ function Database() {
   this._indexPlanet = function(planetData) {
     var planetName = planetData.pl_name;
 
-    // add to indexes
     var distance = null;
     if (planetData.st_dist) {
       distance = planetData.st_dist * 3.26;
@@ -336,7 +335,6 @@ function Database() {
       method = planetData.pl_discmethod;
     }
 
-    // add to main database
     database.push({
       name: planetName,
       data: planetData,
@@ -358,7 +356,11 @@ function Database() {
       // try it one more time
       return request();
     })
-    .then(self._prepDatabase);
+    .then(self._prepDatabase)
+    .catch(function() {
+      requestError = true;
+      throw new Error('Database - Cannot retrieve database.');
+    });
   };
   this._prepDatabase = function(planets) {
     planets.forEach(function(planet) {
@@ -509,7 +511,11 @@ function Database() {
         throw new TypeError('Database - unknown request type: ' + type + '.');
     }
     return new Promise(function(resolve) {
-      resolve(req());
+      if (requestError) {
+        reject();
+      } else {
+        resolve(req());
+      }
     });
   };
 

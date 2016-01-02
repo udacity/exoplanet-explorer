@@ -106,8 +106,13 @@ var queryPairings = {
   }
 };
 
-// queryString > queryParts > parts > pieces
+/**
+ * Creates the params for the specific search from sliders.
+ * @param  {String} queryString In the URL created by the sliders
+ * @return {Object}             The params for specific searches.
+ */
 function handleSlidersQuery(queryString) {
+  // queryString > queryParts > parts > pieces
   var params = [];
   queryString = JSON.parse(queryString.replace('s=', ''));
 
@@ -126,9 +131,14 @@ function handleSlidersQuery(queryString) {
   return params;
 }
 
-// queryString eg: distance 10 20, mass 1 3
-// distance between 10 and 20 ly and mass between 1 and 3 masse
+/**
+ * Creates the params for the specific search from custom entry.
+ * @param  {String} queryString The custom search
+ * @return {Object}             The params for specific searches.
+ */
 function handleCustomQuery(queryString) {
+  // queryString eg: distance 10 20, mass 1 3
+  // distance between 10 and 20 ly and mass between 1 and 3 masse
   var params = [];
   queryString = JSON.parse(queryString.replace('q=', ''));
   // split on commas

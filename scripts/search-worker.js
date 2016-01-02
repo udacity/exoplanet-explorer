@@ -38,14 +38,14 @@ var queryPairings = {
     },
     '1': {
       lower: 0,
-      upper: 20
+      upper: 2
     },
     '2': {
-      lower: 20,
-      upper: 100
+      lower: 2,
+      upper: 7
     },
     '3': {
-      lower: 100,
+      lower: 7,
       upper: -1
     }
   },
@@ -106,8 +106,13 @@ var queryPairings = {
   }
 };
 
-// queryString > queryParts > parts > pieces
+/**
+ * Creates the params for the specific search from sliders.
+ * @param  {String} queryString In the URL created by the sliders
+ * @return {Object}             The params for specific searches.
+ */
 function handleSlidersQuery(queryString) {
+  // queryString > queryParts > parts > pieces
   var params = [];
   queryString = JSON.parse(queryString.replace('s=', ''));
 
@@ -126,21 +131,24 @@ function handleSlidersQuery(queryString) {
   return params;
 }
 
-// queryString eg: distance 10 20, mass 1 3
-// distance between 10 and 20 ly and mass between 1 and 3 masse
+/**
+ * Creates the params for the specific search from custom entry.
+ * @param  {String} queryString The custom search
+ * @return {Object}             The params for specific searches.
+ */
 function handleCustomQuery(queryString) {
+  // queryString eg: distance 10 20, mass 1 3
+  // distance between 10 and 20 ly and mass between 1 and 3 masse
   var params = [];
-  queryString = JSON.parse(queryString.replace('q=', ''));
-  // split on commas
-  // split result on spaces
-  // if known field and 1 value, specific
-  // if known field and 2 values, lower and upper
-  // search differently whether numbers or strings
-  // need to smartly parse strings - remove punctuation and spaces
+  var re = new RegExp(/^q\=/);
+  queryString = queryString.replace(re, '');
 
   var queryParts = queryString.split(',');
+
   queryParts.forEach(function (part) {
-    var pieces = part.replace(/\W+/g, ' ').split(' ');
+    var pieces = part.replace(/^ +/, '');
+    var pieces = part.replace(/ +$/, '');
+    pieces = part.replace(/\W+/g, ' ').split(' ');
 
     if (pieces.length === 2) {
       params.push({
@@ -155,7 +163,12 @@ function handleCustomQuery(queryString) {
       });
     }
   });
-  return params;
+
+  if (!params) {
+    return null;
+  } else {
+    return params;
+  }
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
@@ -168,20 +181,22 @@ var queryableFunctions = {
     }
 
     // query payload
-    var params = {};
+    var params = [];
     var type = 'byField';
 
-    try {
-      if (queryString.indexOf('s=') === 0) {
-        // made with sliders
-        params = handleSlidersQuery(queryString);
-      } else if (queryString.indexOf('q=') === 0) {
-        // it's custom
-        params = handleCustomQuery(queryString);
-      }
-    } catch (e) {
-      // if something is wrong with the payload, just search all fields
+    if (queryString.indexOf('s=') === 0) {
+      // made with sliders
+      params = handleSlidersQuery(queryString);
+    } else if (queryString.indexOf('q=') === 0) {
+      // it's custom
+      params = handleCustomQuery(queryString);
+    }
+
+    if (params.length === 0) {
+      // if something is misformed with the payload, just search all fields
       type = 'general';
+      var re = new RegExp(/^q\=/);
+      queryString = queryString.replace(re, '');
       params = {
         specific: queryString
       };
@@ -190,7 +205,7 @@ var queryableFunctions = {
     db.makeRequest(type, params).then(function(planets) {
       reply('returnedQuery', planets);
     })
-    .catch(function() {
+    .catch(function(e) {
       reply('returnedQuery', {error: true});
     });
   },
@@ -207,11 +222,8 @@ var queryableFunctions = {
   }
 };
 
-// system functions
-
 function defaultQuery (vMsg) {
-  // your default PUBLIC function executed only when main page calls the queryableWorker.postMessage() method directly
-  // do something
+  throw new Error('Search Worker - Missing query.');
 }
 
 function reply (/* listener name, argument to pass 1, argument to pass 2, etc. etc */) {
@@ -290,7 +302,6 @@ function Database() {
   this._indexPlanet = function(planetData) {
     var planetName = planetData.pl_name;
 
-    // add to indexes
     var distance = null;
     if (planetData.st_dist) {
       distance = planetData.st_dist * 3.26;
@@ -336,7 +347,6 @@ function Database() {
       method = planetData.pl_discmethod;
     }
 
-    // add to main database
     database.push({
       name: planetName,
       data: planetData,
@@ -358,7 +368,11 @@ function Database() {
       // try it one more time
       return request();
     })
-    .then(self._prepDatabase);
+    .then(self._prepDatabase)
+    .catch(function() {
+      requestError = true;
+      throw new Error('Database - Cannot retrieve database.');
+    });
   };
   this._prepDatabase = function(planets) {
     planets.forEach(function(planet) {
@@ -376,49 +390,137 @@ function Database() {
    * @return {[type]}        [description]
    */
   this.makeRequest = function(type, params) {
+    // prep for search request
     var req = function() {};
 
-    function getPlanetMatch(planet, params) {
+    function exists(value) {
+      if (value !== undefined) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function getTypeOfComparison(param) {
+      if (exists(param.lower) && exists(param.upper) && exists(param.specific)) {
+        throw new Error('Database - Cannot have specific and range search parameters.');
+      } else if (exists(param.lower) && exists(param.upper)) {
+        return 'range';
+      } else if (param.specific === -1) {
+        return 'any';
+      } else if (exists(param.specific) && typeof param.specific === 'string') {
+        return 'specific-string';
+      } else if (exists(param.specific) && typeof param.specific === 'number') {
+        return 'specific-number';
+      } else {
+        return 'any';
+      }
+    }
+
+    function compareValueToParam(typeOfComparison, planetValue, param) {
       var isMatch = false;
-      var score = 0;
-
-      params.forEach(function (param, index) {
-        if (index > 0 && !isMatch) { return; }
-
-        var value = planet[param.field] || planet.data[param.field];
-        if (!value) { return; }
-
-        if (param.lower !== undefined && param.upper !== undefined) {
-          if (value >= param.lower && value <= param.upper) {
+      switch (typeOfComparison) {
+        case 'range':
+          if (param.upper === -1 && planetValue >= param.lower) {
             isMatch = true;
-            score += 1;
-          } else if (param.upper === -1 && value >= param.lower) {
+          } else if (planetValue >= param.lower && planetValue <= param.upper) {
             isMatch = true;
-            score += 1;
           } else {
             isMatch = false;
           }
-        } else if (param.specific !== undefined) {
-          if (param.specific === -1) {
-            isMatch = true;
-            return;
+          break;
+        case 'specific-string':
+          if (typeof param.specific !== 'string') {
+            param.specific = param.specific.toString();
           }
-
-          try {
-            if (value.match('.*' + param.specific + '.*')) {
-              score += 1;
-              isMatch = true;
-            } else {
-              isMatch = false;
-            }
-          } catch (e) {
-            // this means the field isn't there, right?
+          var re = new RegExp('.*' + param.specific + '.*', 'i');
+          if (planetValue.match(re)) {
             isMatch = true;
+          } else {
+            isMatch = false;
+          }
+          break;
+        case 'specific-number':
+          if (Math.round(planetValue) === Math.round(param.specific)) {
+            isMatch = true;
+          } else {
+            isMatch = false;
+          }
+          break;
+        case 'any':
+          isMatch = true;
+          break;
+        default:
+          throw new Error('Database - Unknown match type.');
+          break;
+      }
+      return isMatch;
+    }
+
+    function searchAllFields(planet, param) {
+      var isHit = false;
+      var typeOfComparison = 'specific-string';
+
+      // check the values that are added with indexing
+      for (var field in planet) {
+        if (planet.hasOwnProperty(field) && field !== 'data' && !isHit) {
+          var planetValue = planet[field]
+          if (planetValue) {
+            planetValue = planetValue.toString();
+            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+          } else {
+            isHit = false;
           }
         }
+      }
+
+      // check the raw data
+      for (var field in planet.data) {
+        if (planet.data.hasOwnProperty(field) && !isHit) {
+          var planetValue = planet.data[field]
+          if (planetValue) {
+            planetValue = planetValue.toString();
+            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+          } else {
+            isHit = false;
+          }
+        }
+      }
+
+      if (isHit) {
+        var result = clone(planet);
+        return result;
+      } else {
+        return null;
+      }
+    }
+
+    function searchSpecificFields(planet, params) {
+      var isHit = false;
+      var score = 0;
+
+      params.forEach(function (param, index) {
+        // if the planet is already not a match after the first param, then skip
+        if (index > 0 && !isHit) { return; }
+
+        var typeOfComparison = getTypeOfComparison(param);
+
+        // use the computed value before using the raw data
+        // NOTE! planet.distance is mesaured in ly, planet.data.st_dist
+        // is measured in pc
+        var planetValue = planet[param.field] || planet.data[param.field];
+
+        // the planet doesn't have data for this parameter
+        if (!planetValue && typeOfComparison !== 'any') {
+          isHit = false;
+          return;
+        }
+
+        isHit = compareValueToParam(typeOfComparison, planetValue, param);
+        if (isHit) { score += 1; }
       });
 
-      if (isMatch) {
+      if (isHit) {
         var result = clone(planet);
         result.score = score;
         return result;
@@ -426,6 +528,8 @@ function Database() {
         return null;
       }
     }
+
+    // create the search request
     if (arguments.length !== 2) { throw new Error('Database - ' + arguments.length + ' request arguments received. 2 expected.'); }
     switch (type) {
       case 'name':
@@ -440,9 +544,20 @@ function Database() {
       case 'general':
         req = function() {
           return self._ready().then(function() {
-            self.database.forEach(function (planet) {
-              // something about looking through all planet values for params
+            var results = [];
+            // there's only 1 parameter
+            var param = params;
+            database.forEach(function(planet) {
+              var hit = searchAllFields(planet, param);
+              if (hit) { results.push(hit); }
             });
+            results.sort(function(a, b) {
+              return b.data.pl_name > a.data.pl_name;
+            });
+            return results;
+          })
+          .catch(function(e) {
+            throw new Error('Database - General search error.');
           });
         };
         break;
@@ -451,7 +566,7 @@ function Database() {
           return self._ready().then(function() {
             var results = [];
             database.forEach(function(planet) {
-              var hit = getPlanetMatch(planet, params);
+              var hit = searchSpecificFields(planet, params);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {
@@ -460,18 +575,25 @@ function Database() {
             return results;
           })
           .catch(function(e) {
-            throw new Error('Database - search error');
+            throw new Error('Database - Field search error.');
           });
         };
         break;
       default:
         throw new TypeError('Database - unknown request type: ' + type + '.');
     }
+
+    // give back the search request
     return new Promise(function(resolve) {
-      resolve(req());
+      if (requestError) {
+        reject();
+      } else {
+        resolve(req());
+      }
     });
   };
 
+  // init the database as soon as the Database is constructed
   this._init();
 }
 

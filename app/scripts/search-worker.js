@@ -190,8 +190,10 @@ var queryableFunctions = {
         params = handleCustomQuery(queryString);
       }
     } catch (e) {
-      // if something is wrong with the payload, just search all fields
+      // if something is misformed with the payload, just search all fields
+      // TODO: for numbers, create a range that's +/- 10?
       type = 'general';
+      queryString = queryString.replace('q=', '');
       params = {
         specific: queryString
       };
@@ -200,7 +202,8 @@ var queryableFunctions = {
     db.makeRequest(type, params).then(function(planets) {
       reply('returnedQuery', planets);
     })
-    .catch(function() {
+    .catch(function(e) {
+      console.log(e);
       reply('returnedQuery', {error: true});
     });
   },
@@ -217,11 +220,8 @@ var queryableFunctions = {
   }
 };
 
-// system functions
-
 function defaultQuery (vMsg) {
-  // your default PUBLIC function executed only when main page calls the queryableWorker.postMessage() method directly
-  // do something
+  throw new Error('Search Worker - Missing query.');
 }
 
 function reply (/* listener name, argument to pass 1, argument to pass 2, etc. etc */) {
@@ -388,6 +388,7 @@ function Database() {
    * @return {[type]}        [description]
    */
   this.makeRequest = function(type, params) {
+    // prep for search request
     var req = function() {};
 
     function exists(value) {
@@ -427,7 +428,11 @@ function Database() {
           }
           break;
         case 'specific-string':
-          if (planetValue.match('.*' + param.specific + '.*')) {
+          if (typeof param.specific !== 'string') {
+            param.specific = param.specific.toString();
+          }
+          var re = new RegExp('.*' + param.specific + '.*', 'i');
+          if (planetValue.match(re)) {
             isMatch = true;
           } else {
             isMatch = false;
@@ -451,8 +456,41 @@ function Database() {
     }
 
     function searchAllFields(planet, param) {
-      // for numbers, create a range that's +/- 10?
-      
+      var isHit = false;
+      var typeOfComparison = 'specific-string';
+
+      // check the values that are added with indexing
+      for (var field in planet) {
+        if (planet.hasOwnProperty(field) && field !== 'data' && !isHit) {
+          var planetValue = planet[field]
+          if (planetValue) {
+            planetValue = planetValue.toString();
+            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+          } else {
+            isHit = false;
+          }
+        }
+      }
+
+      // check the raw data
+      for (var field in planet.data) {
+        if (planet.data.hasOwnProperty(field) && !isHit) {
+          var planetValue = planet.data[field]
+          if (planetValue) {
+            planetValue = planetValue.toString();
+            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+          } else {
+            isHit = false;
+          }
+        }
+      }
+
+      if (isHit) {
+        var result = clone(planet);
+        return result;
+      } else {
+        return null;
+      }
     }
 
     function searchSpecificFields(planet, params) {
@@ -466,7 +504,7 @@ function Database() {
         var typeOfComparison = getTypeOfComparison(param);
 
         // use the computed value before using the raw data
-        // NOTE! planet.distance is mesaured in ly, planet.rawData.st_dist
+        // NOTE! planet.distance is mesaured in ly, planet.data.st_dist
         // is measured in pc
         var planetValue = planet[param.field] || planet.data[param.field];
 
@@ -488,6 +526,8 @@ function Database() {
         return null;
       }
     }
+
+    // create the search request
     if (arguments.length !== 2) { throw new Error('Database - ' + arguments.length + ' request arguments received. 2 expected.'); }
     switch (type) {
       case 'name':
@@ -502,13 +542,15 @@ function Database() {
       case 'general':
         req = function() {
           return self._ready().then(function() {
-            // TODO: if param.field === '*', then search all fields
+            var results = [];
+            // there's only 1 parameter
+            var param = params;
             database.forEach(function(planet) {
               var hit = searchAllFields(planet, param);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {
-              return b.score - a.score;
+              return b.data.pl_name > a.data.pl_name;
             });
             return results;
           })
@@ -538,6 +580,8 @@ function Database() {
       default:
         throw new TypeError('Database - unknown request type: ' + type + '.');
     }
+
+    // give back the search request
     return new Promise(function(resolve) {
       if (requestError) {
         reject();
@@ -547,6 +591,7 @@ function Database() {
     });
   };
 
+  // init the database as soon as the Database is constructed
   this._init();
 }
 

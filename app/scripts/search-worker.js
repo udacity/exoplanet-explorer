@@ -147,8 +147,8 @@ function handleCustomQuery(queryString) {
 
   queryParts.forEach(function (part) {
     var pieces = part.replace(/^ +/, '');
-    var pieces = part.replace(/ +$/, '');
-    pieces = part.replace(/\W+/g, ' ').split(' ');
+    pieces = pieces.replace(/ +$/, '');
+    pieces = pieces.split(' ');
 
     if (pieces.length === 2) {
       params.push({

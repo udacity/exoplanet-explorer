@@ -390,7 +390,7 @@ function Database() {
 
     function getTypeOfMatch(param) {
       if (exists(param.lower) && exists(param.upper) && exists(param.specific)) {
-        throw new Error('Database - Cannot have specific and range search parameters');
+        throw new Error('Database - Cannot have specific and range search parameters.');
       } else if (exists(param.lower) && exists(param.upper)) {
         return 'range';
       } else if (param.specific === -1) {
@@ -414,7 +414,9 @@ function Database() {
 
         var typeOfMatch = getTypeOfMatch(param);
 
-        // get the value to compare the planet's data against
+        // use the computed value before using the raw data
+        // NOTE! planet.distance is mesaured in ly, planet.rawData.st_dist
+        // is measured in pc
         var planetValue = planet[param.field] || planet.data[param.field];
 
         // the planet doesn't have data for this parameter
@@ -456,7 +458,7 @@ function Database() {
             score += 1;
             break;
           default:
-            throw new Error('Database - Unknown match type');
+            throw new Error('Database - Unknown match type.');
             break;
         }
       });
@@ -511,7 +513,7 @@ function Database() {
             return results;
           })
           .catch(function(e) {
-            throw new Error('Database - search error');
+            throw new Error('Database - Field search error.');
           });
         };
         break;

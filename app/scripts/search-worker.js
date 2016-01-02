@@ -483,9 +483,17 @@ function Database() {
       case 'general':
         req = function() {
           return self._ready().then(function() {
-            self.database.forEach(function (planet) {
-              // something about looking through all planet values for params
+            database.forEach(function(planet) {
+              var hit = getPlanetMatch(planet, params);
+              if (hit) { results.push(hit); }
             });
+            results.sort(function(a, b) {
+              return b.score - a.score;
+            });
+            return results;
+          })
+          .catch(function(e) {
+            throw new Error('Database - General search error.');
           });
         };
         break;

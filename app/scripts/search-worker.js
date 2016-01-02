@@ -2,34 +2,6 @@
 
 /* jshint unused: false */
 
-// http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
-function clone(obj) {
-  var copy;
-
-  // Handle the 3 simple types, and null or undefined
-  if (null === obj || 'object' !== typeof obj) { return obj; }
-
-  // Handle Array
-  if (obj instanceof Array) {
-    copy = [];
-    for (var i = 0, len = obj.length; i < len; i++) {
-      copy[i] = clone(obj[i]);
-    }
-    return copy;
-  }
-
-  // Handle Object
-  if (obj instanceof Object) {
-    copy = {};
-    for (var attr in obj) {
-      if (obj.hasOwnProperty(attr)) { copy[attr] = clone(obj[attr]); }
-    }
-    return copy;
-  }
-
-  throw new Error('Unable to copy object! Its type isn\'t supported.');
-}
-
 // match what the homepage sliders say
 var queryPairings = {
   radius: {
@@ -128,7 +100,11 @@ function handleSlidersQuery(queryString) {
     params.push(param);
   }
 
-  return params;
+  if (!params) {
+    return null;
+  } else {
+    return params;
+  }
 }
 
 /**
@@ -174,16 +150,16 @@ function handleCustomQuery(queryString) {
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
   query: function(queryString) {
-
     if (!queryString || typeof queryString !== 'string') {
       reply('returnedQuery', {nosearch: true});
       return;
     }
 
-    // query payload
+    // query payload to be sent to the database
     var params = [];
     var type = 'byField';
 
+    // parse the search and build the payload params
     if (queryString.indexOf('s=') === 0) {
       // made with sliders
       params = handleSlidersQuery(queryString);
@@ -192,8 +168,8 @@ var queryableFunctions = {
       params = handleCustomQuery(queryString);
     }
 
+    // something is misformed, just search all fields
     if (params.length === 0) {
-      // if something is misformed with the payload, just search all fields
       type = 'general';
       var re = new RegExp(/^q\=/);
       queryString = queryString.replace(re, '');
@@ -202,7 +178,8 @@ var queryableFunctions = {
       };
     }
 
-    db.makeRequest(type, params).then(function(planets) {
+    db.makeRequest(type, params)
+    .then(function(planets) {
       reply('returnedQuery', planets);
     })
     .catch(function(e) {
@@ -214,9 +191,11 @@ var queryableFunctions = {
       reply('gotPlanetByName', {noname: true});
       return;
     }
-    db.makeRequest('name', {name: name}).then(function(planet) {
+    db.makeRequest('name', {name: name})
+    .then(function(planet) {
       reply('gotPlanetByName', planet);
-    }).catch(function() {
+    })
+    .catch(function() {
       reply('gotPlanetByName', {error: true});
     });
   }
@@ -348,12 +327,15 @@ function Database() {
     }
 
     database.push({
-      name: planetName,
       data: planetData,
-      distance: distance,
-      temperature: temperature,
+      name: planetName,
       mass: mass,
-      radius: radius
+      radius: radius,
+      temperature: temperature,
+      distance: distance,
+      facility: facility,
+      telescope: telescope,
+      method: method
     });
     nameIndex[planetName] = database.length - 1;
   };
@@ -392,14 +374,6 @@ function Database() {
   this.makeRequest = function(type, params) {
     // prep for search request
     var req = function() {};
-
-    function exists(value) {
-      if (value !== undefined) {
-        return true;
-      } else {
-        return false;
-      }
-    }
 
     function getTypeOfComparison(param) {
       if (exists(param.lower) && exists(param.upper) && exists(param.specific)) {
@@ -633,4 +607,40 @@ function getJSON(url) {
   return get(url).then(JSON.parse).catch(function() {
     throw new Error('AJAX Error');
   });
+}
+
+// http://stackoverflow.com/questions/728360/most-elegant-way-to-clone-a-javascript-object
+function clone(obj) {
+  var copy;
+
+  // Handle the 3 simple types, and null or undefined
+  if (null === obj || 'object' !== typeof obj) { return obj; }
+
+  // Handle Array
+  if (obj instanceof Array) {
+    copy = [];
+    for (var i = 0, len = obj.length; i < len; i++) {
+      copy[i] = clone(obj[i]);
+    }
+    return copy;
+  }
+
+  // Handle Object
+  if (obj instanceof Object) {
+    copy = {};
+    for (var attr in obj) {
+      if (obj.hasOwnProperty(attr)) { copy[attr] = clone(obj[attr]); }
+    }
+    return copy;
+  }
+
+  throw new Error('Unable to copy object! Its type isn\'t supported.');
+}
+
+function exists(value) {
+  if (value !== undefined) {
+    return true;
+  } else {
+    return false;
+  }
 }

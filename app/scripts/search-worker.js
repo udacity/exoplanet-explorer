@@ -140,17 +140,15 @@ function handleCustomQuery(queryString) {
   // queryString eg: distance 10 20, mass 1 3
   // distance between 10 and 20 ly and mass between 1 and 3 masse
   var params = [];
-  queryString = JSON.parse(queryString.replace('q=', ''));
-  // split on commas
-  // split result on spaces
-  // if known field and 1 value, specific
-  // if known field and 2 values, lower and upper
-  // search differently whether numbers or strings
-  // need to smartly parse strings - remove punctuation and spaces
+  var re = new RegExp(/^q\=/);
+  queryString = queryString.replace(re, '');
 
   var queryParts = queryString.split(',');
+
   queryParts.forEach(function (part) {
-    var pieces = part.replace(/\W+/g, ' ').split(' ');
+    var pieces = part.replace(/^ +/, '');
+    var pieces = part.replace(/ +$/, '');
+    pieces = part.replace(/\W+/g, ' ').split(' ');
 
     if (pieces.length === 2) {
       params.push({
@@ -165,7 +163,12 @@ function handleCustomQuery(queryString) {
       });
     }
   });
-  return params;
+
+  if (!params) {
+    return null;
+  } else {
+    return params;
+  }
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
@@ -178,22 +181,22 @@ var queryableFunctions = {
     }
 
     // query payload
-    var params = {};
+    var params = [];
     var type = 'byField';
 
-    try {
-      if (queryString.indexOf('s=') === 0) {
-        // made with sliders
-        params = handleSlidersQuery(queryString);
-      } else if (queryString.indexOf('q=') === 0) {
-        // it's custom
-        params = handleCustomQuery(queryString);
-      }
-    } catch (e) {
+    if (queryString.indexOf('s=') === 0) {
+      // made with sliders
+      params = handleSlidersQuery(queryString);
+    } else if (queryString.indexOf('q=') === 0) {
+      // it's custom
+      params = handleCustomQuery(queryString);
+    }
+
+    if (params.length === 0) {
       // if something is misformed with the payload, just search all fields
-      // TODO: for numbers, create a range that's +/- 10?
       type = 'general';
-      queryString = queryString.replace('q=', '');
+      var re = new RegExp(/^q\=/);
+      queryString = queryString.replace(re, '');
       params = {
         specific: queryString
       };
@@ -203,7 +206,6 @@ var queryableFunctions = {
       reply('returnedQuery', planets);
     })
     .catch(function(e) {
-      console.log(e);
       reply('returnedQuery', {error: true});
     });
   },

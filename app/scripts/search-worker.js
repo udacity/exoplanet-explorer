@@ -398,7 +398,7 @@ function Database() {
       }
     }
 
-    function getTypeOfMatch(param) {
+    function getTypeOfComparison(param) {
       if (exists(param.lower) && exists(param.upper) && exists(param.specific)) {
         throw new Error('Database - Cannot have specific and range search parameters.');
       } else if (exists(param.lower) && exists(param.upper)) {
@@ -414,15 +414,56 @@ function Database() {
       }
     }
 
-    function getPlanetMatch(planet, params) {
+    function compareValueToParam(typeOfComparison, planetValue, param) {
       var isMatch = false;
+      switch (typeOfComparison) {
+        case 'range':
+          if (param.upper === -1 && planetValue >= param.lower) {
+            isMatch = true;
+          } else if (planetValue >= param.lower && planetValue <= param.upper) {
+            isMatch = true;
+          } else {
+            isMatch = false;
+          }
+          break;
+        case 'specific-string':
+          if (planetValue.match('.*' + param.specific + '.*')) {
+            isMatch = true;
+          } else {
+            isMatch = false;
+          }
+          break;
+        case 'specific-number':
+          if (Math.round(planetValue) === Math.round(param.specific)) {
+            isMatch = true;
+          } else {
+            isMatch = false;
+          }
+          break;
+        case 'any':
+          isMatch = true;
+          break;
+        default:
+          throw new Error('Database - Unknown match type.');
+          break;
+      }
+      return isMatch;
+    }
+
+    function searchAllFields(planet, param) {
+      // for numbers, create a range that's +/- 10?
+      
+    }
+
+    function searchSpecificFields(planet, params) {
+      var isHit = false;
       var score = 0;
 
       params.forEach(function (param, index) {
         // if the planet is already not a match after the first param, then skip
-        if (index > 0 && !isMatch) { return; }
+        if (index > 0 && !isHit) { return; }
 
-        var typeOfMatch = getTypeOfMatch(param);
+        var typeOfComparison = getTypeOfComparison(param);
 
         // use the computed value before using the raw data
         // NOTE! planet.distance is mesaured in ly, planet.rawData.st_dist
@@ -430,50 +471,16 @@ function Database() {
         var planetValue = planet[param.field] || planet.data[param.field];
 
         // the planet doesn't have data for this parameter
-        if (!planetValue && typeOfMatch !== 'any') {
-          isMatch = false;
+        if (!planetValue && typeOfComparison !== 'any') {
+          isHit = false;
           return;
         }
 
-        switch (typeOfMatch) {
-          case 'range':
-            if (param.upper === -1 && planetValue >= param.lower) {
-              isMatch = true;
-              score += 1;
-            } else if (planetValue >= param.lower && planetValue <= param.upper) {
-              isMatch = true;
-              score += 1;
-            } else {
-              isMatch = false;
-            }
-            break;
-          case 'specific-string':
-            if (planetValue.match('.*' + param.specific + '.*')) {
-              isMatch = true;
-              score += 1;
-            } else {
-              isMatch = false;
-            }
-            break;
-          case 'specific-number':
-            if (Math.round(planetValue) === Math.round(param.specific)) {
-              isMatch = true;
-              score += 1;
-            } else {
-              isMatch = false;
-            }
-            break;
-          case 'any':
-            isMatch = true;
-            score += 1;
-            break;
-          default:
-            throw new Error('Database - Unknown match type.');
-            break;
-        }
+        isHit = compareValueToParam(typeOfComparison, planetValue, param);
+        if (isHit) { score += 1; }
       });
 
-      if (isMatch) {
+      if (isHit) {
         var result = clone(planet);
         result.score = score;
         return result;
@@ -495,8 +502,9 @@ function Database() {
       case 'general':
         req = function() {
           return self._ready().then(function() {
+            // TODO: if param.field === '*', then search all fields
             database.forEach(function(planet) {
-              var hit = getPlanetMatch(planet, params);
+              var hit = searchAllFields(planet, param);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {
@@ -514,7 +522,7 @@ function Database() {
           return self._ready().then(function() {
             var results = [];
             database.forEach(function(planet) {
-              var hit = getPlanetMatch(planet, params);
+              var hit = searchSpecificFields(planet, params);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {

@@ -70,10 +70,23 @@ Copyright (c) 2015 Udacity. All rights reserved.
           width: 100%;
           margin-left: 0;
         }
+        .poster {
+          width: 50%;
+          margin-left: auto;
+          margin-right: auto;
+          display: block;
+          margin-bottom: 16px;
+        }
+        .poster:last-of-type {
+          margin-bottom: 0px;
+        }
       }
       @media screen and (max-width: 600px) {
         h1 {
           padding: 0 16px;
+        }
+        .poster {
+          width: 100%;
         }
       }
     </style>
@@ -101,11 +114,11 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
     <paper-material>
       <h3 class="indent" id="posters">Not sure what to search for? Here are a few fantastic destinations!</h3>
-      <a href="/planet/Kepler-16%20b"><img class="full-width" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
-      <a href="/planet/Kepler-186%20f"><img class="full-width" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
-      <a href="/planet/HD40307%20g"><img class="full-width" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
-      <a href="/planet/51Peg%20b"><img class="full-width" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
-      <a href="https://en.wikipedia.org/wiki/PSO_J318.5-22"><img class="full-width" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSOJ318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
+      <a href="/planet/Kepler-16%20b"><img class="poster" src="/images/Kepler_16b-300.jpg" srcset="/images/Kepler_16b-300.jpg 300w, /images/Kepler_16b-600.jpg 600w, /images/Kepler_16b-1200.jpg 1200w" alt="poster of Kepler 16 b"></a>
+      <a href="/planet/Kepler-186%20f"><img class="poster" src="/images/Kepler_186f-300.jpg" srcset="/images/Kepler_186f-300.jpg 300w, /images/Kepler_186f-600.jpg 600w, /images/Kepler_186f-1200.jpg 1200w" alt="poster of Kepler 186 f"></a>
+      <a href="/planet/HD40307%20g"><img class="poster" src="/images/HD_40307g-300.jpg" srcset="/images/HD_40307g-300.jpg 300w, /images/HD_40307g-600.jpg 600w, /images/HD_40307g-1200.jpg 1200w" alt="poster of HD 40307 g"></a>
+      <a href="/planet/51Peg%20b"><img class="poster" src="/images/Peg_51-300.jpg" srcset="/images/Peg_51-300.jpg 300w, /images/Peg_51-600.jpg 600w, /images/Peg_51-1200.jpg 1200w" alt="poster of Pegasi 51"></a>
+      <a href="https://en.wikipedia.org/wiki/PSO_J318.5-22"><img class="poster" src="/images/PSOJ318.5-22-300.jpg" srcset="/images/PSOJ318.5-22-300.jpg 300w, /images/PSOJ318.5-22-600.jpg 600w, /images/PSOJ318.5-22-1200.jpg 1200w" alt="poster of PSOJ318.5-22"></a>
       <div class="subtext right"><a class="nolink grey" href="http://planetquest.jpl.nasa.gov/exoplanet_travel_bureau">Posters Source</a></div>
       <p class="indent">Or, try searching for <a href="/search/s=%7B%22distance%22:0,%22radius%22:1,%22mass%22:1,%22temperature%22:2%7D">Earth-like planets</a>!</p>
     </paper-material>

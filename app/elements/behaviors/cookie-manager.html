@@ -1,0 +1,104 @@
+<script>
+	'use strict';
+
+	var CookieManager = {
+    initCookie: function(elem) {
+      if (!elem) {
+        this.whenCookieReady = function() { return Promise.reject(); };
+        return;
+      }
+      if (!this._cookieElem) {
+        this._cookieElem = elem;
+      }
+      this._getValuesFromCookie();
+      this._readyCallback();
+      this.cookieReady = true;
+    },
+    _readyCallback: function() {},
+    whenCookieReady: function() {
+      var self = this;
+      return new Promise(function(resolve, reject) {
+        if (self.cookieReady) {
+          resolve();
+        } else {
+          self._readyCallback = resolve;
+        }
+      });
+    },
+    _getValuesFromCookie: function() {
+      var self = this;
+      var cookieValues = JSON.parse(self._cookieElem.readCookie());
+      for (var v in cookieValues) {
+        if (cookieValues.hasOwnProperty(v)) {
+          self['_' + v] = cookieValues[v];
+        }
+      }
+    },
+    _setCookie: function() {
+      var self = this;
+      var values = {
+        distance: self._distance,
+        radius: self._radius,
+        mass: self._mass,
+        temperature: self._temperature,
+        customQuery: self._customQuery
+      };
+      window.setTimeout(function() {
+        self._cookieElem.value = JSON.stringify(values);
+        self._cookieElem.createCookie();
+      },1);
+    },
+    getCookieValues: function(properties) {
+      var self = this;
+      var values = {};
+      if (self.cookieReady) {
+        properties.forEach(function (prop) {
+          values[prop] = self['_' + prop];
+        });
+        return values;
+      } else {
+        return null;
+      }
+    },
+    updateCookieValues: function(values) {
+      var self = this;
+      for (var v in values) {
+        if (values.hasOwnProperty(v)) {
+          self['_' + v] = values[v];
+        }
+      }
+      if (self.cookieReady) {
+        self._setCookie();
+      }
+    },
+    properties: {
+      cookieReady: {
+        type: Boolean,
+        value: false
+      },
+      _cookieElem: {
+        type: Object
+      },
+      _distance: {
+        type: Number,
+        value: 0
+      },
+      _radius: {
+        type: Number,
+        value: 0
+      },
+      _mass: {
+        type: Number,
+        value: 0
+      },
+      _temperature: {
+        type: Number,
+        value: 0
+      },
+      _customQuery: {
+        type: String,
+        value: ''
+      }
+    }
+  };
+</script>

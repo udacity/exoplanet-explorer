@@ -164,53 +164,42 @@ Copyright (c) 2015 Udacity. All rights reserved.
     (function () {
       'use strict';
 
-      // TODO:
-      // - setCustomValidity on custom search box
-      // - hint that you'll get better results with specific fields
-
       Polymer({
         is: 'home-page',
-        paramChanged: function() {
-          this.composeQueryString();
-          this.setCookie();
+        behaviors: [CookieManager],
+        ready: function() {
+          var self = this;
+          this.initCookie(this.querySelector('#query-cookie'));
+
+          var values = this.getCookieValues(['distance', 'radius', 'mass', 'temperature']);
+          function updateSliders(values) {
+            for (var v in values) {
+              if (values.hasOwnProperty(v)) {
+                self[v] = values[v];
+              }
+            }
+          }
+          if (values) {
+            updateSliders(values);
+          }
         },
-        composeQueryString: function() {
+        paramChanged: function() {
           var values = {
             distance: this.distance,
             radius: this.radius,
             mass: this.mass,
-            temperature: this.temperature,
-            habitableValue: this.habitableValue
+            temperature: this.temperature
           };
+
+          this.composeQueryString(values);
+
+          if (this.cookieReady) {
+            this.updateCookieValues(values);
+          }
+        },
+        composeQueryString: function(values) {
+          // to create search/{{queryString}} urls
           this.queryString = JSON.stringify(values);
-        },
-        setCookie: function() {
-          var cookie = this.querySelector('#query-cookie');
-          var value = {
-            distance: this.distance,
-            radius: this.radius,
-            mass: this.mass,
-            temperature: this.temperature,
-            habitableValue: this.habitableValue
-          };
-          window.setTimeout(function() {
-            cookie.value = JSON.stringify(value);
-            cookie.createCookie();
-          },1);
-        },
-        ready: function() {
-          var cookie = this.querySelector('#query-cookie');
-          var cookieValue = cookie.readCookie();
-          var self = this;
-          function updateParams() {
-            var params = JSON.parse(cookieValue);
-            ['distance', 'radius', 'mass', 'temperature'].forEach(function(param) {
-                self[param] = params[param];
-            });
-          }
-          if (cookieValue) {
-            updateParams();
-          }
         },
         properties: {
           queryString: {

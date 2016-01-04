@@ -147,14 +147,23 @@ Copyright (c) 2015 Udacity. All rights reserved.
               self.queryString = '';
             } else if (planets.length === 0) {
               self.numberReturned = planets.length;
-              self.resultsContainer.innerText = 'Try widening your search!';
+              self.resultsContainer.innerText = 'No planets found. Try widening your search!';
             } else {
               self.numberReturned = planets.length;
               self.renderThumbnails(planets);
             }
           });
+
+          // filling in previous search values
+          self.initCookie(document.querySelector('#query-cookie'));
+          self.whenCookieReady().then(function() {
+            self.customQuery = self.getCookieValues(['customQuery']).customQuery || '';
+          });
         },
         reactToQuery: function() {
+          var self = this;
+          var cookie = document.querySelector('#query-cookie');
+
           if (!this.queryString) {
             this.resultsContainer.innerHTML = '';
             this.hideSpinner = true;
@@ -165,7 +174,11 @@ Copyright (c) 2015 Udacity. All rights reserved.
             this.hideSpinner = true;
           } else {
             this.hideSpinner = false;
+            // save the input in a cookie
             Model.requests.sendQuery('query', this.queryString);
+            if (this.queryString.indexOf('q=') > -1) {
+              self.updateCookieValues({customQuery: self.queryString.replace('q=', '')});
+            }
           }
         },
         renderThumbnails: function(planets) {

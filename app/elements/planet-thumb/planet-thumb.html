@@ -38,7 +38,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
         .top {
           /* I'm only doing this because I have to... */
           display: block !important;
-          /* TODO: center */
           margin-left: auto;
           margin-right: auto;
         }
@@ -64,7 +63,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           </div>
           <div class="top-right">
             <h4 class="indent-xs">{{pl_name}}</h4>
-            <p class="indent-xs">{{distance}} lightyears away</p>
+            <p hidden$="{{!distance}}" class="indent-xs">{{distance}} lightyears away</p>
             <p class="indent-xs">Discovered in {{pl_disc}} with {{pl_telescope}}</p>
           </div>
         </div>
@@ -88,7 +87,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
           },
           distance: {
             type: Number,
-            computed: 'pcToLy(st_dist)'
+            notify: true,
+            computed: 'pcToLy(st_dist)',
+            value: 0
           },
           color: {
             type: String,

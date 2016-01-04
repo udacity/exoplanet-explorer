@@ -63,7 +63,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           <h3>How far away?</h3>
           <p>{{nameParam}} is {{distance}} lightyears away, which means that it would take you {{lyToTravelTime(distance)}} years to reach it going <a href="http://www.aerospaceweb.org/question/performance/q0023.shtml">as fast as any human vehicle has ever gone</a>.</p></p>
         </div>
-        <div hidden$="{{!hasMassOrRadius}}">
+        <div hidden$="{{!hasMassOrRadius(earthRadii, earthMass)}}">
           <h3>How big is it?</h3>
           <p hidden$="{{!earthRadii}}"><strong>Radius: </strong> {{earthRadii}} Earth radii</p>
           <p hidden$="{{!earthMass}}"><strong>Mass: </strong> {{earthMass}} Earth masses</p>
@@ -78,7 +78,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           <h3>How hot is it?</h3>
           <p>There's an average temperature of {{temperature}} degrees C on {{nameParam}}.</p>
         </div>
-        <div hidden$="{{!hasWhereAndHowData}}">
+        <div hidden$="{{!hasWhereAndHow(pl_discmethod, pl_facility, pl_telescope)}}">
           <h3>How was it found?</h3>
           <p hidden$="{{!pl_discmethod}}"><strong>Method:</strong> {{pl_discmethod}}</p>
           <p hidden$="{{!pl_facility}}"><strong>Facility:</strong> {{pl_facility}}</p>
@@ -229,12 +229,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
             computed: 'pcToLy(st_dist)',
             value: 0
           },
-          hasWhereAndHowData: {
-            type: Boolean,
-            notify: true,
-            computed: 'whereAndHow(pl_discmethod, pl_facility, pl_telescope)',
-            value: false
-          },
           hasStellarInfo: {
             type: Boolean,
             notify: true,
@@ -249,7 +243,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
             return false;
           }
         },
-        whereAndHow: function(method, facility, telescope) {
+        hasWhereAndHow: function(method, facility, telescope) {
           if (method || facility || telescope) {
             return true;
           } else {

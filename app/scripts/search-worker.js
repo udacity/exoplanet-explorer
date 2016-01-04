@@ -290,8 +290,6 @@ var queryableFunctions = {
     // query payload to be sent to the database
     var query = queryParser(queryString);
 
-    console.log('query is:', query);
-
     // send the request to the database
     db.makeRequest(query.type, query.params)
     .then(function(planets) {

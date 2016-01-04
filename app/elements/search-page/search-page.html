@@ -3,6 +3,7 @@
 Copyright (c) 2015 Udacity. All rights reserved.
 -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../behaviors/cookie-manager.html">
 
 <dom-module id="search-page">
   <template>
@@ -127,12 +128,18 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'search-page',
+        behaviors: [CookieManager],
         attached: function() {
           var self = this;
-          this.resultsContainer = this.querySelector('.search-results');
+          self.resultsContainer = self.querySelector('.search-results');
+
+          // getting ready for search results
           Model.requests.addListener('returnedQuery', function(planets) {
+            // prep the space for search results
             self.resultsContainer.innerHTML = '';
             self.hideSpinner = true;
+
+            // react to state of planets
             if (planets.error) {
               self.resultsContainer.innerText = 'Something went wrong :(';
             } else if (planets.nosearch) {
@@ -191,9 +198,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
               window.clearInterval(interval);
             }
           }, 1000);
-        },
-        test: function() {
-          console.log('test');
         },
         properties: {
           _holdingPen: {

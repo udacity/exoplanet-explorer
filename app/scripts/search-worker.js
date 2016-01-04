@@ -2,187 +2,314 @@
 
 /* jshint unused: false */
 
-// match what the homepage sliders say
-var queryPairings = {
-  radius: {
-    '0': {
-      specific: -1
-    },
-    '1': {
-      lower: 0,
-      upper: 2
-    },
-    '2': {
-      lower: 2,
-      upper: 7
-    },
-    '3': {
-      lower: 7,
-      upper: -1
-    }
-  },
-  mass: {
-    '0': {
-      specific: -1
-    },
-    '1': {
-      lower: 0,
-      upper: 2
-    },
-    '2': {
-      lower: 2,
-      upper: 100
-    },
-    '3': {
-      lower: 100,
-      upper: -1
-    }
-  },
-  distance: {
-    '0': {
-      specific: -1
-    },
-    '1': {
-      lower: 0,
-      upper: 20
-    },
-    '2': {
-      lower: 20,
-      upper: 1000
-    },
-    '3': {
-      lower: 1000,
-      upper: -1
-    }
-  },
-  temperature: {
-    '0': {
-      specific: -1
-    },
-    '1': {
-      lower: 0,
-      upper: 200
-    },
-    '2': {
-      lower: 200,
-      upper: 330
-    },
-    '3': {
-      lower: 330,
-      upper: 700
-    },
-    '4': {
-      lower: 700,
-      upper: -1
-    }
-  }
-};
-
-/**
- * Creates the params for the specific search from sliders.
- * @param  {String} queryString In the URL created by the sliders
- * @return {Object}             The params for specific searches.
- */
-function handleSlidersQuery(queryString) {
-  // queryString > queryParts > parts > pieces
+function queryParser(queryString) {
+  // the eventual payload to the database
   var params = [];
-  queryString = JSON.parse(queryString.replace('s=', ''));
+  var typeOfQuery = ''; // either 'byField' or 'allFields'.
 
-  // matches the slider query with the pairings above
-  for (var q in queryString) {
-    var param = {
-      field: q
-    };
-    var values = queryPairings[q][queryString[q]];
-    for (var r in values) {
-      param[r] = values[r];
-    }
-    params.push(param);
+  var preppedQuery = prepQuery(queryString);
+
+  switch (preppedQuery.subType) {
+    case 'slider':
+      typeOfQuery = 'byField';
+      params = parseSliderParameters(preppedQuery.queryString);
+      break;
+    case 'custom-params':
+      typeOfQuery = 'byField';
+      params = parseCustomQueryParameters(preppedQuery.queryString);
+      break;
+    case 'custom-allfields':
+      typeOfQuery = 'allFields';
+      params = createAllFieldParameters(preppedQuery.queryString);
+      break;
+    default:
+      params = createAllFieldParameters(preppedQuery.queryString);
+      break;
   }
 
-  if (!params) {
-    return null;
-  } else {
+  /**
+   * Determine type of query and format the string
+   * @param  {String} queryString In the URL created by the sliders
+   * @return {Object}             Formatted queryString and subType
+   */
+  function prepQuery(queryString) {
+    // either 'slider', 'custom-params', 'custom-allfields'
+    var subType = '';
+    var validFields = [
+      'radius',
+      'mass',
+      'temperature',
+      'distance',
+      'name',
+      'method',
+      'facility',
+      'telescope',
+      'ra',
+      'dec',
+      'pl_disc',
+      'pl_dens',
+      'pl_pnum',
+      'pl_hostname',
+      'hd_name',
+      'hip_name',
+      'pl_cbflag',
+      'st_age',
+      'st_mass',
+      'st_rad',
+      'st_teff',
+      'st_optmag',
+      'pl_orbeccen',
+      'pl_orbper'
+    ]
+
+    // parse the search and build the payload params
+    if (queryString.indexOf('s=') === 0) {
+      // made with sliders
+      subType = 'slider';
+      // get rid of the s=
+      queryString = queryString.replace(/^s\=/g, '');
+    } else if (queryString.indexOf('q=') === 0) {
+      // custom search
+      // get rid of the q=
+      queryString = queryString.replace(/^q\=/g, '');
+
+      // this pattern represents a valid custom search
+      var re = new RegExp(/(\w+ +(((\d+( )?){1,2})|([A-z]+))(, )?)+/g);
+      var match = queryString.match(re);
+      if (match && queryString === match[0]) {
+        // it's a valid custom search. need to make sure the fields are valid
+        // these are the fields pulled from the query
+        var possibleFields = queryString.match(/(^\w+)|(, +(\w+))/);
+        console.log(possibleFields);
+        if (possibleFields) {
+          // loop through the possible fields, see if they're in the list of valid fields
+          var allValidFields = false;
+          possibleFields.forEach(function (field, index) {
+            field = field.replace(', ', ''); // because JS doesn't do positive lookbehinds
+            if (validFields.indexOf(field) > -1) {
+              if (index === 0) {
+                allValidFields = true;
+              } else {
+                allValidFields = allValidFields && true;
+              }
+            } else {
+              allValidFields = allValidFields && false;
+            }
+          });
+          if (allValidFields) {
+            // it's custom
+            subType = 'custom-params';
+          } else {
+            // not valid custom query
+            subType = 'custom-allfields';
+          }
+        }
+      } else {
+        // not a valid custom query
+        subType = 'custom-allfields';
+      }
+    }
+    return {
+      subType: subType,
+      queryString: queryString
+    }
+  }
+
+  /**
+   * Creates the params for the specific search from sliders.
+   * @param  {String} queryString Formatted queryString
+   * @return {Object}             The params for specific searches.
+   */
+  function parseSliderParameters(queryString) {
+    // match what the homepage sliders say
+    var sliderPairings = {
+      radius: {
+        '0': {
+          specific: -1
+        },
+        '1': {
+          lower: 0,
+          upper: 2
+        },
+        '2': {
+          lower: 2,
+          upper: 7
+        },
+        '3': {
+          lower: 7,
+          upper: -1
+        }
+      },
+      mass: {
+        '0': {
+          specific: -1
+        },
+        '1': {
+          lower: 0,
+          upper: 2
+        },
+        '2': {
+          lower: 2,
+          upper: 100
+        },
+        '3': {
+          lower: 100,
+          upper: -1
+        }
+      },
+      distance: {
+        '0': {
+          specific: -1
+        },
+        '1': {
+          lower: 0,
+          upper: 20
+        },
+        '2': {
+          lower: 20,
+          upper: 1000
+        },
+        '3': {
+          lower: 1000,
+          upper: -1
+        }
+      },
+      temperature: {
+        '0': {
+          specific: -1
+        },
+        '1': {
+          lower: 0,
+          upper: 200
+        },
+        '2': {
+          lower: 200,
+          upper: 330
+        },
+        '3': {
+          lower: 330,
+          upper: 700
+        },
+        '4': {
+          lower: 700,
+          upper: -1
+        }
+      }
+    }
+    // queryString > queryParts > parts > pieces
+    try {
+      queryString = JSON.parse(queryString);
+    } catch (e) {
+      return null;
+    }
+    var params = [];
+
+    // matches the slider query with the pairings above
+    for (var q in queryString) {
+      var param = {
+        field: q
+      };
+      var values = sliderPairings[q][queryString[q]];
+      for (var r in values) {
+        param[r] = values[r];
+      }
+      params.push(param);
+    }
+
+    if (!params) {
+      return null;
+    } else {
+      return params;
+    }
+  };
+  /**
+   * Creates the params for the specific search from custom entry.
+   * @param  {String} queryString Formatted queryString
+   * @return {Object}             The params for specific searches.
+   */
+  function parseCustomQueryParameters(queryString) {
+    // queryString eg: distance 10 20, mass 1 3
+    // distance between 10 and 20 ly and mass between 1 and 3 masses
+
+    var params = [];
+
+    var queryParts = queryString.split(',');
+
+    queryParts.forEach(function (part) {
+      // TODO: differentiate between strings and numbers!
+      var pieces = part.replace(/^ +/, '');
+      pieces = pieces.replace(/ +$/, '');
+      pieces = pieces.split(' ');
+
+      if (pieces.length === 2) {
+        params.push({
+          field: pieces[0],
+          specific: pieces[1]
+        });
+      } else if (pieces.length === 3) {
+        params.push({
+          field: pieces[0],
+          lower: pieces[1],
+          upper: pieces[2]
+        });
+      }
+    });
+  }
+
+  /**
+   * Similar to the above, but for unstructured queries
+   * @param  {String} queryString Formatted queryString
+   * @return {Object}             The params for specific searches.
+   */
+  function createAllFieldParameters(queryString) {
+    var params = [];
+    // break on spaces, create multiple params
+    // create pyramid of queries
+    var multipleWords = queryString.split(' ');
+    if (multipleWords.length > 1) {
+      multipleWords.reduce(function (prev, curr) {
+        var mix = [prev, curr].join(' ');
+        params.push({
+          specific: curr
+        })
+        params.push({
+          specific: mix
+        })
+        return mix;
+      });
+    } else {
+      params.push({
+        specific: queryString
+      })
+    }
     return params;
   }
-}
 
-/**
- * Creates the params for the specific search from custom entry.
- * @param  {String} queryString The custom search
- * @return {Object}             The params for specific searches.
- */
-function handleCustomQuery(queryString) {
-  // queryString eg: distance 10 20, mass 1 3
-  // distance between 10 and 20 ly and mass between 1 and 3 masse
-  var params = [];
-  var re = new RegExp(/^q\=/);
-  queryString = queryString.replace(re, '');
 
-  var queryParts = queryString.split(',');
-
-  queryParts.forEach(function (part) {
-    var pieces = part.replace(/^ +/, '');
-    pieces = pieces.replace(/ +$/, '');
-    pieces = pieces.split(' ');
-
-    if (pieces.length === 2) {
-      params.push({
-        field: pieces[0],
-        specific: pieces[1]
-      });
-    } else if (pieces.length === 3) {
-      params.push({
-        field: pieces[0],
-        lower: pieces[1],
-        upper: pieces[2]
-      });
-    }
-  });
-
-  if (!params) {
-    return null;
-  } else {
-    return params;
+  return {
+    type: typeOfQuery,
+    params: params
   }
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
 var queryableFunctions = {
   query: function(queryString) {
-    if (!queryString || typeof queryString !== 'string') {
+    if (!queryString || typeof queryString !== 'string' || queryString.length < 3) {
       reply('returnedQuery', {nosearch: true});
       return;
     }
 
     // query payload to be sent to the database
-    var params = [];
-    var type = 'byField';
+    var query = queryParser(queryString);
 
-    // parse the search and build the payload params
-    if (queryString.indexOf('s=') === 0) {
-      // made with sliders
-      params = handleSlidersQuery(queryString);
-    } else if (queryString.indexOf('q=') === 0) {
-      // it's custom
-      params = handleCustomQuery(queryString);
-    }
-
-    // something is misformed, just search all fields
-    if (params.length === 0) {
-      type = 'general';
-      var re = new RegExp(/^q\=/);
-      queryString = queryString.replace(re, '');
-      params = {
-        specific: queryString
-      };
-    }
-
-    db.makeRequest(type, params)
+    // send the request to the database
+    db.makeRequest(query.type, query.params)
     .then(function(planets) {
       reply('returnedQuery', planets);
     })
     .catch(function(e) {
+      console.log(e);
       reply('returnedQuery', {error: true});
     });
   },
@@ -431,7 +558,7 @@ function Database() {
       return isMatch;
     }
 
-    function searchAllFields(planet, param) {
+    function searchAllFields(planet, params) {
       var isHit = false;
       var typeOfComparison = 'specific-string';
 
@@ -441,7 +568,12 @@ function Database() {
           var planetValue = planet[field]
           if (planetValue) {
             planetValue = planetValue.toString();
-            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+            var isHit = false;
+            params.forEach(function(param, index) {
+              if (compareValueToParam(typeOfComparison, planetValue, param)) {
+                isHit = true;
+              };
+            })
           } else {
             isHit = false;
           }
@@ -454,7 +586,12 @@ function Database() {
           var planetValue = planet.data[field]
           if (planetValue) {
             planetValue = planetValue.toString();
-            isHit = compareValueToParam(typeOfComparison, planetValue, param);
+            var isHit = false;
+            params.forEach(function(param, index) {
+              if (compareValueToParam(typeOfComparison, planetValue, param)) {
+                isHit = true;
+              };
+            })
           } else {
             isHit = false;
           }
@@ -515,14 +652,13 @@ function Database() {
           }
         };
         break;
-      case 'general':
+      case 'allFields':
         req = function() {
           return self._ready().then(function() {
             var results = [];
-            // there's only 1 parameter
-            var param = params;
+
             database.forEach(function(planet) {
-              var hit = searchAllFields(planet, param);
+              var hit = searchAllFields(planet, params);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {

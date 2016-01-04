@@ -3,18 +3,26 @@
 
 	var MathAndPhysics = {
     getSigFigs: function(input1, input2, output) {
-      var length1 = input1.toString().length;
-      var length2 = input2.toString().length;
-      var length = null;
+      output = Number(output);
+      input1 = Number(input1);
+      input2 = Number(input2);
+      var precision = null;
 
-      if (length1 < length2) {
-        length = length1;
+      var precision1 = (input1 - Math.floor(input1)).toString().length;
+      var precision2 = (input2 - Math.floor(input2)).toString().length;
+
+      if (precision1 < precision2) {
+        precision = precision1;
       } else {
-        length = length2;
+        precision = precision2;
       }
-      output = output.toString();
-      output = output.slice(0,length);
-      return Number(output);
+
+      if (precision === 0 || precision === null) {
+        return output;
+      } else {
+        output = output.toFixed(precision);
+        return output;
+      }
     },
 		tempToColor: function(temp) {
       if (!temp) {
@@ -45,12 +53,11 @@
     },
     pcToLy: function(dist) {
       // gotta respect sigfigs
-      if (!dist) { return '0' };
-      // is this right? get rid of the .
-      var digits = dist.toString().length;
+      if (!dist) { return 0 };
+
       var ly = (dist * 3.26).toString();
-      ly = ly.slice(0, digits);
-      return ly;
+
+      return this.getSigFigs(dist, 3.26, ly);
     },
     lyToTravelTime: function(ly) {
       if (!ly) { return null; }
@@ -64,7 +71,7 @@
       if (!earthRad && !jupiterRad) {
         return 0;
       } else if (earthRad) {
-        return earthRad;
+        return Number(earthRad).toFixed(1);
       } else {
         var radii = jupiterRad * 11.2;
         return this.getSigFigs(jupiterRad, 11.2, radii);
@@ -74,7 +81,7 @@
     if (!earthMass && !jupiterMass) {
         return 0;
       } else if (earthMass) {
-        return earthMass;
+        return Number(earthMass).toFixed(1);
       } else {
         var mass = jupiterMass * 317.8;
         return this.getSigFigs(jupiterMass, 317.8, mass);

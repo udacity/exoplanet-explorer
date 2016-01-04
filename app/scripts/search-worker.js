@@ -60,7 +60,7 @@ function queryParser(queryString) {
       'st_optmag',
       'pl_orbeccen',
       'pl_orbper'
-    ]
+    ];
 
     // parse the search and build the payload params
     if (queryString.indexOf('s=') === 0) {
@@ -112,7 +112,7 @@ function queryParser(queryString) {
     return {
       subType: subType,
       queryString: queryString
-    }
+    };
   }
 
   /**
@@ -195,7 +195,8 @@ function queryParser(queryString) {
           upper: -1
         }
       }
-    }
+    };
+
     // queryString > queryParts > parts > pieces
     try {
       queryString = JSON.parse(queryString);
@@ -276,7 +277,7 @@ function queryParser(queryString) {
   return {
     type: typeOfQuery,
     params: params
-  }
+  };
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Example_2_Advanced_passing_JSON_Data_and_creating_a_switching_system
@@ -540,7 +541,6 @@ function Database() {
           break;
         default:
           throw new Error('Database - Unknown match type.');
-          break;
       }
       return isMatch;
     }
@@ -550,18 +550,20 @@ function Database() {
       var typeOfComparison = 'specific-string';
       var score = 0;
 
+      function compareUtil(param, index) {
+        if (compareValueToParam(typeOfComparison, planetValue, param)) {
+          isHit = true;
+          score += 1;
+        }
+      }
+
       // check the values that are added with indexing
       for (var field in planet) {
         if (planet.hasOwnProperty(field) && field !== 'data') {
-          var planetValue = planet[field]
+          var planetValue = planet[field];
           if (planetValue) {
             planetValue = planetValue.toString();
-            params.forEach(function(param, index) {
-              if (compareValueToParam(typeOfComparison, planetValue, param)) {
-                isHit = true;
-                score += 1;
-              }
-            });
+            params.forEach(compareUtil);
           }
         }
       }
@@ -569,15 +571,10 @@ function Database() {
       // check the raw data
       for (var field in planet.data) {
         if (planet.data.hasOwnProperty(field)) {
-          var planetValue = planet.data[field]
+          var planetValue = planet.data[field];
           if (planetValue) {
             planetValue = planetValue.toString();
-            params.forEach(function(param, index) {
-              if (compareValueToParam(typeOfComparison, planetValue, param)) {
-                isHit = true;
-                score += 1;
-              }
-            });
+            params.forEach(compareUtil);
           }
         }
       }

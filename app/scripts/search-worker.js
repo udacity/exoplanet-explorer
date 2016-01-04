@@ -77,14 +77,14 @@ function queryParser(queryString) {
       var re = new RegExp(/(\w+ +(((\d+( )?){1,2})|([A-z]+))(, )?)+/g);
       var match = queryString.match(re);
       if (match && queryString === match[0]) {
-        // it's a valid custom search. need to make sure the fields are valid
+        // the whole string is a valid custom search. need to make sure the fields are valid
         // these are the fields pulled from the query
         var possibleFields = queryString.match(/(^\w+)|(, +(\w+))/);
-        console.log(possibleFields);
         if (possibleFields) {
           // loop through the possible fields, see if they're in the list of valid fields
           var allValidFields = false;
           possibleFields.forEach(function (field, index) {
+            if (!field) { return; }
             field = field.replace(', ', ''); // because JS doesn't do positive lookbehinds
             if (validFields.indexOf(field) > -1) {
               if (index === 0) {
@@ -216,20 +216,16 @@ function queryParser(queryString) {
       params.push(param);
     }
 
-    if (!params) {
-      return null;
-    } else {
-      return params;
-    }
-  };
+    return params;
+  }
   /**
    * Creates the params for the specific search from custom entry.
    * @param  {String} queryString Formatted queryString
    * @return {Object}             The params for specific searches.
    */
   function parseCustomQueryParameters(queryString) {
-    // queryString eg: distance 10 20, mass 1 3
-    // distance between 10 and 20 ly and mass between 1 and 3 masses
+    // queryString eg: distance 10 20, mass 1 3, name kepler
+    // distance between 10 and 20 ly and mass between 1 and 3 masses and name has kepler in it
 
     var params = [];
 
@@ -240,6 +236,7 @@ function queryParser(queryString) {
       var pieces = part.replace(/^ +/, '');
       pieces = pieces.replace(/ +$/, '');
       pieces = pieces.split(' ');
+
 
       if (pieces.length === 2) {
         params.push({
@@ -254,6 +251,7 @@ function queryParser(queryString) {
         });
       }
     });
+    return params;
   }
 
   /**
@@ -264,24 +262,13 @@ function queryParser(queryString) {
   function createAllFieldParameters(queryString) {
     var params = [];
     // break on spaces, create multiple params
-    // create pyramid of queries
     var multipleWords = queryString.split(' ');
-    if (multipleWords.length > 1) {
-      multipleWords.reduce(function (prev, curr) {
-        var mix = [prev, curr].join(' ');
-        params.push({
-          specific: curr
-        })
-        params.push({
-          specific: mix
-        })
-        return mix;
-      });
-    } else {
+    multipleWords.forEach(function (word) {
       params.push({
-        specific: queryString
-      })
-    }
+        specific: word
+      });
+    });
+
     return params;
   }
 
@@ -302,6 +289,8 @@ var queryableFunctions = {
 
     // query payload to be sent to the database
     var query = queryParser(queryString);
+
+    console.log('query is:', query);
 
     // send the request to the database
     db.makeRequest(query.type, query.params)
@@ -561,45 +550,43 @@ function Database() {
     function searchAllFields(planet, params) {
       var isHit = false;
       var typeOfComparison = 'specific-string';
+      var score = 0;
 
       // check the values that are added with indexing
       for (var field in planet) {
-        if (planet.hasOwnProperty(field) && field !== 'data' && !isHit) {
+        if (planet.hasOwnProperty(field) && field !== 'data') {
           var planetValue = planet[field]
           if (planetValue) {
             planetValue = planetValue.toString();
-            var isHit = false;
             params.forEach(function(param, index) {
               if (compareValueToParam(typeOfComparison, planetValue, param)) {
                 isHit = true;
-              };
-            })
-          } else {
-            isHit = false;
+                score += 1;
+              }
+            });
           }
         }
       }
 
       // check the raw data
       for (var field in planet.data) {
-        if (planet.data.hasOwnProperty(field) && !isHit) {
+        if (planet.data.hasOwnProperty(field)) {
           var planetValue = planet.data[field]
           if (planetValue) {
             planetValue = planetValue.toString();
-            var isHit = false;
             params.forEach(function(param, index) {
               if (compareValueToParam(typeOfComparison, planetValue, param)) {
                 isHit = true;
-              };
-            })
-          } else {
-            isHit = false;
+                score += 1;
+              }
+            });
           }
         }
       }
 
       if (isHit) {
         var result = clone(planet);
+        result.score = score;
         return result;
       } else {
         return null;
@@ -656,13 +643,12 @@ function Database() {
         req = function() {
           return self._ready().then(function() {
             var results = [];
-
             database.forEach(function(planet) {
               var hit = searchAllFields(planet, params);
               if (hit) { results.push(hit); }
             });
             results.sort(function(a, b) {
-              return b.data.pl_name > a.data.pl_name;
+              return b.score - a.score;
             });
             return results;
           })

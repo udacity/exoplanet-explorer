@@ -27,7 +27,14 @@
     },
     _getValuesFromCookie: function() {
       var self = this;
-      var cookieValues = JSON.parse(self._cookieElem.readCookie());
+      var cookieValues = {};
+      try {
+        cookieValues = JSON.parse(self._cookieElem.readCookie());
+      } catch (e) {
+        // cookie hasn't been made yet
+        return;
+      }
+
       for (var v in cookieValues) {
         if (cookieValues.hasOwnProperty(v)) {
           self['_' + v] = cookieValues[v];

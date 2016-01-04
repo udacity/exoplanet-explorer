@@ -18,7 +18,7 @@
     "Platform": true,
     "Promise": true,
     "MathAndPhysics": true,
-    "PlanetRawData": true,
+    "CookieManager": true,
     "Model": true,
     "window": true,
     "document": true

@@ -2,32 +2,9 @@
 	'use strict';
 
 	var MathAndPhysics = {
-    getSigFigs: function(input1, input2, output) {
-      output = Number(output);
-      input1 = Number(input1);
-      input2 = Number(input2);
-      var precision = null;
-
-      var precision1 = (input1 - Math.floor(input1)).toString().length;
-      var precision2 = (input2 - Math.floor(input2)).toString().length;
-
-      if (precision1 < precision2) {
-        precision = precision1;
-      } else {
-        precision = precision2;
-      }
-
-      if (precision === 0 || precision === null) {
-        return output;
-      } else {
-        output = output.toFixed(precision);
-        return output;
-      }
-    },
 		tempToColor: function(temp) {
-      if (!temp) {
-      	return 'grey';
-      }
+      if (!temp) { return 'grey'; }
+
       var color = '#ccc';
       if (temp < 200) {
         color = '#33f';
@@ -48,19 +25,20 @@
     },
     getTemperatureInCelsius: function(tempK) {
       if (!tempK) { return 0; };
+
       var temp = tempK - 273;
-      return this.getSigFigs(tempK, 273, temp);
+      return temp.toFixed(1);
     },
     pcToLy: function(dist) {
-      // gotta respect sigfigs
       if (!dist) { return 0 };
 
-      var ly = (dist * 3.26).toString();
+      var ly = (dist * 3.26);
 
-      return this.getSigFigs(dist, 3.26, ly);
+      return ly.toFixed(1);
     },
     lyToTravelTime: function(ly) {
-      if (!ly) { return null; }
+      if (!ly) { return ''; }
+
       var digits = ly.toString().length;
       var years = (ly / 0.000234).toString();
       years = years.slice(0,digits);
@@ -68,32 +46,36 @@
       return years.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     getEarthRadii: function(earthRad, jupiterRad) {
-      if (!earthRad && !jupiterRad) {
-        return 0;
-      } else if (earthRad) {
+      if (!earthRad && !jupiterRad) { return 0; }
+
+      if (earthRad) {
         return Number(earthRad).toFixed(1);
       } else {
         var radii = jupiterRad * 11.2;
-        return this.getSigFigs(jupiterRad, 11.2, radii);
+        return radii.toFixed(1);;
       }
     },
     getEarthMass: function(earthMass, jupiterMass) {
-    if (!earthMass && !jupiterMass) {
-        return 0;
-      } else if (earthMass) {
+      if (!earthMass && !jupiterMass) { return 0; }
+      
+      if (earthMass) {
         return Number(earthMass).toFixed(1);
       } else {
         var mass = jupiterMass * 317.8;
-        return this.getSigFigs(jupiterMass, 317.8, mass);
+        return mass.toFixed(1);;
       }
     },
     getGravity: function(earthRadii, earthMass) {
+      if (!earthRadii || !earthMass) { return 0; }
+
       var gravity = earthMass / (earthRadii * earthRadii);
-      return this.getSigFigs(earthRadii, earthMass, gravity);
+      return gravity.toFixed(1);;
     },
     getPlanetWeight: function(earthWeight, gravity) {
+      if (!earthWeight || !gravity) { return 0; }
+
       var weight = earthWeight * gravity;
-      return this.getSigFigs(earthWeight, gravity, weight);
+      return weight.toFixed(1);;
     }
 	};
 </script>

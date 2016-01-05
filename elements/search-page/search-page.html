@@ -133,26 +133,32 @@ Copyright (c) 2015 Udacity. All rights reserved.
           var self = this;
           self.resultsContainer = self.querySelector('.search-results');
 
-          // getting ready for search results
-          Model.requests.addListener('returnedQuery', function(planets) {
+          function reactToDbResponse(planets) {
             // prep the space for search results
             self.resultsContainer.innerHTML = '';
             self.hideSpinner = true;
 
-            // react to state of planets
+            // react to state of response from db
             if (planets.error) {
+              // there's an error
               self.resultsContainer.innerText = 'Something went wrong :(';
             } else if (planets.nosearch) {
+              // no search happened
               self.resultsContainer.innerHTML = '';
               self.queryString = '';
             } else if (planets.length === 0) {
+              // no planets found
               self.numberReturned = planets.length;
               self.resultsContainer.innerText = 'No planets found. Try widening your search!';
             } else {
+              // found planets
               self.numberReturned = planets.length;
               self.renderThumbnails(planets);
             }
-          });
+          }
+
+          // getting ready for search results
+          Model.requests.addListener('returnedQuery', reactToDbResponse);
 
           // filling in previous search values
           self.initCookie(document.querySelector('#query-cookie'));
@@ -160,18 +166,21 @@ Copyright (c) 2015 Udacity. All rights reserved.
             self.customQuery = self.getCookieValues(['customQuery']).customQuery || '';
           });
         },
-        reactToQuery: function() {
+        reactToUrl: function() {
           var self = this;
 
           if (!this.queryString) {
+            // nothing is there
             this.resultsContainer.innerHTML = '';
             this.hideSpinner = true;
           } else if (this.queryString === 'how') {
+            // basically the same as nothing
             this.numberReturned = 0;
             this.resultsContainer.innerHTML = '';
             this.queryString = false;
             this.hideSpinner = true;
           } else {
+            // there's an actual query in the URL
             this.hideSpinner = false;
             // save the input in a cookie
             Model.requests.sendQuery('query', this.queryString);
@@ -183,9 +192,17 @@ Copyright (c) 2015 Udacity. All rights reserved.
         renderThumbnails: function(planets) {
           var self = this;
 
+          function createPlanetThumb(planet) {
+            var pT = document.createElement('planet-thumb');
+            for (var d in planet.data) {
+              pT[d] = planet.data[d];
+            }
+            self.resultsContainer.appendChild(pT);
+          }
+
           planets.forEach(function (planet, index) {
             if (index < 30) {
-              self.createPlanetThumb(planet);
+              createPlanetThumb(planet);
             } else if (index === 30) {
               self.createPlanetThumb(planet);
               if (self._holdingPen.pen.length === 0) {
@@ -241,19 +258,12 @@ Copyright (c) 2015 Udacity. All rights reserved.
           queryString: {
             type: String,
             notify: true,
-            observer: 'reactToQuery'
+            observer: 'reactToUrl'
           },
           customQuery: {
             type: String,
             notify: true
           }
-        },
-        createPlanetThumb: function(planet) {
-          var pT = document.createElement('planet-thumb');
-          for (var d in planet.data) {
-            pT[d] = planet.data[d];
-          }
-          this.resultsContainer.appendChild(pT);
         }
       });
     })();

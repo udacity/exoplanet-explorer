@@ -110,14 +110,16 @@ Copyright (c) 2015 Udacity. All rights reserved.
         behaviors: [MathAndPhysics],
         attached: function() {
           var self = this;
-          Model.requests.addListener('gotPlanetByName', function(data) {
+
+          function bindData(data) {
             self.hasData = true;
             self.bindData(data);
             if (!data.noname) {
-              console.log('planet raw data:', data);
+              console.log('%cPlanet\'s raw data:', 'color: blue;', data);
             }
-          });
+          }
 
+          Model.requests.addListener('gotPlanetByName', bindData);
         },
         loadData: function() {
           this.hasData = false;

@@ -67,6 +67,17 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
       Polymer({
         is: 'scale-visualizer',
+        ready: function() {
+          var self = this;
+          this.changeSizes();
+          window.addEventListener('resize', function() { self.windowResize(); });
+        },
+        windowResize: function() {
+          this.changeSizes();
+        },
+        attached: function() {
+          this.changeSizes();
+        },
         properties: {
           earthRadii: {
             type: Number,
@@ -112,17 +123,6 @@ Copyright (c) 2015 Udacity. All rights reserved.
             notify: true,
             value: 'grey'
           }
-        },
-        ready: function() {
-          var self = this;
-          this.changeSizes();
-          window.addEventListener('resize', function() { self.windowResize(); });
-        },
-        windowResize: function() {
-          this.changeSizes();
-        },
-        attached: function() {
-          this.changeSizes();
         },
         hasRadius: function(earthRadii) {
           if (earthRadii > 0) {

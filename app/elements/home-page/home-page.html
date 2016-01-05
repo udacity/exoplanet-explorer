@@ -197,6 +197,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
           }
         },
         paramChanged: function() {
+          var self = this;
           var values = {
             distance: this.distance,
             radius: this.radius,
@@ -204,15 +205,16 @@ Copyright (c) 2015 Udacity. All rights reserved.
             temperature: this.temperature
           };
 
-          this.composeQueryString(values);
+          function composeQueryString(values) {
+            // to create search/{{queryString}} urls
+            self.queryString = JSON.stringify(values);
+          }
+
+          composeQueryString(values);
 
           if (this.cookieReady) {
             this.updateCookieValues(values);
           }
-        },
-        composeQueryString: function(values) {
-          // to create search/{{queryString}} urls
-          this.queryString = JSON.stringify(values);
         },
         properties: {
           queryString: {

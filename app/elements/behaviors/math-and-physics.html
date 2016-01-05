@@ -37,7 +37,7 @@
       return ly.toFixed(1);
     },
     lyToTravelTime: function(ly) {
-      if (!ly) { return null; }
+      if (!ly) { return ''; }
 
       var digits = ly.toString().length;
       var years = (ly / 0.000234).toString();

@@ -265,7 +265,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="shared-styles" assetpath="styles/"><template><style>paper-material {border-radius: 2px;height: 100%;padding: 16px 0 16px 0;width: calc(98.66% - 16px);max-width: 600px;margin: 16px auto;background: white;}.page-title {@apply(--paper-font-display2);}@media (max-width: 600px) {.page-title {font-size: 24px!important;}}</style></template></dom-module><dom-module id="planet-info" assetpath="elements/planet-info/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;}paper-material {padding: 16px;}paper-input {display: block;max-width: 230px;margin-left: auto;margin-right: auto;}.vis {margin-left: auto;margin-right: auto;max-width: 75%;}.center {margin-left: auto;margin-right: auto;}.subtext {font-style: italic;font-size: 0.75em;}@keyframes rotate {from {transform: rotate(0deg);}to {transform: rotate(359deg);}}.spinner {animation: rotate 2s infinite linear;width: 100px;display: block;}</style>
+    <style>:host {display: block;}paper-material {padding: 16px;}paper-input {display: block;max-width: 230px;margin-left: auto;margin-right: auto;}.vis {margin-left: auto;margin-right: auto;max-width: 300px;}@media screen and (max-width: 420px) {.vis {margin-left: 0px}}.center {margin-left: auto;margin-right: auto;}.subtext {font-style: italic;font-size: 0.75em;}@keyframes rotate {from {transform: rotate(0deg);}to {transform: rotate(359deg);}}.spinner {animation: rotate 2s infinite linear;width: 100px;display: block;}</style>
     <paper-material hidden$="{{!hasData}}">
       <h2>{{nameParam}}</h2>
       <div class="vis" hidden$="{{!exists(earthRadii)}}">
@@ -539,6 +539,9 @@ Copyright (c) 2015 Udacity. All rights reserved.
         <li><a href="https://commons.wikimedia.org/wiki/File:Tango_Venus.svg">Venus Image (the loading spinner)</a></li>
       </ul>
     </paper-material>
+    <paper-material>
+      <p class="indent"><em>Version: 1.0.1</em></p>
+    </paper-material>
 
   </template>
 
@@ -546,7 +549,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
 <dom-module id="scale-visualizer" assetpath="elements/scale-visualizer/">
   <template>
     <style include="shared-styles"></style>
-    <style>:host {display: block;max-width: 300px;}svg {display: block;height: 100%;}circle {transform: translate(30px, 100px);webkit-transform: translate(30px, 100px);}.wrapper {background: #000000;min-width: 260px;}.planet-comparison {width: 100%;height: 100%;}.no-radius {color: white;font-size: 2em;padding-left: 35px;margin-top: auto;margin-bottom: auto;}.no-radius::after{content: "?";}earth-img,jupiter-img {margin-top: auto;margin-bottom: auto;}img {display: block;width: 150px;}</style>
+    <style>:host {display: block;width: 300px;}svg {display: block;height: 100%;}circle {transform: translate(30px, 100px);webkit-transform: translate(30px, 100px);}.wrapper {background: #000000;width: 300px;}.planet-comparison {width: 100%;height: 100%;}.no-radius {color: white;font-size: 2em;padding-left: 35px;margin-top: auto;margin-bottom: auto;}.no-radius::after{content: "?";}earth-img,jupiter-img {margin-top: auto;margin-bottom: auto;}img {display: block;width: 150px;}</style>
     <div class="wrapper">
       <div class="planet-comparison layout horizontal end-justified">
         <p class="no-radius" hidden$="{{hasRadius(earthRadii)}}"></p>

@@ -52,7 +52,7 @@ Copyright (c) 2015 Udacity. All rights reserved.
       }
     </style>
     <paper-material elevation="1">
-      <a href$="/planet/{{pl_name}}">
+      <a href$="/planet/{{encodeURIComponent(pl_name)}}">
         <div class="layout vertical">
           <div class="vis">
             <scale-visualizer
@@ -97,6 +97,10 @@ Copyright (c) 2015 Udacity. All rights reserved.
             computed: 'tempToColor(pl_eqt)',
             value: 'grey'
           }
+        },
+        encodeURIComponent: function(str) {
+          var encoded = encodeURIComponent(str);
+          return encoded;
         }
       });
     })();

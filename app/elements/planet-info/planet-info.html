@@ -113,64 +113,69 @@ Copyright (c) 2015 Udacity. All rights reserved.
 
           function bindData(data) {
             self.hasData = true;
-            self.bindData(data);
-            if (!data.noname) {
+            var triedASecondTimeBecauseMaybePlusSign = false;
+            var rawData = [
+              'dec',
+              'hd_name',
+              'hip_name',
+              'pl_astflag',
+              'pl_cbflag',
+              'pl_dens',
+              'pl_disc',
+              'pl_discmethod',
+              'pl_eqt',
+              'pl_facility',
+              'pl_hostname',
+              'pl_imgflag',
+              'pl_masse',
+              'pl_massj',
+              'pl_name',
+              'pl_omflag',
+              'pl_orbeccen',
+              'pl_orbper',
+              'pl_pnum',
+              'pl_rade',
+              'pl_radj',
+              'pl_ratdor',
+              'pl_rvflag',
+              'pl_telescope',
+              'pl_tranflag',
+              'ra',
+              'rowupdate',
+              'st_age',
+              'st_dist',
+              'st_mass',
+              'st_optmag',
+              'st_rad',
+              'st_teff',
+              'pl_pelink',
+              'pl_edelink'
+            ];
+
+            rawData.forEach(function (d) {
+              var path = d;
+              var value = data[d];
+              if (!value) { value = ''; }
+              self.set(path, value);
+            });
+
+            if (!data.noname && !data.missing) {
               console.log('%cPlanet\'s raw data:', 'color: blue;', data);
+            } else if (data.missing && !triedASecondTimeBecauseMaybePlusSign) {
+              // the planet name could have a + in it. try to request again
+              triedASecondTimeBecauseMaybePlusSign = true;
+              var loc = window.location.hash;
+              var i = loc.lastIndexOf('/');
+              var name = decodeURIComponent(loc.slice(i+1));
+              self.loadData(name);
             }
           }
 
           Model.requests.addListener('gotPlanetByName', bindData);
         },
-        loadData: function() {
+        loadData: function(name) {
           this.hasData = false;
-          Model.requests.sendQuery('getPlanetByName', this.nameParam);
-        },
-        bindData: function(data) {
-          var self = this;
-          var rawData = [
-            'dec',
-            'hd_name',
-            'hip_name',
-            'pl_astflag',
-            'pl_cbflag',
-            'pl_dens',
-            'pl_disc',
-            'pl_discmethod',
-            'pl_eqt',
-            'pl_facility',
-            'pl_hostname',
-            'pl_imgflag',
-            'pl_masse',
-            'pl_massj',
-            'pl_name',
-            'pl_omflag',
-            'pl_orbeccen',
-            'pl_orbper',
-            'pl_pnum',
-            'pl_rade',
-            'pl_radj',
-            'pl_ratdor',
-            'pl_rvflag',
-            'pl_telescope',
-            'pl_tranflag',
-            'ra',
-            'rowupdate',
-            'st_age',
-            'st_dist',
-            'st_mass',
-            'st_optmag',
-            'st_rad',
-            'st_teff',
-            'pl_pelink',
-            'pl_edelink'
-          ];
-
-          rawData.forEach(function (d) {
-            var path = d;
-            var value = data[d];
-            if (!value) { value = ''; }
-            self.set(path, value);
-          });
+          Model.requests.sendQuery('getPlanetByName', name);
         },
         properties: {
           hasData: {

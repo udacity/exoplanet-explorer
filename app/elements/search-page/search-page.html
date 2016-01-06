@@ -200,33 +200,33 @@ Copyright (c) 2015 Udacity. All rights reserved.
             self.resultsContainer.appendChild(pT);
           }
 
+          function checkNeedMoreThumbs() {
+            var scroller = document.querySelector('paper-scroll-header-panel').scroller;
+            var interval = window.setInterval(function() {
+              var scrollDepth = scroller.scrollTop;
+              if (scrollDepth > (4000 * self._holdingPen.batch)) {
+                var newThumbs = self._holdingPen.pen.splice(0,20);
+                self.renderThumbnails(newThumbs);
+                self._holdingPen.batch += 1;
+              }
+              if (self._holdingPen.pen.length === 0) {
+                window.clearInterval(interval);
+              }
+            }, 1000);
+          }
+
           planets.forEach(function (planet, index) {
             if (index < 30) {
               createPlanetThumb(planet);
             } else if (index === 30) {
               createPlanetThumb(planet);
               if (self._holdingPen.pen.length === 0) {
-                self.checkNeedMoreThumbs();
+                checkNeedMoreThumbs();
               }
             } else if (index >= 30) {
               self._holdingPen.pen.push(planet);
             }
           });
-        },
-        checkNeedMoreThumbs: function() {
-          var self = this;
-          var scroller = document.querySelector('paper-scroll-header-panel').scroller;
-          var interval = window.setInterval(function() {
-            var scrollDepth = scroller.scrollTop;
-            if (scrollDepth > (4000 * self._holdingPen.batch)) {
-              var newThumbs = self._holdingPen.pen.splice(0,20);
-              self.renderThumbnails(newThumbs);
-              self._holdingPen.batch += 1;
-            }
-            if (self._holdingPen.pen.length === 0) {
-              window.clearInterval(interval);
-            }
-          }, 1000);
         },
         properties: {
           _holdingPen: {

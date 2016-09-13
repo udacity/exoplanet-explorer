@@ -41,6 +41,11 @@ Instructions:
    */
   function getJSON(url) {
     return get(url).then(function(response) {
+      // Handle network errors
+      if (!response.ok) {
+        throw Error(response.statusText ? response.statusText : 'Uknown network error')
+      }
+
       return response.json();
     });
   }

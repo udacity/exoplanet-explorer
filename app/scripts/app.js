@@ -43,7 +43,7 @@ Instructions:
     return get(url).then(function(response) {
       // Handle network errors
       if (!response.ok) {
-        throw Error(response.statusText ? response.statusText : 'Uknown network error')
+        throw Error(response.statusText ? response.statusText : 'Unknown network error')
       }
 
       return response.json();

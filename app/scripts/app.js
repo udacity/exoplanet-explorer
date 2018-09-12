@@ -62,6 +62,10 @@ Hint: you'll probably still need to use .map.
 
       addSearchHeader(response.query);
 
+      // var arrayOfPromise = response.results.map(function(url){
+      //   getJSON(url);
+      // });
+      // return Promise.all(arrayOfPromise);
       return Promise.all(response.results.map(getJSON));
     })
     .then(function(planetData) {
